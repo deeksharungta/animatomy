@@ -30,7 +30,7 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
 1. **The species' trait is the job.** Claws grip, teeth cut, wheels run, a slow animal times things. If you can't say why that animal does that job in three words, it's the wrong animal.
 2. **Colour by role, not by species.** Eight role colours, fixed for every figure (section 3). Many species share one role; a reader learns eight colours, never forty.
 3. **One operator per mechanism.** A part that moves on its own power gets exactly one operator. A part pushed by another part (a plunger riding a block, a gear driven by a gear) needs none. A swarm of one species (ants, hamsters) counts as one operator.
-4. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the heater contacts and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
+4. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the live wire and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
 5. **A flaw for every member, kept for later.** Each species has a habit that would cause a real failure (the sloth dozes off, the crab won't let go). Note it in the crew list. Don't show it unless the user asks for a "break it" moment; then the failure shown must be the real failure that habit causes.
 
 Write the crew list next to the parts list, one line each:
@@ -57,7 +57,7 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 
 **Colour belongs to the animals.** The machine and the scene are drawn exactly as Anatomy draws them: its paper and tone ramp, one lit accent, no colour. The animals carry their real fur colours, their role collars and their props, so they are the only colour in the picture and the eye finds them first. Never tint a machine part, a scene prop or a wall, and never paint a part in a role colour; the run's progress bar is the only other place the role colours appear.
 
-**Light and heat are the exception.** What the machine gives off, not what it is made of, may glow in colour: a heating element's orange, a flame, a spark, an LED. Draw it with WebGL as Anatomy does (`webgl.md`): a canvas between a back and a front drawing that adds a warm glow (screen blend in dark, ink in light) and sparks, only while the part is on. The toaster's ribbons, the warm light on the bread and the contact spark are the reference. The glow never tints a part that is off.
+**Light and heat are the exception.** What the machine gives off, not what it is made of, may glow in colour: a heating element's orange, a flame, a spark, an LED. Draw it with WebGL as Anatomy does (`webgl.md`): a canvas between a back and a front drawing that adds a warm glow (screen blend in dark, ink in light) and sparks, only while the part is on. The toaster's ribbons, the warm light on the bread and the contact spark are the reference. The glow never tints a part that is off. A crew member's own glow (an eel's charge) is part of the crew's drawing, in SVG, and follows the same rule: only while the current flows.
 
 ## 4. The cast
 
@@ -76,6 +76,7 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 | raccoon | turning knobs, dials and latches with nimble hands | grey coat, black mask over the eyes, pale muzzle and brows, black hand-like paws, a ringed tail |
 | otter | fluid: pumps, valves, anything wet | sleek brown coat, broad flat head with small ears, pale throat, a thick tapering tail |
 | crab | holding, clamping, pinching | red shell with a pale underside, eyes on stalks, two big pincers; walks sideways, legs drawn into the body |
+| eel | power: current, wires, circuits, batteries (an electric eel makes electricity) | electric eel: long smooth olive body, orange throat and belly, a flat head with small eyes, a long fin under its whole length and no other limbs; lies along a path and crackles while charged |
 
 Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` with every species at four headings (facing you, left, right, away) and in seven poses (reaching, walking, on all fours, hanging, asleep, startled, kitted out with props). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
 
@@ -108,6 +109,7 @@ svg.push(critterSvg(c, { part: "pip" })); // build time
 - **Size** is the critter's height in world units. Pick it against the part it operates: about half a carriage's length, a third of a dial's diameter. A squirrel at 25 and a sloth at 18 sit well in the dial example; the vending machine's hamsters are 10 in a wheel of radius 11.
 - **Painted, not built from solids.** Each animal is drawn once, facing left and about 100 units tall, as a set of authored shapes: body, head, ears, markings, eyes, nose, whiskers, arms, paws, feet and tail. Fills are soft gradients lit from above; light markings (belly, muzzle, cheeks) fade into the fur; short fur strokes soften every edge and hair strands follow the coat; there are no outlines. `critter()` places that drawing in the figure's camera: at the projection of `at`, scaled so `size` world units of height match the camera, mirrored to face its heading, and drawn from behind when its heading points away from the viewer (no belly, no far eye, the tail in front). The ground shadow stays on the floor when it hops.
 - **A rig, not a puppet.** The upper body leans around the hips, the head tips around the neck, the arms are two bones from the shoulder to the paw target (projected into the drawing), the feet step with the stride, and the tail sways from its root. `stance: "four"` swaps to the side-on drawing on all fours, whose four legs run from `stride`. `stance: "hang"` uses the upright drawing with the shoulders set back, the arms up to the paws and the feet dangling, and drops the ground shadow.
+- **No limbs: a body along a path.** The eel has no paws, so it doesn't stand at a point: `pose.path` is a list of world points from its snout back, and its body lies along that path for `size` world units (carrying on past the last point if the path is shorter). Lay the path along the part it is: a wire, a pipe, a channel. Lift the path off the floor by its half-thickness (about 5% of its length) so it lies on the surface, not in it. The head is drawn like any other head (eyes, props, collar) and turned to point back along the first stretch of path. `charge` (0 to 1) makes it crackle, `flicker` redraws the sparks each time it steps on a whole number (give it time × 14 for a lively crackle), and `target` draws an arc from the snout to a world point, such as the terminal it touches. With no path, it lies straight along `heading` through `at`, with a gentle wave that `stride` moves.
 - **Turning.** Facing left or right is a mirror, and a critter that turns through the camera's axis narrows a little as it passes, which reads as a turn. Headings within a few degrees of straight at the viewer still show a three-quarter face; that is the drawing, not a bug.
 - **Colour comes from tokens.** `crewCss()` gives every species its fur, belly, dark, skin and marking tones (each with a lit and a shade value), eye, nose, claw, whisker and teeth colours, and every role its collar colour. Never type a colour into a critter's markup.
 
@@ -187,7 +189,7 @@ otter: {
 },
 ```
 
-Work from photographs of the real animal in profile: trace its proportions on the 100-unit grid, then render it on the cast sheet in both themes and read it at 2× before using it. A species with a different body plan (a crab's legs and claws, a bird's wings) gets its own drawing with the same parts list (`legs` like the `four` drawings, `arms` for whatever grips), so `critter`, `critterSvg` and `paintCritter` work unchanged.
+Work from photographs of the real animal in profile: trace its proportions on the 100-unit grid, then render it on the cast sheet in both themes and read it at 2× before using it. A species with a different body plan (a crab's legs and claws, a bird's wings) gets its own drawing with the same parts list (`legs` like the `four` drawings, `arms` for whatever grips), so `critter`, `critterSvg` and `paintCritter` work unchanged. A species with no limbs at all (an eel, a snake, a worm) uses a `path` drawing like the eel's: a `head` in the usual head format with its neck at the origin, a `width` (half-thickness behind the head) and a `fin`; the body is built along the path each frame.
 
 ## 12. Props
 
@@ -209,6 +211,7 @@ A prop says what the job is before the reader reads a word: a stopwatch on the t
 | `notebook` | far paw | a notebook with a cover in the role colour |
 | `clipboard` | far paw | a clipboard with a written sheet |
 
+- **Heads and necks only for the eel.** It has no paws, so mitts, notebooks and clipboards don't apply. Volta wears a hard hat, as electricians do.
 - **One or two each, chosen for the job.** A head prop and a face or neck prop at most. The sensing crew get glasses and a stopwatch, the heat crew goggles and mitts, the runners sweatbands, the one under a load a hard hat.
 - **Anchored to the drawing.** Props are placed from each species' own head, eye, neck and paw points, so they sit right on every species at every heading, mirror with it, follow the lean and the head's tip, and show only what the camera would see (glasses and goggles from the front, just the strap from behind). Never place a prop by hand.
 - **Colour.** Cloth and plastic take the role colour; metal, glass, wood and paper keep their own. That keeps the rule: one role colour per critter.

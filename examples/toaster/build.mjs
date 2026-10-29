@@ -48,6 +48,9 @@ const C = {
   KNOB_A0: 0.3,
   KNOB_ARM: 10,
   BOOK: { x: 94, y: -46, w: 20, d: 26, r: 1.5, h: 12 },
+  // The live wire's run beside the mains wire, from its terminal on the contact post back toward the cord.
+  LIVE: [[69, 22.6, 14.6], [74.6, 17.4, 14.3], [74.6, -12, 14.3], [73.2, -19, 14.3], [69, -27, 14.3], [67.5, -40, 14.3]],
+  TERMINAL: [67, 22.4, 16],
 };
 
 // Real numbers. A brass-steel strip 40 mm long and 0.5 mm thick bends about 0.045 mm per kelvin at
@@ -60,7 +63,7 @@ const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["gl
 const DIG = { species: "mole", name: "Dig", size: 18, role: "holding", wear: ["minerhat"] };
 const ROCKY = { species: "raccoon", name: "Rocky", size: 24, role: "sensing", wear: ["glasses",  "pencil"] };
 const ROO = { species: "kangaroo", name: "Roo", size: 17, role: "spring", wear: ["sweatband",  "whistle"] };
-const EMBER = { species: "fennec", name: "Ember", size: 18, role: "heat", wear: ["goggles",  "mitts"] };
+const VOLTA = { species: "eel", name: "Volta", size: 50, role: "power", wear: ["hardhat"] };
 
 const DESK = { x: -150, y: -96, w: 286, d: 214, r: 6 };
 const ROOM_TOP = 165;
@@ -187,9 +190,9 @@ function dynamic(K, P, C, S) {
 
   // Upper contact leaf: a spring strip from its post, pressed down by the carriage foot.
   const foot = S.zb - 4;
-  const leafZ = Math.min(20.4, Math.max(18.9, foot - 0.4)) - (foot - 0.4 <= 18.95 ? 0.7 * (S.ember ?? 0) : 0);
+  const leafZ = Math.min(20.4, Math.max(18.2, foot - 0.4));
   out.leafZ = leafZ;
-  out.leaf = `${K.solidSvg(plateX([[21, 20.4], [21, 21.2], [9, leafZ + 0.8], [9, leafZ]], 63, 67), { tone: "hi", crease: "lo" })}${K.solidSvg(plateX([[8.6, leafZ + 0.8], [12.6, leafZ + 0.8], [12.6, leafZ + 2.4], [8.6, leafZ + 2.4]], 66.6, 77), { tone: "mid", lit: S.duty === "ember" })}`;
+  out.leaf = `${K.solidSvg(plateX([[21, 20.4], [21, 21.2], [9, leafZ + 0.8], [9, leafZ]], 63, 67), { tone: "hi", crease: "lo" })}`;
   out.spark = S.on ? K.dotsSvg([at([67, 9.6, leafZ - 0.3])], { size: 0.7, tone: "hi" }) : "";
 
   // Lift spring: an extension spring round the guide rod, from the carriage top to the top bracket.
@@ -287,20 +290,19 @@ function poses(C, S, D) {
     hop: (S.hop ?? 0) * 1.5,
     eyes: S.hop > 0.5 ? "wide" : S.on ? "open" : S.brown > 0.5 ? "happy" : "open",
   };
-  // Ember rides the contact leaf, keeping the two contacts pressed together while the heaters run.
-  const lz = D.leafZ;
-  const ember = {
-    at: [79.5, 10.5, C.FLOOR],
-    heading: 130,
-    lean: 10 + 8 * (S.ember ?? 0),
-    look: [0, -8],
-    paws: S.zb < C.BOTTOM + 3 ? { l: [76.9, 9.8, lz + 2.4], r: [76.6, 11.8, lz + 2.4] } : undefined,
-    eyes: S.on ? (S.glow > 0.9 ? "happy" : "wide") : "open",
+  // Volta lies along the live wire with his snout on its terminal. While the contacts are closed his
+  // current runs through them into the ribbons, and he crackles with it.
+  const volta = {
+    path: C.LIVE,
+    charge: S.on ? 1 : 0,
+    flicker: S.on ? Math.floor((S.stepT ?? 0) * 14) : 0,
+    target: S.on ? C.TERMINAL : undefined,
+    eyes: S.on ? (S.glow > 0.9 ? "happy" : "wide") : S.brown > 0.5 && S.zb >= C.UP - 0.1 ? "happy" : "shut",
   };
-  return { mo, dig, rocky, roo, ember };
+  return { mo, dig, rocky, roo, volta };
 }
 
-const REST = { knob: 0, knobT: 0, knobV: 0, ember: 0, emberT: 0, zb: C.UP, v: 0, hand: false, phi: 0, latched: false, strip: T0, element: T0, glow: 0, bread: T0, water: 1, brown: 0, hop: 0, hv: 0, on: false, duty: "", moEyes: "shut", digEyes: "open", strain: false, clock: 0, warp: 1, fade: 1, swap: -1, stepT: 0 };
+const REST = { knob: 0, knobT: 0, knobV: 0, zb: C.UP, v: 0, hand: false, phi: 0, latched: false, strip: T0, element: T0, glow: 0, bread: T0, water: 1, brown: 0, hop: 0, hv: 0, on: false, duty: "", moEyes: "shut", digEyes: "open", strain: false, clock: 0, warp: 1, fade: 1, swap: -1, stepT: 0 };
 const dyn0 = dynamic(K, P, C, REST);
 const pose0 = poses(C, REST, dyn0);
 
@@ -670,7 +672,7 @@ const parts = [
     mv("clamp", clampTop()),
     crew(DIG, pose0.dig, "dig"),
     crew(MO, pose0.mo, "mo"),
-    crew(EMBER, pose0.ember, "ember"),
+    crew(VOLTA, pose0.volta, "volta"),
     stub(),
     mv("knob", dyn0.knobFace),
     book(),
@@ -680,7 +682,7 @@ const parts = [
     propsFront(),
 ];
 const cut = parts.indexOf("|");
-const LABEL = "A two-slice pop-up toaster on a kitchen counter, with its front wall, open end and the front half of its top cut away, run by five animals. Inside, two slices of bread stand between mica boards wound with nichrome ribbon. At the open end the carriage slides on a rod with a lift spring round it. Rocky the raccoon, on a stack of books, lifts the browning knob by its pointer lever; the knob's cam sets the height of a brass and steel bimetal strip. Roo the kangaroo stands on the lever knob and stamps it down. Ember the fennec fox presses the contacts that feed the heaters. Dig the mole holds the hook that catches the carriage's pin, and Mo the sloth hangs from the strip, which curls as it heats until it pushes the hook's tail and lets the carriage go.";
+const LABEL = "A two-slice pop-up toaster on a kitchen counter, with its front wall, open end and the front half of its top cut away, run by five animals. Inside, two slices of bread stand between mica boards wound with nichrome ribbon. At the open end the carriage slides on a rod with a lift spring round it. Rocky the raccoon, on a stack of books, lifts the browning knob by its pointer lever; the knob's cam sets the height of a brass and steel bimetal strip. Roo the kangaroo stands on the lever knob and stamps it down, and the carriage's foot closes the contacts. Volta the electric eel lies along the live wire with his snout on its terminal, and crackles while current flows to the heaters. Dig the mole holds the hook that catches the carriage's pin, and Mo the sloth hangs from the strip, which curls as it heats until it pushes the hook's tail and lets the carriage go.";
 const backSvg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: LABEL, body: parts.slice(0, cut) });
 const frontSvg = `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg tz-layer" viewBox="0 0 ${WIDTH} ${HEIGHT}" aria-hidden="true">${parts.slice(cut + 1).join("")}</svg>`;
 
@@ -834,14 +836,11 @@ function model(C, H, T0) {
     }
     // Hook: Dig keeps it closed; the pin cams it open on the way down; the strip lifts its tail.
     const relax = S.phi * Math.exp(-dt / 0.07);
-    // Rocky's knob, and Ember's paws on the contact leaf.
+    // Rocky's knob.
     const kPrev = S.knob;
     S.knob += (S.knobT - S.knob) * (1 - Math.exp(-dt / 0.55));
     if (Math.abs(S.knobT - S.knob) < 0.002) S.knob = S.knobT;
     S.knobV = (S.knob - kPrev) / Math.max(dt, 1e-3);
-    const ePrev = S.ember;
-    S.ember += (S.emberT - S.ember) * (1 - Math.exp(-dt / 0.22));
-    if (Math.abs(S.emberT - S.ember) < 0.002) S.ember = S.emberT;
     const tip = tipOf(S.strip, S.knob);
     S.phi = Math.max(relax < 1e-4 ? 0 : relax, S.hand ? camPhi(S.zb + 6) : 0, tailPhi(tip[0], tip[1]));
     // Swept test: a pin that was below the hook's underside last frame can't pass through it this frame.
@@ -850,12 +849,11 @@ function model(C, H, T0) {
     const under = hz !== null && topPrev <= hz + 0.05;
     if (under && pinTop > hz) { S.zb = hz - C.PIN.r - 6; S.v = 0; }
     S.latched = under && !S.hand && S.zb + 6 + C.PIN.r >= hz - 0.05;
-    // Once the carriage is free and rising, the leaf springs open under Ember's paws.
-    if (!S.latched && !S.hand && S.zb > C.BOTTOM + 3) S.emberT = 0;
     // Bread hops off the rack when the carriage hits its top stop.
     if (S.hop > 0) { S.hv -= 6300 * dt; S.hop += S.hv * dt; if (S.hop <= 0) { S.hop = 0; S.hv = 0; } }
     // Switch, heaters and the strip.
-    const leafZ = Math.min(20.4, Math.max(18.9, S.zb - 4.4)) - (S.zb - 4.4 <= 18.95 ? 0.7 * S.ember : 0);
+    // Switch: the carriage's foot presses the leaf onto the lower contact near the bottom of its travel.
+    const leafZ = Math.min(20.4, Math.max(18.2, S.zb - 4.4));
     S.on = leafZ <= 18.3;
     S.element += ((S.on ? H.element : T0) - S.element) * (1 - Math.exp(-sim / H.tauElement));
     S.glow = Math.max(0, Math.min(1, (S.element - 380) / 220));
@@ -877,7 +875,7 @@ function model(C, H, T0) {
     else if (Math.abs(S.knobV) > 0.02) duty = "rocky";
     else if (dph > 0.05) duty = "dig";
     else if (S.hand || (S.zb < C.UP - 0.2 && !S.latched)) duty = "roo";
-    else if (Math.abs(S.ember - ePrev) > 1e-4 || (S.on && S.glow < 0.97)) duty = "ember";
+    else if (S.on && S.glow > 0 && S.glow < 0.97) duty = "volta";
     else if (S.latched) duty = "dig";
     S.duty = duty;
     S.strain = S.latched && S.phi < 0.01;
@@ -898,9 +896,7 @@ const Mdl = model(C, HEAT, T0);
   S.hand = false;
   for (let i = 0; i < 60; i++) Mdl.step(S, 1 / 60);
   if (!S.latched) console.warn("the hook did not catch the carriage");
-  S.emberT = 1;
-  for (let i = 0; i < 30; i++) Mdl.step(S, 1 / 60);
-  if (!S.on) console.warn("Ember did not close the contacts");
+  if (!S.on) console.warn("the carriage did not close the contacts");
   S.warp = 1;
   let n = 0;
   while (S.latched && n++ < 60 * 400) Mdl.step(S, 1 / 60);
@@ -913,22 +909,22 @@ const Mdl = model(C, HEAT, T0);
 for (const [T, knob, down] of [[20, 0, false], [20, 0.1, false], [20, 0.2, false], [20, 0.3, false], [20, 0.4, false], [20, 0.5, false], [20, 0.5, true], [80, 0.5, true], [120, 0.5, true], [170, 0.5, true]]) {
   const tip = Mdl.tipOf(T, knob);
   const phi = Mdl.tailPhi(tip[0], tip[1]);
-  const st = { ...REST, strip: T, phi, knob, zb: down ? C.BOTTOM + 1.5 : C.UP, ember: down ? 1 : 0, latched: down, on: down };
+  const st = { ...REST, strip: T, phi, knob, zb: down ? C.BOTTOM + 1.5 : C.UP, latched: down, on: down };
   const d = dynamic(K, P, C, st);
   const p = poses(C, st, d);
-  for (const [name, spec, pose] of [["Mo", MO, p.mo], ["Dig", DIG, p.dig], ["Rocky", ROCKY, p.rocky], ["Ember", EMBER, p.ember]]) {
+  for (const [name, spec, pose] of [["Mo", MO, p.mo], ["Dig", DIG, p.dig], ["Rocky", ROCKY, p.rocky]]) {
     const c = critter(spec, pose, P);
     for (const [paw, short] of Object.entries(c.reach)) if (short > 0.3) console.warn(`${name}'s ${paw === "l" ? "left" : "right"} paw is ${short.toFixed(1)} short at ${T} °C, knob ${knob}`);
   }
 }
 
-const ROLE = { sensing: "#3E9BDB", holding: "#E5484D", spring: "#E93D82", heat: "#F76B15" };
+const ROLE = { sensing: "#3E9BDB", holding: "#E5484D", spring: "#E93D82", power: "#F5C518" };
 const STEPS = [
-  { title: "Meet the crew", who: "Rocky, Roo, Dig, Ember and Mo", color: "var(--anatomy-hi)", text: "Five animals run this toaster: Rocky on the browning knob, Roo on the lever, Dig on the hook, Ember at the contacts and Mo on the strip.", points: null, hold: 1.6 },
+  { title: "Meet the crew", who: "Rocky, Roo, Dig, Volta and Mo", color: "var(--anatomy-hi)", text: "Five animals run this toaster: Rocky on the browning knob, Roo on the lever, Dig on the hook, Volta on the live wire and Mo on the strip.", points: null, hold: 1.6 },
   { title: "Rocky sets the browning", who: "Rocky · sensing", color: ROLE.sensing, text: "Rocky lifts the knob's lever toward dark. Its cam drops the strip's bracket, so the strip must curl further, and stay hot longer, before it trips.", points: [[96, -30, 14], [96, -30, 30], [110, -40, 0], [58, -44, 26], [58, -20, 50], [70, -46, 46]] },
-  { title: "Roo stamps the lever down", who: "Roo · spring", color: ROLE.spring, text: "Roo jumps on the lever knob. The carriage slides down its rod and stretches the lift spring, and the pin knocks Dig's hook aside on the way past.", points: [[64, 14, 96], [64, 14, 18], [64, 62, 24], [64, 62, 104], [64, -14, 56]] },
+  { title: "Roo stamps the lever down", who: "Roo · spring", color: ROLE.spring, text: "Roo jumps on the lever knob. The carriage slides down, stretching the lift spring; its pin knocks Dig's hook aside and its foot closes the contacts.", points: [[64, 14, 96], [64, 14, 18], [64, 62, 24], [64, 62, 104], [64, -14, 56]] },
   { title: "Dig holds it down", who: "Dig · holding", color: ROLE.holding, text: "The spring pulls back up, but Dig has swung the hook back over the pin, and it stops there. The carriage is held at the bottom.", points: [[64, -18, 24], [64, 22, 14], [64, -4, 56], [68, 14, 36]] },
-  { title: "Ember switches on the heat", who: "Ember · heat", color: ROLE.heat, text: "Ember presses the contacts together. Current runs through the nichrome ribbons, which glow at about 600 °C.", points: [[82, 4, 12], [82, 22, 32], [60, 4, 14], [-40, 17, 40], [40, 34, 46], [58, -40, 62]] },
+  { title: "Volta powers the heaters", who: "Volta · power", color: ROLE.power, text: "With the contacts closed, Volta's current runs through them into the nichrome ribbons, which glow at about 600 °C.", points: [[76, 24, 12], [76, -22, 12], [66, 22, 24], [-40, 17, 40], [40, 34, 46], [58, -40, 62]] },
   { title: "Mo feels the heat", who: "Mo · sensing", color: ROLE.sensing, text: "Brass grows more than steel when hot, so the strip curls up, lifting Mo toward the hook's tail. The bread dries, then browns.", points: [[60, -44, 28], [60, -44, 66], [66, -16, 58], [70, -20, 24]] },
   { title: "Mo trips the hook", who: "Mo · sensing", color: ROLE.sensing, text: "The strip pushes the hook's tail up. The hook swings off the pin, and Dig can't hold it against Mo.", points: [[60, -44, 28], [60, -26, 62], [66, 6, 58], [66, 6, 22]] },
   { title: "Pop!", who: "Roo · spring", color: ROLE.spring, text: "The spring yanks the carriage up in a fifth of a second and throws Roo with it. The contacts spark open and the ribbons go dark.", points: [[-52, 17, 150], [24, 17, 140], [64, 62, 84], [64, 62, 120], [64, 14, 18]] },
@@ -941,7 +937,7 @@ const live = `
 const P = ${JSON.stringify(P)};
 const C = ${JSON.stringify(C)};
 const HEAT = ${JSON.stringify(HEAT)};
-const MO = ${JSON.stringify(MO)}, DIG = ${JSON.stringify(DIG)}, ROCKY = ${JSON.stringify(ROCKY)}, ROO = ${JSON.stringify(ROO)}, EMBER = ${JSON.stringify(EMBER)};
+const MO = ${JSON.stringify(MO)}, DIG = ${JSON.stringify(DIG)}, ROCKY = ${JSON.stringify(ROCKY)}, ROO = ${JSON.stringify(ROO)}, VOLTA = ${JSON.stringify(VOLTA)};
 const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, hold, pace }) => ({ title, text, who, hold, pace })))};
 const VIEWS = ${JSON.stringify(views.map((v) => v.map((n) => +n.toFixed(2))))};
 const COLORS = ${JSON.stringify(STEPS.map((step) => step.color))};
@@ -956,12 +952,13 @@ const MDL = model(C, HEAT, ${T0});
 const stage = document.querySelector(".tz-stage");
 const svgs = [...stage.querySelectorAll(":scope > svg")];
 const part = (name) => stage.querySelector('[data-part="' + name + '"]');
-const el = { cb: part("carriage-b"), cb2: part("carriage-b2"), cf: part("carriage-f"), slider: part("slider"), out: part("slider-out"), leaf: part("leaf"), spark: part("spark"), sb: part("spring-back"), sf: part("spring-front"), lever: part("lever"), strip: part("strip"), mo: part("mo"), dig: part("dig"), rocky: part("rocky"), roo: part("roo"), ember: part("ember"), wire: part("wire"), wire2: part("wire2"), cam: part("cam"), adjust: part("adjust"), clamp: part("clamp"), knob: part("knob") };
+const el = { cb: part("carriage-b"), cb2: part("carriage-b2"), cf: part("carriage-f"), slider: part("slider"), out: part("slider-out"), leaf: part("leaf"), spark: part("spark"), sb: part("spring-back"), sf: part("spring-front"), lever: part("lever"), strip: part("strip"), mo: part("mo"), dig: part("dig"), rocky: part("rocky"), roo: part("roo"), volta: part("volta"), wire: part("wire"), wire2: part("wire2"), cam: part("cam"), adjust: part("adjust"), clamp: part("clamp"), knob: part("knob") };
 const toasts = [...stage.querySelectorAll("[data-toast]")];
 const readout = document.querySelector("[data-readout]");
 const REST = ${JSON.stringify(REST)};
 const S = { ...REST };
-const WARP = [1, 1, 1, 1, 2, 30, 30, 1, 60];
+// The heat is slowed while the carriage goes down and latches, so it comes on in Volta's own beat.
+const WARP = [1, 1, 0.1, 0.1, 2, 30, 30, 1, 60];
 let lastPose = {};
 function paintCrew(name, node, spec, pose, duty) {
   const key = JSON.stringify(pose) + duty;
@@ -1013,7 +1010,7 @@ function draw() {
   paintCrew("dig", el.dig, DIG, p.dig, S.duty === "dig");
   paintCrew("rocky", el.rocky, ROCKY, p.rocky, S.duty === "rocky");
   paintCrew("roo", el.roo, ROO, p.roo, S.duty === "roo");
-  paintCrew("ember", el.ember, EMBER, p.ember, S.duty === "ember");
+  paintCrew("volta", el.volta, VOLTA, p.volta, S.duty === "volta");
   paintGL();
   const word = S.swap >= 0 ? "fresh bread" : Math.abs(S.knobV) > 0.02 ? "setting the browning" : S.hand ? "going down" : S.on ? (S.duty === "mo" && S.phi > 0.02 ? "tripping" : "toasting") : S.zb < C.UP - 0.5 ? (S.latched ? "held down" : "pop!") : S.strip > 30 ? "cooling" : S.brown > 0.5 ? "toast is up" : "ready";
   const text = word + " · browning " + (1 + 4 * S.knob * ${(C.KNOB_TURN / 176).toFixed(3)}).toFixed(1) + " · strip " + Math.round(S.strip) + " °C · " + mm(S.clock);
@@ -1050,7 +1047,6 @@ function enter(i, how) {
   if (i === 1) S.knobT = 0.5;
   if (i === 2) S.hand = true;
   if (i === 3) S.hand = false;
-  if (i === 4) S.emberT = 1;
   if (i === 8) S.knobT = 0;
   S.stepT = 0;
   draw();
@@ -1078,7 +1074,7 @@ const keys = [
   { mark: "raised", label: "Rocky, raccoon, sensing: sets the browning knob" },
   { mark: "raised", label: "Roo, kangaroo, spring: stamps the lever down and rides the pop" },
   { mark: "raised", label: "Dig, mole, holding: keeps the hook closed over the carriage pin" },
-  { mark: "raised", label: "Ember, fennec fox, heat: presses the contacts that feed the heaters" },
+  { mark: "raised", label: "Volta, electric eel, power: carries the current from the cord to the heaters" },
   { mark: "raised", label: "Mo, sloth, sensing: rides the bimetal strip as it curls" },
 ];
 

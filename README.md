@@ -3,10 +3,10 @@
 <p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, as one continuous story.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a run that plays the whole mechanism on a loop.</p>
 
 <p align="center">
-  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole in a red miner's hat holds the latch hook, a fennec fox in goggles and oven mitts presses the heater contacts, a kangaroo in a sweatband rides the lever, and a raccoon in glasses lifts the browning knob's lever.">
+  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole in a red miner's hat holds the latch hook, an electric eel in a hard hat lies along the live wire, crackling, a kangaroo in a sweatband rides the lever, and a raccoon in glasses lifts the browning knob's lever.">
 </p>
 
-<p align="center"><sub><code>examples/toaster</code>, light theme, mid-toast. Mo feels the heat while Dig, Ember, Roo and Rocky hold their posts. Whoever is working is lit.</sub></p>
+<p align="center"><sub><code>examples/toaster</code>, light theme, mid-toast. Mo feels the heat while Dig, Volta, Roo and Rocky hold their posts. Whoever is working is lit.</sub></p>
 
 ---
 
@@ -33,9 +33,9 @@ Everything else, from the craft rules to the audit, the line check, WebGL, the 3
 
 ## The crew
 
-<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: eleven painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab), each at four headings and in seven poses including on all fours, hanging and kitted out with props, each with a thin collar in its role colour."></p>
+<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: twelve painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel), each at four headings and in seven poses including on all fours, hanging and kitted out with props, each with a thin collar in its role colour."></p>
 
-Eleven species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter and crab. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. Each wears a thin collar in its role colour:
+Twelve species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab and electric eel. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. Each wears a thin collar in its role colour:
 
 | Role | Colour | Does |
 |---|---|---|

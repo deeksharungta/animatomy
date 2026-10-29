@@ -912,6 +912,27 @@ const ART = {
       arms: { near: [-26, -38], far: [-20, -40], l1: 9, l2: 10, w: [5, 5, 4.6], bend: [0.3, 1], tone: "fur", rest: { near: [-38, -40], far: [-36, -44] }, paw: { len: 15, w: 9, pincer: true, tone: "fur" } },
     },
   },
+
+  // An electric eel has no limbs: its body lies along a path in the world (pose.path, head first) and is
+  // drawn in screen space each frame. Units are 1% of its length; the head is drawn like the others' heads.
+  eel: {
+    colors: { fur: "#4B4A3A", belly: "#E59A3A", dark: "#2B2A21", skin: "#6E6A52", mark: "#F0C27A", eye: "#120d08", nose: "#1d1b14" },
+    coat: { shell: true, flow: [0, 1], tuft: 0, gap: 1, tw: 0.4, strand: 3, sw: 0.3 },
+    path: {
+      width: 4.6, fin: 2.4,
+      head: {
+        len: 15.6,
+        pts: [[2.5, -4.7], [-3, -5.1], [-8.5, -4.8], [-12.4, -3.6], [-15, -1.7], [-15.6, 0.3], [-14.6, 2.3], [-11, 3.5], [-5.5, 4.3], [0, 4.7], [2.5, 4.6]],
+        marks: [{ pts: [[-13.6, 1.8], [-9, 3.4], [-3, 4.3], [2.4, 4.3], [2, 2.6], [-4, 2.2], [-10, 1.6]], tone: "belly", op: 0.95 }],
+        lines: [{ d: "M-9.6,-1.4l.01,0M-7.6,-1.6l.01,0M-5.6,-1.7l.01,0M-3.6,-1.7l.01,0M-8.6,0l.01,0M-6.4,0.2l.01,0", tone: "mark", w: 0.55, op: 0.8 }],
+        eye: { at: [-11.6, -2.2], rx: 1.05, ry: 1 },
+        nose: [[-14.9, -1.4], [-14.3, -1.75], [-13.95, -1.25], [-14.45, -0.95]],
+        mouth: "M-15.3,0.9Q-12,1.9 -7.8,1.3",
+        pectoral: [[1.6, 0.6], [5.6, -0.8], [7.4, 1.4], [5.6, 3.6], [2, 2.6]],
+        collar: { d: "M2,-4.6Q3.4,0 2,4.6", w: 1.1, tag: [2.4, 5.2, 0.95] },
+      },
+    },
+  },
 };
 
 export const ROLES = {
@@ -925,7 +946,7 @@ export const ROLES = {
   spring: { hex: "#E93D82", word: "spring", does: "springs, launchers, returns" },
 };
 
-export const SPECIES = Object.fromEntries(Object.entries(ART).map(([name, a]) => [name, { colors: a.colors, arms: a.up.arms, four: !!a.four }]));
+export const SPECIES = Object.fromEntries(Object.entries(ART).map(([name, a]) => [name, { colors: a.colors, arms: a.up?.arms ?? null, four: !!a.four, path: !!a.path }]));
 
 // ---------- colour
 const hexToHsl = (hex) => {
@@ -953,6 +974,7 @@ export function crewCss() {
     `.crew[data-duty]>.so-fig{filter:url(#so-duty)}`,
     `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
     `.crew{--so-ground:#000}`,
+    `.iso{--so-zap:#FFE14D;--so-zap-core:#FFFBE8}.iso[data-theme="light"]{--so-zap:#E8A600;--so-zap-core:#FFF4C2}`,
   ];
   for (const [name, a] of Object.entries(ART)) {
     rules.push(`.crew[data-species="${name}"]{${TONES.filter((t) => a.colors[t]).map((t) => toneVars(t, a.colors[t])).join(";")};--so-eye:${a.colors.eye ?? "#120c08"};--so-nose:${a.colors.nose ?? a.colors.skin};--so-claw:${a.colors.claw ?? "#efe6da"};--so-whisker:${a.colors.whisker ?? "#f6f1e8"};--so-teeth:${a.colors.teeth ?? "#f4efe6"}}`);
@@ -1292,11 +1314,130 @@ function pieces(sp, stance, front, mirror, eyes, role, wear) {
 
 const tr = (x, y) => `translate(${n1(x)} ${n1(y)})`;
 
+// ---------- the eel: a body along a world path
+const ramp = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+// A path when the pose gives none: straight along the heading through `at`, with a gentle wave.
+function eelPath(pose, size) {
+  const at = pose.at ?? [0, 0, 0];
+  const h = (pose.heading ?? 0) * RAD, fw = [Math.cos(h), Math.sin(h)], side = [-fw[1], fw[0]];
+  const ph = (pose.stride?.phase ?? 0) * TAU, amp = size * (0.035 + (pose.stride?.amount ?? 0) * 0.3);
+  return Array.from({ length: 17 }, (_, i) => {
+    const u = i / 16, wave = Math.sin(u * TAU * 1.2 + ph) * amp * ramp(0, 0.3, u);
+    if (pose.stance === "hang") return [at[0] + fw[0] * wave, at[1] + fw[1] * wave, at[2] + size * (0.55 - u)];
+    return [at[0] + fw[0] * size * (0.5 - u) + side[0] * wave, at[1] + fw[1] * size * (0.5 - u) + side[1] * wave, at[2]];
+  });
+}
+// Distance along a world polyline to a point, carrying on past its end along the last segment.
+function walker(path) {
+  const d = [0];
+  for (let i = 1; i < path.length; i++) d.push(d[i - 1] + Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1], path[i][2] - path[i - 1][2]));
+  return (s) => {
+    let i = 1;
+    while (i < path.length - 1 && d[i] < s) i++;
+    const a = path[i - 1], b = path[i], t = (s - d[i - 1]) / (d[i] - d[i - 1] || 1);
+    return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  };
+}
+const ribbon = (L, R) => `M${L.map(pt).join("L")}L${[...R].reverse().map(pt).join("L")}Z`;
+function eelPieces(sp, mirror, eyes, role, wear) {
+  const key = `${sp}|path|${mirror}|${eyes}|${role}|${wear.join(",")}`;
+  if (CACHE.has(key)) return CACHE.get(key);
+  const H = ART[sp].path.head;
+  const out = { defs: defs(sp).replace("</defs>", `${propsDefs(sp, role)}</defs>`) };
+  out.head = headSvg(sp, H, { eyes, front: true, mirror, wear, role }) + collarSvg(H.collar) + neckProps(sp, { collar: H.collar }, wear, role, true) + softShape(sp, H.pectoral, "dark", 0.85);
+  CACHE.set(key, out);
+  return out;
+}
+// pose: { path: world points from the snout back, at/heading when there is no path, eyes, charge 0..1,
+// flicker (any number; each whole step redraws the sparks), target: a world point the snout arcs to }.
+function eelCritter(spec, pose, P) {
+  const sp = spec.species, A = ART[sp].path;
+  const size = spec.size ?? 40;
+  const path = pose.path?.length > 1 ? pose.path : eelPath(pose, size);
+  const W = walker(path);
+  const mid = W(size / 2);
+  const zpx = Math.abs(iso([mid[0], mid[1], mid[2] + 1], P)[1] - iso(mid, P)[1]);
+  const k = (size * zpx) / 100;
+  const s0 = (A.head.len * size) / 100, N = 36;
+  const p = [], n = [], hw = [], fin = [];
+  for (let i = 0; i <= N; i++) {
+    const t = i / N;
+    p.push(iso(W(s0 + (size - s0) * t), P));
+    const w = A.width * (t < 0.42 ? 1 - (0.1 * t) / 0.42 : 0.9 * (1 - ((t - 0.42) / 0.58) ** 1.5)) + 0.25;
+    hw.push(w * k);
+    fin.push(A.fin * k * ramp(0.1, 0.32, t) * (1 - 0.4 * ramp(0.9, 1, t)));
+  }
+  for (let i = 0; i <= N; i++) {
+    const tg = unit(sub(p[Math.min(N, i + 1)], p[Math.max(0, i - 1)]));
+    let nv = [tg[1], -tg[0]];
+    if (i ? nv[0] * n[i - 1][0] + nv[1] * n[i - 1][1] < 0 : nv[1] > 0) nv = [-nv[0], -nv[1]];
+    n.push(nv);
+  }
+  const at = (i, f) => add(p[i], n[i], hw[i] * f);
+  const span = (a, b, f) => Array.from({ length: b - a + 1 }, (_, j) => at(a + j, f));
+  const tip = add(p[N], unit(sub(p[N], p[N - 1])), hw[N] * 1.5);
+  const outline = [...span(0, N, 1), [...tip, 1], ...span(0, N, -1).reverse()];
+  const finEdge = (i) => add(p[i], n[i], -(hw[i] + fin[i]));
+  const f0 = Math.round(N * 0.1);
+  const dyn = {};
+  dyn.body = curve(outline).d;
+  dyn.shade = shd(dyn.body, 0, hw[0] * 0.6);
+  dyn.under = ribbon(span(0, N, -0.15), span(0, N, -1));
+  dyn.lit = ribbon(span(0, N - 4, 0.15), span(0, N - 4, 0.8));
+  const b1 = Math.round(N * 0.45);
+  dyn.belly = ribbon(span(0, b1, -0.98), Array.from({ length: b1 + 1 }, (_, j) => at(j, -(1 - 0.6 * (1 - j / b1)))));
+  dyn.gloss = ribbon(span(0, Math.round(N * 0.8), 0.5), span(0, Math.round(N * 0.8), 0.62));
+  dyn.fin = ribbon(Array.from({ length: N - f0 + 1 }, (_, j) => finEdge(f0 + j)).concat([tip]), span(f0, N, -0.9).concat([tip]));
+  let rays = "";
+  for (let i = f0 + 1; i < N; i += 2) rays += `M${pt(at(i, -0.95))}L${pt(finEdge(i))}`;
+  dyn.rays = rays;
+  // The head: drawn facing left with its neck at the origin, turned to point back along the first stretch of path.
+  const snout = iso(W(0), P);
+  let D = sub(snout, p[0]);
+  D = len(D) > 1e-6 ? unit(D) : unit(sub(p[0], p[1]));
+  const mirror = D[0] > 0;
+  const rot = Math.atan2(D[1], D[0]) / RAD + (mirror ? 0 : 180);
+  dyn.head = `${tr(p[0][0], p[0][1])} rotate(${n1(rot)}) scale(${n1(mirror ? -k * 100 : k * 100) / 100} ${n1(k * 100) / 100})`;
+  // Charge: sparks off the body and a crackle down its middle, redrawn whenever `flicker` steps on.
+  const charge = Math.max(0, Math.min(1, pose.charge ?? 0));
+  let zap = "";
+  if (charge > 0) {
+    const r = rng(Math.floor(pose.flicker ?? 0) * 7919 + 13);
+    for (let i = 1; i < N - 2; i += 3) {
+      if (r() > charge * 0.85) continue;
+      const side = r() < 0.5 ? 1 : -1;
+      let q = at(i, side * 0.9);
+      zap += `M${pt(q)}`;
+      for (let j = 0; j < 3; j++) { q = add(add(q, n[i], side * hw[0] * (0.35 + r() * 0.3)), unit(sub(p[i + 1], p[i])), hw[0] * (r() - 0.5) * 0.8); zap += `L${pt(q)}`; }
+    }
+    zap += `M${pt(p[0])}` + p.slice(1, N - 2).map((q, i) => `L${pt(add(q, n[i + 1], hw[i + 1] * (r() - 0.5) * 0.7))}`).join("");
+    if (pose.target) {
+      const T = iso(pose.target, P);
+      zap += `M${pt(snout)}`;
+      for (let j = 1; j <= 3; j++) { const q = add(snout, sub(T, snout), j / 3); zap += `L${pt(j < 3 ? add(q, [r() - 0.5, r() - 0.5], hw[0] * 0.7) : q)}`; }
+    }
+    dyn.charge = dyn.body;
+  } else dyn.charge = "";
+  dyn.zap = zap;
+  dyn.zapGlow = zap;
+  const eyes = pose.eyes ?? "open";
+  const wear = [].concat(spec.wear ?? []).filter((w) => PROPS[w]);
+  const S = eelPieces(sp, mirror, eyes, spec.role, wear);
+  const xs = outline.map((q) => q[0]).concat([snout[0] - hw[0] * 1.4, snout[0] + hw[0] * 1.4]);
+  const ys = outline.map((q) => q[1]).concat([snout[1] - hw[0] * 2.4, snout[1] + hw[0] * 1.4]);
+  return {
+    name: spec.name ?? sp, species: sp, role: spec.role, size, stance: "path", hang: false, front: true, mirror, eyes,
+    key: `${sp}|path|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0],
+    box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], lines: { ray: k * 0.14, glow: Math.max(1, hw[0] * 0.55), core: Math.max(0.4, hw[0] * 0.17) },
+  };
+}
+
 // ---------- the critter
 export function critter(spec, pose = {}, P) {
   const sp = spec.species;
   const a = ART[sp];
   if (!a) throw new Error(`no species ${sp}`);
+  if (a.path) return eelCritter(spec, pose, P);
   const stance = pose.stance === "four" && a.four ? "four" : "up";
   const hang = pose.stance === "hang";
   const R = stance === "four" ? a.four : a.up;
@@ -1394,7 +1535,15 @@ export function critter(spec, pose = {}, P) {
 
 const node = (k, tag, attr, inner = "") => (tag === "path" ? `<path data-k="${k}" ${attr}/>` : `<g data-k="${k}" ${attr}>${inner}</g>`);
 
+function eelInner(c) {
+  const { S, dyn, lines: w } = c;
+  const fill = (k, style, op) => `<path data-k="${k}" d="${dyn[k]}" style="${style}"${op ? ` opacity="${op}"` : ""}/>`;
+  const line = (k, style) => `<path data-k="${k}" d="${dyn[k]}" class="so-line" style="${style}"/>`;
+  return `${S.defs}${fill("shade", "fill:var(--so-ground)", ".16")}<g class="so-fig">${fill("fin", "fill:var(--so-fur-shade)", ".85")}${line("rays", `stroke:var(--so-dark);stroke-width:${n1(w.ray * 10) / 10};opacity:.3`)}${fill("body", "fill:var(--so-fur)")}${fill("under", "fill:var(--so-fur-shade)", ".55")}${fill("lit", "fill:var(--so-fur-lit)", ".5")}${fill("belly", "fill:var(--so-belly)", ".9")}${fill("gloss", "fill:#fff", ".22")}${fill("charge", "fill:var(--so-zap)", ".24")}<g data-k="head" transform="${dyn.head}">${S.head}</g>${line("zapGlow", `stroke:var(--so-zap);stroke-width:${n1(w.glow)};opacity:.45`)}${line("zap", `stroke:var(--so-zap-core);stroke-width:${n1(w.core * 10) / 10}`)}</g>`;
+}
+
 function inner(c) {
+  if (c.stance === "path") return eelInner(c);
   const { S, dyn } = c;
   const a = ART[c.species];
   const R = c.stance === "four" ? a.four : a.up;
@@ -1443,6 +1592,7 @@ export function paintCritter(el, c) {
 
 // The box a critter covers on screen, for framing.
 export function critterBox(c) {
+  if (c.box) return c.box;
   const a = ART[c.species], R = c.stance === "four" ? a.four : a.up;
   const [x0, y0, x1, y1] = R.box;
   const m = c.dyn.root.match(/translate\(([-\d.]+) ([-\d.]+)\) scale\(([-\d.]+) ([-\d.]+)\)/).slice(1).map(Number);

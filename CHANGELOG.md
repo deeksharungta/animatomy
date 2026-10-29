@@ -1,5 +1,16 @@
 # Changelog
 
+## Staff Only 0.6.0 (2026-10-29)
+
+### Added
+
+- The electric eel, the first crew member with no limbs. It lies along a path in the world (`pose.path`, snout first), drawn along it each frame with a head like the others', a fin under its length and a role collar, and crackles with sparks while charged (`charge`, `flicker`, and `target` for an arc from its snout). It takes head and neck props.
+- The cast sheet draws the eel in every cell: straight at four headings, swimming, curled, hanging and charged.
+
+### Changed
+
+- `examples/toaster`: Volta the electric eel (power) replaces Ember on the live wire. The carriage's foot now closes the contacts on its own, as in a real toaster, so they need no operator; Volta lies along the wire with his snout on its terminal and crackles while current flows to the ribbons. The heat is slowed while the carriage goes down, so the ribbons come up in Volta's beat. Ember stays in the cast for a future heat job.
+
 ## Staff Only 0.5.0 (2026-10-29)
 
 ### Added

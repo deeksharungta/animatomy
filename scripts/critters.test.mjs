@@ -65,3 +65,15 @@ test("crewCss colours every species and role, and nothing else", () => {
   for (const role of Object.keys(ROLES)) assert.ok(css.includes(`[data-role="${role}"]`));
   assert.ok(!css.includes("mat-"), "machines are not coloured");
 });
+
+test("an eel lies along its path, head first, and crackles only while charged", () => {
+  const path = [[12, 0, 0], [0, 0, 0], [-10, 6, 0], [-24, 6, 0]];
+  const quiet = critter({ species: "eel", size: 30, role: "power" }, { path }, P);
+  const live = critter({ species: "eel", size: 30, role: "power" }, { path, charge: 1, flicker: 4, target: [14, 0, 2] }, P);
+  assert.equal(quiet.dyn.zap, "", "no sparks without charge");
+  assert.ok(live.dyn.zap.length > 40, "sparks while charged");
+  const [x0, y0, x1, y1] = critterBox(quiet);
+  const snout = k.iso(path[0], P);
+  assert.ok(snout[0] >= x0 && snout[0] <= x1 && snout[1] >= y0 && snout[1] <= y1, "the head is at the start of the path");
+  assert.equal(quiet.mirror, true, "a head pointing right mirrors the drawing");
+});
