@@ -66,7 +66,7 @@ node examples/turning-dial/stress.mjs --light
 
 The Raptor builds take a few minutes each; the rest take seconds. `examples/test-rig/` and `examples/spot-plate/` are React components with no build script.
 
-After a build, `git status --short` must show nothing unless you meant to change a figure. CI runs exactly these commands and then `git diff --exit-code`.
+After a build, `git status --short` must show nothing unless you meant to change a figure. Run `node --test scripts/*.test.mjs` too: there is no CI, so these checks are yours to run before you push.
 
 ## The checks
 
@@ -162,7 +162,7 @@ These come from [`SKILL.md`](SKILL.md) and [`references/`](references). A pull r
 6. Add a line under `Unreleased` in [`CHANGELOG.md`](CHANGELOG.md).
 7. Fill in the pull request template.
 
-CI must pass before a merge.
+The tests and the rebuild must pass on your machine before a merge.
 
 ## Reporting a bug or asking for a figure
 

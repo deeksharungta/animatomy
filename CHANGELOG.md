@@ -6,6 +6,10 @@
 
 - `examples/vending-machine`: a Hero-size figure, a snack machine in a hallway with four crew (Dig the mole checks coins, Pip the squirrel banks them, Bun and Mochi turn coil B3) and seven steps, from the coin going in to the bar landing in the bin.
 
+### Removed
+
+- The GitHub Actions workflow. Run the tests and rebuild the examples locally (see `CONTRIBUTING.md`).
+
 ## Staff Only 0.2.0 (2026-10-27)
 
 ### Added
