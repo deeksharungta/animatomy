@@ -934,7 +934,7 @@ const ART = {
     },
   },
 
-  // Birds have no paws: the beak does the work. pose.beak is a world point the beak tip reaches by leaning
+  // A bird has no paws: the beak does the work. pose.beak is a world point the beak tip reaches by leaning
   // the body and tipping the head, and pose.wings (0..1) opens the wings.
   woodpecker: {
     colors: { fur: "#222126", belly: "#EFEBE3", dark: "#151418", skin: "#7A736E", mark: "#C8282D", eye: "#140c0c", claw: "#2a2726" },
@@ -988,62 +988,6 @@ const ART = {
       tail: {
         pivot: [-2, -6], back: "over",
         pts: [[3, -15], [13, -11], [21, 1], [19, 4.5], [11, -1.5], [1, -7]], tone: "dark", strands: 10, tuft: 0.8, flow: [0.6, 1],
-      },
-    },
-  },
-
-  pigeon: {
-    colors: { fur: "#8F98A7", belly: "#BCC3CE", dark: "#40475A", skin: "#D3625C", mark: "#4E9B7C", eye: "#E06A1E", claw: "#3a2f2e" },
-    coat: { flow: [1, 0.3], tuft: 0.6, gap: 1.3, tw: 0.3, strand: 4, sw: 0.3 },
-    up: {
-      pivot: [2, -12], box: [-40, -80, 74, 4], shadow: [12, 34, 6],
-      neck: { base: [-16, -48], w: [16, 12], max: 36, tone: "fur" },
-      body: {
-        pts: [[-12, -13], [-21, -20], [-27, -31], [-27, -42], [-23, -51], [-15, -57], [-6, -57], [3, -51], [16, -45], [30, -38], [40, -31], [36, -24], [22, -17], [6, -12]],
-        strands: 45, flow: [1, 0.25],
-        marks: [
-          { pts: [[-25, -41], [-22, -51], [-15, -56], [-7, -55.6], [-9, -48], [-15, -42], [-21, -37.4]], tone: "mark", op: 0.9 },
-          { pts: [[-20, -21], [-10, -15], [6, -13], [20, -17], [8, -19.6], [-8, -20.6]], tone: "belly", op: 0.7 },
-        ],
-      },
-      wing: {
-        pivot: [-8, -44], up: 75,
-        pts: [[-14, -44], [-4, -48], [12, -45], [28, -38], [44, -30], [50, -27], [40, -25.6], [24, -27], [6, -29], [-8, -33], [-15, -38]], tone: "belly",
-        marks: [
-          { pts: [[10, -34.6], [23, -33.2], [24, -30.6], [11, -31.6]], tone: "dark", soft: false },
-          { pts: [[16, -30], [31, -30.4], [32, -28], [17, -27.6]], tone: "dark", soft: false },
-          { pts: [[36, -31], [50, -27], [40, -25.6], [34, -27]], tone: "dark", op: 0.8 },
-        ],
-        lines: "M2,-40Q20,-37 40,-29M6,-36Q22,-33 36,-28",
-        spread: {
-          pts: [[-12, -42], [-16, -58], [-12, -74], [-2, -88], [12, -97], [26, -100], [31, -95], [24, -88], [31, -85], [23, -77], [28, -72], [18, -66], [21, -60], [10, -52], [2, -46]],
-          marks: [
-            { pts: [[-4, -66], [6, -74], [8, -71], [-2, -63]], tone: "dark", soft: false },
-            { pts: [[0, -60], [10, -68], [12, -65], [2, -57]], tone: "dark", soft: false },
-            { pts: [[18, -96], [26, -100], [31, -95], [24, -88], [31, -85], [23, -77], [28, -72], [20, -70], [16, -82]], tone: "dark", op: 0.75 },
-          ],
-          lines: "M-6,-56Q4,-76 22,-96M0,-52Q14,-70 28,-86M6,-50Q18,-62 26,-72",
-        },
-      },
-      collar: { d: "M-26,-46Q-17,-41 -6,-50", w: 1.2, tag: [-16, -43.5, 1.5] },
-      head: {
-        pivot: [-14, -54],
-        pts: [[-27, -61], [-28, -67], [-24, -73], [-17, -75], [-11, -72], [-9, -66], [-11, -59], [-17, -56], [-23, -57]],
-        strands: 0, tuft: 0.7,
-        marks: [{ pts: [[-27.4, -66.4], [-29.8, -66.8], [-30.6, -65.2], [-28, -64.4]], tone: "belly", soft: false }],
-        eye: { at: [-20.5, -66.5], rx: 2, ry: 2, pupil: 0.48 },
-        beak: [[-27, -66], [-31, -65.2], [-35.4, -63], [-34.4, -61.8], [-30.6, -62.2], [-27, -62.6]],
-        beakLine: "M-27.4,-64.2L-33.6,-62.6",
-        beakTip: [-35.2, -62.6],
-      },
-      feet: {
-        near: { at: [-6, 0], pts: [[1.4, -10], [-1.2, -10], [-1.6, -2], [-8, -1.4], [-10, 0.4], [-7, 1], [-2, 0.8], [3.6, 0.8], [4.2, -0.6], [1.8, -2]], tone: "skin", claws: "M-9.6,.2l-1.3,.6M-6.8,.9l-1,.6", clawW: 0.45 },
-        far: { at: [4, -1.2], pts: [[1.2, -9], [-1, -9], [-1.4, -1.8], [-7, -1.2], [-8.8, 0.3], [-6.2, 0.9], [-1.8, 0.7], [3.2, 0.7], [3.8, -0.5], [1.6, -1.8]], tone: "skin" },
-      },
-      tail: {
-        pivot: [2, -12],
-        pts: [[33, -35], [52, -33], [68, -29], [70, -24.6], [52, -21.6], [33, -24]], strands: 12, tuft: 0.8, flow: [1, 0.1],
-        marks: [{ pts: [[60, -31.2], [68.6, -29], [70, -24.8], [60, -23]], tone: "dark", soft: false }],
       },
     },
   },
@@ -1264,7 +1208,6 @@ function ringsSvg(L) {
 export const PROPS = {
   glasses: { at: "face", does: "round wire glasses, for whoever reads or times things" },
   sweatband: { at: "head", does: "a towelling band in the role colour, for the runners and jumpers" },
-  envelope: { at: "beak", does: "a letter in the beak, for a bird that carries messages" },
 };
 const ink = (w) => `class="so-line" style="stroke:#2b2622;stroke-width:${n1(w)}"`;
 function headProps(sp, H, wear, front) {
@@ -1283,10 +1226,6 @@ function headProps(sp, H, wear, front) {
     const r = Math.max(H.eye.rx * 1.75 + 0.8, 3 * s);
     const arm = `<path d="M${n1(cx + r)},${n1(cy - 0.4)}L${n1(Math.min(x1 - 2 * s, cx + r + w * 0.4))},${n1(cy - 1.2)}" ${ink(0.7 * s)}/>`;
     out += front ? `${arm}<circle cx="${n1(cx)}" cy="${n1(cy)}" r="${n1(r)}" fill="#fff" opacity=".14"/><circle cx="${n1(cx)}" cy="${n1(cy)}" r="${n1(r)}" fill="none" ${ink(0.75 * s)}/><path d="M${n1(cx - r * 0.6)},${n1(cy - r * 0.55)}Q${n1(cx - r * 0.1)},${n1(cy - r * 0.9)} ${n1(cx + r * 0.4)},${n1(cy - r * 0.7)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.5 * s)};opacity:.7"/><path d="M${n1(cx - r)},${n1(cy + 0.2)}L${n1(cx - r - 2.6 * s)},${n1(cy + 0.8 * s)}" ${ink(0.7 * s)}/>` : arm;
-  }
-  if (wear.includes("envelope") && H.beakTip) {
-    const [bx, by] = H.beakTip;
-    out += `<g transform="translate(${n1(bx + 2.2)} ${n1(by + 2.6)}) rotate(14)"><rect x="-5" y="-3.4" width="10" height="6.8" rx=".5" fill="#F7F3EA"/><path d="M-5,-3.4L0,0.6L5,-3.4" class="so-line" style="stroke:#a8a296;stroke-width:.4"/></g>`;
   }
   return out;
 }

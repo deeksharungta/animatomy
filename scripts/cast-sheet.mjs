@@ -28,7 +28,7 @@ const cells = [
 // Birds work with the beak and fly instead of hanging or going on all fours.
 const fw = (deg, d, z) => [Math.cos((deg * Math.PI) / 180) * d, Math.sin((deg * Math.PI) / 180) * d, z];
 const BIRD = {
-  reach: (sp, h) => ({ beak: sp === "pigeon" ? fw(h, SIZE * 0.5, SIZE * 0.1) : fw(h, SIZE * 0.3, SIZE * 0.8), lean: 0, look: [0, 0] }),
+  reach: (sp, h) => ({ beak: fw(h, SIZE * 0.3, SIZE * 0.8), lean: 0, look: [0, 0] }),
   "all fours": () => ({ stance: "up", wings: 0.5, hop: SIZE * 0.12, stride: null }),
   hanging: () => ({ stance: "up", wings: 1, hop: SIZE * 0.18 }),
 };

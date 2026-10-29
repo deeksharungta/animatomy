@@ -33,9 +33,9 @@ Everything else, from the craft rules to the audit, the line check, WebGL, the 3
 
 ## The crew
 
-<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: fourteen painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel, woodpecker, pigeon), each at four headings and in six poses including on all fours, hanging and flying, each with a thin collar in its role colour."></p>
+<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: thirteen painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel, woodpecker), each at four headings and in six poses including on all fours, hanging and flying, each with a thin collar in its role colour."></p>
 
-Fourteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel, woodpecker and pigeon. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. The birds work with their beaks: the woodpecker strikes, the pigeon pecks and carries, and both fly. Each wears a thin collar in its role colour:
+Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel and woodpecker. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. The woodpecker works with its beak, striking over and over, and flies. Each wears a thin collar in its role colour:
 
 | Role | Colour | Does |
 |---|---|---|
@@ -50,7 +50,7 @@ Fourteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, 
 
 Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. One crew member per mechanism, so a detailed machine gets a bigger crew (up to seven).
 
-Props are rare and only where they read cleanly: glasses on Mo, who times things, sweatbands on the runners, a letter in a pigeon's beak. `references/crew.md` has the full rules and how to add a species.
+Props are rare and only where they read cleanly: glasses on Mo, who times things, and sweatbands on the runners. `references/crew.md` has the full rules and how to add a species.
 
 ## Install
 

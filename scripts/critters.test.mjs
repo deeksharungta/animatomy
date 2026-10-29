@@ -80,10 +80,10 @@ test("an eel lies along its path, head first, and crackles only while charged", 
 
 test("a bird reaches with its beak, and says when a target is too far", () => {
   const P9 = { origin: [0, 0], scale: 9, azimuth: 45, elevation: 30 };
-  const peck = critter({ species: "pigeon", size: 20 }, { at: [0, 0, 0], heading: 90, beak: [0, 11, 1] }, P9);
-  assert.ok(peck.reach.beak < 0.3, "a pigeon pecks the ground in front of it");
+  const peck = critter({ species: "woodpecker", size: 22 }, { at: [0, 0, 0], heading: 90, beak: [0, 8, 18] }, P9);
+  assert.ok(peck.reach.beak < 0.3, "a woodpecker strikes a point just ahead of its beak");
   const far = critter({ species: "woodpecker", size: 22 }, { at: [0, 0, 0], heading: 90, beak: [0, 40, 20] }, P9);
   assert.ok(far.reach.beak > 10, "a target well out of reach is reported");
-  const flap = critter({ species: "pigeon", size: 20 }, { at: [0, 0, 0], heading: 90, wings: 1 }, P9);
+  const flap = critter({ species: "woodpecker", size: 22 }, { at: [0, 0, 0], heading: 90, wings: 1 }, P9);
   assert.notEqual(flap.key, peck.key, "spread wings swap the wing drawing");
 });
