@@ -14,7 +14,8 @@ Every Staff Only figure is an Anatomy figure with a crew inside. This page is ev
 9. Painter's order and performance
 10. Verifying a crew
 11. Adding a species
-12. Anti-patterns
+12. Props
+13. Anti-patterns
 
 ## 1. The premise
 
@@ -29,7 +30,7 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
 1. **The species' trait is the job.** Claws grip, teeth cut, wheels run, a slow animal times things. If you can't say why that animal does that job in three words, it's the wrong animal.
 2. **Colour by role, not by species.** Eight role colours, fixed for every figure (section 3). Many species share one role; a reader learns eight colours, never forty.
 3. **One operator per mechanism.** A part that moves on its own power gets exactly one operator. A part pushed by another part (a plunger riding a block, a gear driven by a gear) needs none. A swarm of one species (ants, hamsters) counts as one operator.
-4. **Two to five per figure.** More than five critters on screen stops reading. A machine with more mechanisms keeps the extras off duty and out of frame, or splits into two figures.
+4. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the heater contacts and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
 5. **A flaw for every member, kept for later.** Each species has a habit that would cause a real failure (the sloth dozes off, the crab won't let go). Note it in the crew list. Don't show it unless the user asks for a "break it" moment; then the failure shown must be the real failure that habit causes.
 
 Write the crew list next to the parts list, one line each:
@@ -41,7 +42,7 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 
 ## 3. Roles and colours
 
-`ROLES` in `kit/critters.mjs`. Each critter wears a thin collar in its role colour, with a small tag at the throat.
+`ROLES` in `kit/critters.mjs`. Each critter wears a thin collar in its role colour, with a small tag at the throat. Props that are cloth or plastic (hats, bands, bows, mitts) take the same colour (section 12).
 
 | Role | Colour | Hex | Mechanisms |
 |---|---|---|---|
@@ -54,7 +55,9 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 | fluid | aqua | `#12A594` | pumps, hoses, valves, cooling |
 | spring | bubblegum pink | `#E93D82` | springs, launchers, returns |
 
-**Colour belongs to the animals.** The machine and the scene are drawn exactly as Anatomy draws them: its paper and tone ramp, one lit accent, no colour. The animals carry their real fur colours and their role collars, so they are the only colour in the picture and the eye finds them first. Never tint a machine part, a prop or a wall, and never paint a part in a role colour; the step bar's dots are the only other place the role colours appear.
+**Colour belongs to the animals.** The machine and the scene are drawn exactly as Anatomy draws them: its paper and tone ramp, one lit accent, no colour. The animals carry their real fur colours, their role collars and their props, so they are the only colour in the picture and the eye finds them first. Never tint a machine part, a scene prop or a wall, and never paint a part in a role colour; the run's progress bar is the only other place the role colours appear.
+
+**Light and heat are the exception.** What the machine gives off, not what it is made of, may glow in colour: a heating element's orange, a flame, a spark, an LED. Draw it with WebGL as Anatomy does (`webgl.md`): a canvas between a back and a front drawing that adds a warm glow (screen blend in dark, ink in light) and sparks, only while the part is on. The toaster's ribbons, the warm light on the bread and the contact spark are the reference. The glow never tints a part that is off.
 
 ## 4. The cast
 
@@ -69,8 +72,12 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 | sloth | sensing and timing, slow steady holds | three-toed sloth: shaggy coat, pale face mask with dark eye stripes, long arms with long claws; hangs from bars |
 | mole | digging, pushing through, inspecting | velvet black coat, furred cone of a head with a short pink snout tip, huge pink spade hands with claws, hidden eyes |
 | kangaroo | spring, launching, stamping | upright on long hind feet with a thick tail behind, long ears, long muzzle, short arms |
+| fennec | heat (it lives in the desert), listening | sand-coloured fox with enormous ears, a cream face and chest, a dark-tipped bushy tail |
+| raccoon | turning knobs, dials and latches with nimble hands | grey coat, black mask over the eyes, pale muzzle and brows, black hand-like paws, a ringed tail |
+| otter | fluid: pumps, valves, anything wet | sleek brown coat, broad flat head with small ears, pale throat, a thick tapering tail |
+| crab | holding, clamping, pinching | red shell with a pale underside, eyes on stalks, two big pincers; walks sideways, legs drawn into the body |
 
-Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` with every species at four headings (facing you, left, right, away) and in six poses (reaching, walking, on all fours, hanging, asleep, startled). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
+Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` with every species at four headings (facing you, left, right, away) and in seven poses (reaching, walking, on all fours, hanging, asleep, startled, kitted out with props). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
 
 Recurring cast: give each critter a name and keep the same species and role across a set of figures, so readers learn them.
 
@@ -79,7 +86,7 @@ Recurring cast: give each critter a name and keep the same species and role acro
 ```js
 import { critter, critterSvg, crewCss } from "../../kit/critters.mjs";
 
-const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving" };
+const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving", wear: ["cap"] };
 const pose = {
   at: [x, y, z],              // the point between its feet, on the surface it stands on
   heading: 30,                // degrees in the floor plane, 0 = +x
@@ -97,6 +104,7 @@ svg.push(critterSvg(c, { part: "pip" })); // build time
 // page: <style>${crewCss()}</style> once, before the figure
 ```
 
+- **Wear** is an optional list of props (section 12).
 - **Size** is the critter's height in world units. Pick it against the part it operates: about half a carriage's length, a third of a dial's diameter. A squirrel at 25 and a sloth at 18 sit well in the dial example; the vending machine's hamsters are 10 in a wheel of radius 11.
 - **Painted, not built from solids.** Each animal is drawn once, facing left and about 100 units tall, as a set of authored shapes: body, head, ears, markings, eyes, nose, whiskers, arms, paws, feet and tail. Fills are soft gradients lit from above; light markings (belly, muzzle, cheeks) fade into the fur; short fur strokes soften every edge and hair strands follow the coat; there are no outlines. `critter()` places that drawing in the figure's camera: at the projection of `at`, scaled so `size` world units of height match the camera, mirrored to face its heading, and drawn from behind when its heading points away from the viewer (no belly, no far eye, the tail in front). The ground shadow stays on the floor when it hops.
 - **A rig, not a puppet.** The upper body leans around the hips, the head tips around the neck, the arms are two bones from the shoulder to the paw target (projected into the drawing), the feet step with the stride, and the tail sways from its root. `stance: "four"` swaps to the side-on drawing on all fours, whose four legs run from `stride`. `stance: "hang"` uses the upright drawing with the shoulders set back, the arms up to the paws and the feet dangling, and drops the ground shadow.
@@ -110,7 +118,8 @@ A paw that works is a contact, like a pipe end on its port (`craft.md`, section 
 - **Targets come from the part.** Compute each paw target from the same numbers that place the handle: the knob's centre plus its radius, the coin's rim, the lever's end. Never from the critter.
 - **The nearer paw takes the nearer target.** `critter()` works out which side of the animal faces the viewer and gives that arm the matching paw (`l` or `r`). Both arms reach in the drawing's plane, so a target far behind or in front of the animal reads as reached when it is on screen. Pick targets that read from the camera: the top or the near rim of a coin, not two points on opposite faces. Reaching straight at the camera is the rig's weak spot: a target in front of a critter that faces the viewer lands low on its body, so turn the critter a little side-on to its handle.
 - **Place the critter from the handle.** Stand it where both paws reach: `at` = handle − about 0.35 × size along its heading. Arms don't stretch; `critter(…).reach.l` / `.r` report how far each paw falls short, in world units. A hanging sloth's `at` is about one body height below the bar.
-- **Check reach in the build** at both ends of travel and at every stop, and print a warning for any paw short by more than 0.3 (`examples/dial-indicator-crew/build.mjs` does this). Ship at zero warnings.
+- **Check reach in the build** at both ends of travel and at every stop, and print a warning for any paw short by more than 0.3 (`examples/dial-indicator-crew/build.mjs` does this). Ship at zero warnings. To find a spot, loop the build over a few candidate `at` values and headings and keep one with no warnings; it takes seconds.
+- **Give a small control a handle.** A knob a fraction of the critter's size can't be gripped on its rim from the viewer's side: the critter stands in front of it and hides the hand. Give the part a real handle that reaches toward the critter, and slide the paws along it to the point nearest the shoulder. The toaster's browning knob has a pointer lever that Rocky lifts.
 - **Grip from the side you can see.** Put the critter on the viewer's side of its handle, so the paws and face are in view.
 - **Standing.** Feet stand on a real surface at its real height: a plate's top, a dial's face, a wheel's rungs. Not on a slab's edge, not in the air (a hop and a hang are the exceptions).
 - **Clearance.** No critter's body passes through a part, at rest or anywhere in its travel. Crowding a critter against a rail at full stroke reads like a sunk part.
@@ -140,7 +149,7 @@ Everything in `motion.md` applies; the machine stays calm and eased. The crew ri
 - **Within a critter** the order is fixed by the drawing: tail, far arm and far foot behind the body, then the body, collar and head, then the near foot and near arm (the tail comes forward when it is seen from behind).
 - **In the figure** a critter is one item in the slot where it physically stands, like any moving part. In the dial example Pip is drawn after the carriage, plunger and dial (he stands in front of all three) and Mo after the needle he holds. If a critter can pass in front of and behind the same part during its travel, split that part or bound the travel, as `craft.md`, section 5 says for any moving part.
 - **The audit doesn't record critters.** They are drawn in their slot and checked by eye at 4× (section 10). Keep them clear of pipes and cables, and don't route a line through where a critter stands.
-- **Cost.** Posing a critter is a few transforms, so four critters add well under a millisecond to a frame; the vending machine's busiest step runs at about 3 ms a frame. A critter's markup is large (fur strokes), about 25–40 KB each, so a page with many critters grows; keep it to five.
+- **Cost.** Posing a critter is a few transforms, so five critters add well under a millisecond to a frame; the vending machine's busiest beat runs at about 3 ms a frame. A critter's markup is large (fur strokes), about 25–40 KB each, so a page with many critters grows; past seven, split the figure.
 
 ## 10. Verifying a crew
 
@@ -148,7 +157,7 @@ Add these to `verify.md`'s list:
 
 1. **Cast sheet first.** `node scripts/cast-sheet.mjs --only=… --light` and without `--light`; read both at 2×.
 2. **Reach is zero.** The build prints no reach warnings at either end of travel or at any stop.
-3. **4× close-ups in both themes** of every critter at rest, at both ends of its travel and mid-motion: paws on the handle, feet on the surface, nothing sunk into a part, the face readable and the collar showing.
+3. **4× close-ups in both themes** of every critter at rest, at both ends of its travel and mid-motion: paws on the handle, feet on the surface, nothing sunk into a part, the face readable and the collar and props showing.
 4. **390 px wide.** Every critter's face and role colour still read. If not, raise its size before shrinking anything else.
 5. **The duty light** is on the critter whose part is moving in each frame of a contact sheet, and on the part when nothing moves.
 6. **Line ends.** `scripts/lines.mjs` must still print `line ends: 0`. Critters draw no kit lines, so they never count.
@@ -180,15 +189,42 @@ otter: {
 
 Work from photographs of the real animal in profile: trace its proportions on the 100-unit grid, then render it on the cast sheet in both themes and read it at 2× before using it. A species with a different body plan (a crab's legs and claws, a bird's wings) gets its own drawing with the same parts list (`legs` like the `four` drawings, `arms` for whatever grips), so `critter`, `critterSvg` and `paintCritter` work unchanged.
 
-## 12. Anti-patterns
+## 12. Props
+
+A prop says what the job is before the reader reads a word: a stopwatch on the timer, goggles on the one by the heat, a hard hat on the one under the falling coin. `PROPS` in `kit/critters.mjs` lists them, and `spec.wear` puts them on:
+
+| Prop | Sits | Looks like |
+|---|---|---|
+| `hardhat` | head | a hard hat in the role colour |
+| `minerhat` | head | a hard hat with a lamp on the front |
+| `cap` | head | a peaked cap in the role colour |
+| `sweatband` | head | a towelling band round the forehead, in the role colour |
+| `glasses` | face | round wire glasses |
+| `goggles` | face | safety goggles on a strap |
+| `pencil` | ear | a pencil tucked behind the ear |
+| `bowtie` | neck | a bow tie at the collar, in the role colour |
+| `stopwatch` | neck | a stopwatch on a chain |
+| `whistle` | neck | a whistle on a lanyard |
+| `mitts` | paws | oven mitts on both paws, in the role colour |
+| `notebook` | far paw | a notebook with a cover in the role colour |
+| `clipboard` | far paw | a clipboard with a written sheet |
+
+- **One or two each, chosen for the job.** A head prop and a face or neck prop at most. The sensing crew get glasses and a stopwatch, the heat crew goggles and mitts, the runners sweatbands, the one under a load a hard hat.
+- **Anchored to the drawing.** Props are placed from each species' own head, eye, neck and paw points, so they sit right on every species at every heading, mirror with it, follow the lean and the head's tip, and show only what the camera would see (glasses and goggles from the front, just the strap from behind). Never place a prop by hand.
+- **Colour.** Cloth and plastic take the role colour; metal, glass, wood and paper keep their own. That keeps the rule: one role colour per critter.
+- **Kid-friendly.** Nothing a child shouldn't copy: no cigarettes or cigars, no drinks, no weapons.
+- **Held props need a free paw.** A notebook or clipboard rides in the far paw, so give it only to a critter whose far paw isn't on a handle.
+
+## 13. Anti-patterns
 
 - **Decorative crew.** A critter waving at the reader, or standing beside a part that moves by itself. Every critter has a job.
 - **A crew that lies.** A critter that turns a part the wrong way, at a different speed from the model, or before the part moves. The motion is the part's motion.
 - **Pasted pictures.** An image dropped over the machine at a guessed spot. Every critter is placed by `critter()` from world points: where it stands, which way it heads, what its paws hold.
-- **Cartoon tells.** Outlines, blush, huge shiny eyes, hats, a head as big as the body, every species built on the same body. The crew looks like the real animals.
+- **Cartoon tells.** Outlines, blush, huge shiny eyes, a head as big as the body, every species built on the same body. The crew looks like the real animals; props are the only costume.
+- **Costume pile.** A hat, glasses, a bow tie and a clipboard on one critter. One or two props, each saying something about the job.
 - **Colour on the machine.** A tinted housing, a coloured prop, a part in a role colour. The machine is drawn as Anatomy draws it; colour is the crew's.
 - **Rainbow crew.** Several role colours on one critter. One collar, one role.
 - **Speech bubbles and name tags.** Words stay in the legend.
 - **Floating paws.** A paw a few units short of its handle reads like a pipe ending in the air. The reach check catches it; a 4× close-up confirms it.
-- **Crowds.** Eight critters on one machine. Two to five, one on duty at a time.
+- **Crowds.** More critters than mechanisms, or more than seven on one machine. One per mechanism, one on duty at a time.
 - **A crew that hides the mechanism.** A body parked over the part it explains. Put the critter beside its handle on the viewer's side, and make the part visible around it.

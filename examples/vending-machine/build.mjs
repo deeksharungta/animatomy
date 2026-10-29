@@ -49,10 +49,10 @@ const C = {
   PANEL: { x: -55, y: 47, w: 28, d: 5, z0: 146, z1: 190 },
 };
 
-const DIG = { species: "mole", name: "Dig", size: 18, role: "sensing" };
-const PIP = { species: "squirrel", name: "Pip", size: 20, role: "moving" };
-const BUN = { species: "hamster", name: "Bun", size: 10, role: "power" };
-const MOCHI = { species: "hamster", name: "Mochi", size: 10, role: "power" };
+const DIG = { species: "mole", name: "Dig", size: 18, role: "sensing", wear: ["minerhat"] };
+const PIP = { species: "squirrel", name: "Pip", size: 20, role: "moving", wear: ["cap"] };
+const BUN = { species: "hamster", name: "Bun", size: 10, role: "power", wear: ["sweatband"] };
+const MOCHI = { species: "hamster", name: "Mochi", size: 10, role: "power", wear: ["sweatband"] };
 
 const ROOM = { x0: -100, x1: 112, y0: -84, y1: 66, top: 210 };
 const P = k.fitProjection(
@@ -582,13 +582,12 @@ const svg = k.figureSvg({
 
 const ROLE = { sensing: "#3E9BDB", moving: "#46A758", power: "#F5C518" };
 const STEPS = [
-  { title: "Meet the crew", who: "Dig, Pip, Bun and Mochi", color: "var(--anatomy-hi)", text: "Four animals run this snack machine. Dig checks coins on the coin rail, Pip looks after the cash box, and Bun and Mochi doze in the wheel that drives coil B3.", points: null, dwell: 2.8 },
-  { title: "A coin goes in", who: "the coin", color: "var(--anatomy-hi)", text: "The coin drops through the slot behind the keypad panel and rolls down the coin rail on its edge, straight into Dig's paws.", points: [[-56, 54, 186], [-28, 62, 150], [-37, 47.5, 108], [-50, 27, 134], [-37, 18, 108]] },
-  { title: "Dig checks the coin", who: "Dig · sensing", color: ROLE.sensing, text: "Dig can't see much, so he feels it: size, thickness, what it's made of. A real validator measures those three with magnetic coils as the coin rolls past. It's good, so the gate swings open and the display shows CREDIT 1.00. A fake gets tossed down the chute to the coin return.", points: [[-56, 52, 186], [-29, 52, 172], [-50, 27, 110], [-34, 42, 110], [-37, 16, 98]], dwell: 2.2 },
-  { title: "Pip stashes it", who: "Pip · moving", color: ROLE.moving, text: "Past the gate the coin rolls down a second rail and drops off the end. Pip catches it, turns round and puts it on the stack in the cash box.", points: [[-37, 44, 100], [-53, 14, 4], [-30, 46, 4], [-30, 34, 30], [-46, 47, 30]] },
-  { title: "You press B3", who: "the keypad", color: "var(--anatomy-hi)", text: "Row B, coil 3. The controller checks the credit covers the price, takes the 1.00 and sends current down the wire to the B3 motor.", points: [[-57, 54, 190], [-26, 54, 146], [-31, 47, 158]] },
-  { title: "Bun and Mochi turn the coil", who: "Bun and Mochi · power", color: ROLE.power, text: "Woken by the current, the hamsters run. Their wheel is B3's motor: a belt from its axle turns the coil once for every four laps, and as the coil turns, every snack in it creeps forward.", points: [[52, -52, 90], [75, -44, 117], [33, -56, 91], [50, -6, 106], [36, -6, 92]] },
-  { title: "The snack drops into the bin", who: "the snack", color: "var(--anatomy-hi)", text: "Two thirds of a turn in, the front bar's middle passes the edge of the tray and it tips off. The coil finishes exactly one turn, a cam switch cuts the current, and the bar lands in the bin. Every bar behind it has moved up one gap.", points: [[48, 40, 108], [36, 26, 92], [-18, 52, 6], [54, 52, 6], [54, 18, 22], [-53, 52, 184], [-29, 52, 174]], dwell: 2.4 },
+  { title: "Meet the crew", who: "Dig, Pip, Bun and Mochi", color: "var(--anatomy-hi)", text: "Four animals run this snack machine: Dig on the coin rail, Pip at the cash box, Bun and Mochi in the wheel.", points: null, hold: 1.6 },
+  { title: "A coin goes in", who: "the coin", color: "var(--anatomy-hi)", text: "A coin drops in behind the keypad and rolls down the rail into Dig's paws.", points: [[-56, 54, 186], [-28, 62, 150], [-37, 47.5, 108], [-50, 27, 134], [-37, 18, 108]] },
+  { title: "Dig checks the coin", who: "Dig · sensing", color: ROLE.sensing, text: "Dig feels its size, thickness and metal, as a validator's coils do. It's good, so the gate opens: CREDIT 1.00.", points: [[-56, 52, 186], [-29, 52, 172], [-50, 27, 110], [-34, 42, 110], [-37, 16, 98]] },
+  { title: "Pip stashes it", who: "Pip · moving", color: ROLE.moving, text: "The coin rolls down a second rail to Pip, who catches it, turns and stacks it in the cash box.", points: [[-37, 44, 100], [-53, 14, 4], [-30, 46, 4], [-30, 34, 30], [-46, 47, 30]] },
+  { title: "You press B3, the hamsters run", who: "Bun and Mochi · power", color: ROLE.power, text: "Current runs down the wire to the wheel. Bun and Mochi run, and the belt turns coil B3 once for every four laps.", points: [[52, -52, 90], [75, -44, 117], [33, -56, 91], [50, -6, 106], [36, -6, 92]] },
+  { title: "The snack drops into the bin", who: "the snack", color: "var(--anatomy-hi)", text: "One full turn pushes the front bar off the tray and into the bin. A cam switch cuts the current.", points: [[48, 40, 108], [36, 26, 92], [-18, 52, 6], [54, 52, 6], [54, 18, 22], [-53, 52, 184], [-29, 52, 174]], hold: 2 },
 ];
 const views = STEPS.map((step) => (step.points ? fitView(step.points.map(at), [WIDTH, HEIGHT], { pad: 18, least: 0.34 }) : [0, 0, WIDTH, HEIGHT]));
 
@@ -596,7 +595,7 @@ const live = `
 const P = ${JSON.stringify(P)};
 const C = ${JSON.stringify(C)};
 const DIG = ${JSON.stringify(DIG)}, PIP = ${JSON.stringify(PIP)}, BUN = ${JSON.stringify(BUN)}, MOCHI = ${JSON.stringify(MOCHI)};
-const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, dwell }) => ({ title, text, who, dwell })))};
+const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, hold, pace }) => ({ title, text, who, hold, pace })))};
 const VIEWS = ${JSON.stringify(views.map((v) => v.map((n) => +n.toFixed(2))))};
 const COLORS = ${JSON.stringify(STEPS.map((step) => step.color))};
 const K = { iso, pathOf, extrude, cylinder, slabOf, segment, sideArc, solidSvg, lineSvg, dotsSvg, ...CREW };
@@ -761,7 +760,6 @@ const DONE = [
   () => S.coin.phase === "held",
   () => S.credit === 1 && S.coin.phase === "low" && S.coin.p[1] > 26,
   () => S.coin.phase === "done" && S.pt >= 2.25,
-  () => S.on && S.stepT > 1.1,
   () => S.on && C.SLOTS[0] + (S.phi / TAU) * C.HEL.pitch >= 30 && S.omega > 0.97,
   () => S.snack === "landed" && S.omega === 0 && S.msg === "ENJOY!" && S.stepT > 1.2,
 ];
@@ -789,6 +787,9 @@ STEPS.mountSteps({
   enter,
   update: (dt) => { step(dt); draw(); },
   done: (i) => DONE[i](),
+  advance: step,
+  save: snap,
+  load: (x) => { Object.assign(S, JSON.parse(JSON.stringify(x))); lastPose = {}; lastMsg = ""; },
 });
 `;
 
@@ -810,7 +811,7 @@ const css = `${crewCss()}${STEPS_CSS}
 const body = `<style>${css}</style>` + k.plateHtml({
   fig: "Fig 1",
   title: "Vending machine, staffed",
-  hint: "Next, Back, or the arrow keys",
+  hint: "Plays on its own, on a loop",
   readout: "insert coin · credit 0.00 · 5 coins banked",
   keys,
   caption:

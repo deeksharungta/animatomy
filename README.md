@@ -1,12 +1,12 @@
 <h1 align="center">Staff Only</h1>
 
-<p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, one step at a time.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a step-by-step player.</p>
+<p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, as one continuous story.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a run that plays the whole mechanism on a loop.</p>
 
 <p align="center">
-  <img src=".github/assets/dial-indicator-crew.webp" width="640" alt="An isometric dial indicator on a surface plate. A squirrel with a green collar pushes the carriage of gauge blocks by its handle, and a sloth with a blue collar stands on the dial's hub, turning with the needle.">
+  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole in a red miner's hat holds the latch hook, a fennec fox in goggles and oven mitts presses the heater contacts, a kangaroo in a sweatband rides the lever, and a raccoon in glasses lifts the browning knob's lever.">
 </p>
 
-<p align="center"><sub><code>examples/dial-indicator-crew</code>, light theme. Pip pushes the carriage; Mo walks the needle round. Whoever is working is lit.</sub></p>
+<p align="center"><sub><code>examples/toaster</code>, light theme, mid-toast. Mo feels the heat while Dig, Ember, Roo and Rocky hold their posts. Whoever is working is lit.</sub></p>
 
 ---
 
@@ -22,20 +22,20 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
 | Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
-| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur and a collar in their role colour) |
-| Format | One interactive figure | A full scene played step by step: Next, Back, autoplay, the camera zooms onto whoever is working, a caption per step |
+| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur, a collar in their role colour, their props) and on the light and heat the machine gives off, drawn with WebGL |
+| Format | One interactive figure | A full scene played as one continuous story on a loop: the camera eases onto whoever is working, a caption per beat, no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
-| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the step player) and `scripts/cast-sheet.mjs` |
-| Examples | 8 | 11: adds `examples/pencil-sharpener`, `examples/vending-machine` and `examples/dial-indicator-crew` |
+| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur, role colours and props), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
+| Examples | 8 | 12: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
 Everything else, from the craft rules to the audit, the line check, WebGL, the 3D mode and printable sheets, is Anatomy's, unchanged. `ANATOMY-README.md` is Anatomy's own README, kept for reference.
 
 ## The crew
 
-<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: seven painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo), each at four headings and in six poses including on all fours and hanging, each with a thin collar in its role colour."></p>
+<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: eleven painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab), each at four headings and in seven poses including on all fours, hanging and kitted out with props, each with a thin collar in its role colour."></p>
 
-Seven species ship: hamster, mouse, squirrel, beaver, sloth, mole and kangaroo. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. Each wears a thin collar in its role colour:
+Eleven species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter and crab. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. Each wears a thin collar in its role colour:
 
 | Role | Colour | Does |
 |---|---|---|
@@ -48,7 +48,9 @@ Seven species ship: hamster, mouse, squirrel, beaver, sloth, mole and kangaroo. 
 | fluid | aqua | pumps, hoses, valves |
 | spring | pink | springs, launchers |
 
-Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. `references/crew.md` has the full rules and how to add a species.
+Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. One crew member per mechanism, so a detailed machine gets a bigger crew (up to seven).
+
+Props say what each job is: hard hats, a miner's hat, a cap, a sweatband, glasses, goggles, a pencil behind the ear, a bow tie, a stopwatch, a whistle, oven mitts, a notebook or a clipboard. Cloth and plastic take the role colour. `references/crew.md` has the full rules, the props and how to add a species.
 
 ## Install
 
@@ -76,11 +78,13 @@ Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. N
 /staff-only explain a token bucket rate limiter, with a crew
 ```
 
-Claude sizes the figure, finds the real numbers, invents (or uses) the machine, writes the parts list, the crew list and the steps, renders a cast sheet, builds the scene and the machine, poses the crew from the same model that moves the parts, plays it step by step, and checks every step in both themes.
+Claude sizes the figure, finds the real numbers, invents (or uses) the machine, writes the parts list, the crew list and the beats, renders a cast sheet, builds the scene and the machine, poses the crew from the same model that moves the parts, plays the story on a loop, and checks every beat in both themes.
 
 Try the examples:
 
 ```sh
+node examples/toaster/build.mjs --light
+open examples/toaster/toaster-light.html
 node examples/pencil-sharpener/build.mjs --light
 open examples/pencil-sharpener/pencil-sharpener-light.html
 node examples/vending-machine/build.mjs --light
@@ -91,4 +95,4 @@ open cast-sheet-light.html
 
 ## Credits and license
 
-Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the step player (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).
+Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).

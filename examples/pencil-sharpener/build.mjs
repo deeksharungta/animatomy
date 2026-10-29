@@ -51,10 +51,10 @@ const C = {
   CLOSE: (14 * Math.PI) / 180,
 };
 
-const MO = { species: "sloth", name: "Mo", size: 21, role: "sensing" };
-const BUN = { species: "hamster", name: "Bun", size: 15, role: "power" };
-const MOCHI = { species: "hamster", name: "Mochi", size: 15, role: "power" };
-const CHOMP = { species: "beaver", name: "Chomp", size: 20, role: "cutting" };
+const MO = { species: "sloth", name: "Mo", size: 21, role: "sensing", wear: ["glasses",  "stopwatch"] };
+const BUN = { species: "hamster", name: "Bun", size: 15, role: "power", wear: ["sweatband"] };
+const MOCHI = { species: "hamster", name: "Mochi", size: 15, role: "power", wear: ["sweatband"] };
+const CHOMP = { species: "beaver", name: "Chomp", size: 20, role: "cutting", wear: ["goggles"] };
 
 const outTop = C.BOTTOM_IN + C.TRAVEL + C.BODY_LEN + C.FERRULE + C.ERASER;
 const DESK = { x: -121, y: -116, w: 236, d: 224, r: 6 };
@@ -456,13 +456,12 @@ for (const g of [0, C.CLOSE, 0.323]) {
 }
 
 const STEPS = [
-  { title: "Meet the crew", who: "Mo, Bun, Mochi and Chomp", color: "var(--anatomy-hi)", text: "Inside this electric sharpener, four animals do every job. Mo hangs on the switch lever, Bun and Mochi doze in the motor wheel, and Chomp waits on the cutter carrier.", points: null, dwell: 2.6 },
-  { title: "A pencil goes in", who: "the pencil", color: "var(--anatomy-hi)", text: "The pencil slides down through the throat collar until its point meets the switch lever's short arm.", points: [[C.A[0], C.A[1], 150], [C.A[0], C.A[1], 92], [-42, -6, 100], [8, 8, 136]] },
-  { title: "Mo gets lifted onto the switch", who: "Mo · sensing", color: "#3E9BDB", text: "The pencil pushes the short arm aside. The lever pivots, the long arm swings up with Mo hanging on it, and its end presses the microswitch. The light comes on and current runs to the motor.", points: [[-46, -10, 124], [-46, 4, 78], [-8, -6, 112], [-6, -6, 92]], dwell: 2.2 },
-  { title: "Bun and Mochi start running", who: "Bun and Mochi · power", color: "#F5C518", text: "Woken by the current, the hamsters sprint. Their wheel is the motor, and the pinion on its axle turns the crown teeth of the cutter carrier.", points: [[28, -30, 50], [40, 18, 98], [8, -6, 70], [14, 10, 70]] },
-  { title: "Chomp gnaws a point", who: "Chomp · cutting", color: "#8E4EC6", text: "Chomp rides the turning carrier round the pencil and gnaws the wood into a cone. Each lap takes a thin curl off, so the point grows a little every time round.", points: [[C.A[0] - 20, C.A[1] - 20, 64], [C.A[0] + 20, C.A[1] + 20, 64], [C.A[0], C.A[1], 100]] },
-  { title: "Shavings fall into the drawer", who: "Chomp · cutting", color: "#8E4EC6", text: "The curls drop through the hole in the deck into the drawer below. When the cone reaches 18 mm on this 7 mm pencil, the point is done.", points: [[-40, -40, 6], [16, 16, 26], [C.A[0], C.A[1], 82], [-30, 15, 6]] },
-  { title: "Let go: switch off, wheel coasts", who: "everyone", color: "var(--anatomy-hi)", text: "Out comes a sharp pencil. The lever drops, the switch opens, the hamsters skid to a stop and Mo goes back to his nap.", points: [[-50, -50, -5], [50, 50, 0], [C.A[0], C.A[1], 150]], dwell: 2.2 },
+  { title: "Meet the crew", who: "Mo, Bun, Mochi and Chomp", color: "var(--anatomy-hi)", text: "Four animals run this sharpener: Mo on the switch lever, Bun and Mochi in the motor wheel, Chomp on the cutter.", points: null, hold: 1.6 },
+  { title: "A pencil goes in", who: "the pencil", color: "var(--anatomy-hi)", text: "A pencil slides down through the throat until its point meets the switch lever.", points: [[C.A[0], C.A[1], 150], [C.A[0], C.A[1], 92], [-42, -6, 100], [8, 8, 136]] },
+  { title: "Mo flips the switch", who: "Mo · sensing", color: "#3E9BDB", text: "The lever lifts Mo onto the microswitch. Current wakes Bun and Mochi, and their wheel turns the cutter's crown teeth.", points: [[-46, -10, 124], [-46, 4, 78], [-8, -6, 112], [28, -30, 50], [40, 18, 98]] },
+  { title: "Chomp gnaws a point", who: "Chomp · cutting", color: "#8E4EC6", text: "Chomp rides the carrier round the pencil, taking a thin curl off the wood on every lap.", points: [[C.A[0] - 20, C.A[1] - 20, 64], [C.A[0] + 20, C.A[1] + 20, 64], [C.A[0], C.A[1], 100]] },
+  { title: "Shavings fall into the drawer", who: "Chomp · cutting", color: "#8E4EC6", text: "The curls drop through the deck into the drawer. At 18 mm the cone is done.", points: [[-40, -40, 6], [16, 16, 26], [C.A[0], C.A[1], 82], [-30, 15, 6]] },
+  { title: "Let go: switch off, wheel coasts", who: "everyone", color: "var(--anatomy-hi)", text: "Out comes a sharp pencil. The lever drops, the switch opens and the wheel coasts to a stop.", points: [[-50, -50, -5], [50, 50, 0], [C.A[0], C.A[1], 150]], hold: 2 },
 ];
 const views = STEPS.map((step) => (step.points ? fitView(step.points.map(at), [WIDTH, HEIGHT], { pad: 18, least: 0.34 }) : [0, 0, WIDTH, HEIGHT]));
 
@@ -470,7 +469,7 @@ const live = `
 const P = ${JSON.stringify(P)};
 const C = ${JSON.stringify(C)};
 const MO = ${JSON.stringify(MO)}, BUN = ${JSON.stringify(BUN)}, MOCHI = ${JSON.stringify(MOCHI)}, CHOMP = ${JSON.stringify(CHOMP)};
-const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, dwell }) => ({ title, text, who, dwell })))};
+const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, hold, pace }) => ({ title, text, who, hold, pace })))};
 const VIEWS = ${JSON.stringify(views.map((v) => v.map((n) => +n.toFixed(2))))};
 const COLORS = ${JSON.stringify(STEPS.map((step) => step.color))};
 const K = { iso, pathOf, extrude, cylinder, slabOf, segment, sideArc, radialTicks, solidSvg, lineSvg, dotsSvg, ...CREW };
@@ -586,7 +585,6 @@ function draw() {
 const DONE = [
   () => S.swap < 0,
   () => S.gamma > 0.02,
-  () => S.on && S.closeT > 1.1,
   () => S.omega > 0.97 && S.stepT > 0.6,
   () => S.s >= 0.62,
   () => S.s >= 1 && S.chips.length === 0 && S.stepT > 0.8,
@@ -599,7 +597,7 @@ function enter(i, how) {
     Object.assign(S, { ...FRESH, wheel: S.wheel, carrier: S.carrier, pile: S.pile, chips: [], s: how === "loop" ? 1 : 0, bottom: C.BOTTOM_IN + C.TRAVEL, swap: how === "loop" ? 0 : -1, spark: how === "loop" ? 9 : 0 });
   }
   if (i === 1) S.target = 1;
-  if (i === 6) S.target = 0;
+  if (i === 5) S.target = 0;
   S.stepT = 0;
   snaps[i] = snap();
   draw();
@@ -615,6 +613,9 @@ STEPS.mountSteps({
   enter,
   update: (dt) => { step(dt); draw(); },
   done: (i) => DONE[i](),
+  advance: step,
+  save: snap,
+  load: (x) => { Object.assign(S, JSON.parse(JSON.stringify(x))); lastPose = {}; },
 });
 `;
 
@@ -633,7 +634,7 @@ const css = `${crewCss()}${STEPS_CSS}
 const body = `<style>${css}</style>` + k.plateHtml({
   fig: "Fig 1",
   title: "Pencil sharpener, staffed",
-  hint: "Next, Back, or the arrow keys",
+  hint: "Plays on its own, on a loop",
   readout: "ready · cone 2.0 of 18 mm",
   keys,
   caption:

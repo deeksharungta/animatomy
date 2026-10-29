@@ -1,12 +1,30 @@
 # Changelog
 
+## Staff Only 0.5.0 (2026-10-29)
+
+### Added
+
+- `examples/toaster`: the new reference figure. A pop-up toaster cut away on a kitchen counter, run by five crew with props: Rocky the raccoon lifts the browning knob's pointer lever, whose cam lowers the bimetal strip's bracket; Roo the kangaroo stamps the lever down; Dig the mole swings the latch hook over the carriage pin; Ember the fennec fox presses the heater contacts closed; Mo the sloth rides the strip as it curls and trips the hook. A WebGL layer between a back and a front drawing paints the glowing nichrome ribbons, the warm light on the bread and walls, and the spark as the contacts open, in both themes. The build checks every paw at every knob setting and temperature.
+- Four species: fennec fox, raccoon, otter and crab (eleven in all).
+- Props. `PROPS` in `kit/critters.mjs` and `spec.wear` put a hard hat, miner's hat, cap, sweatband, glasses, goggles, a pencil, a bow tie, a stopwatch, a whistle, oven mitts, a notebook or a clipboard on any critter. They are anchored to each drawing's head, eyes, neck and paws, follow the lean, the head and the mirror, and take the role colour when they are cloth or plastic. The crew in every example wears them.
+- `scripts/cast-sheet.mjs` gains a "kitted out" column.
+- `references/crew.md`: the new species, a props section, crew size by mechanism, the glow rule and how to give a small control a handle.
+
+### Changed
+
+- The step player is now a continuous run. `mountSteps` plays the whole story without stopping: no buttons, no step dots, no autoplay toggle, just a caption, who is on duty and a progress bar. Each beat lasts at least as long as its caption takes to read; given `advance`, `save` and `load`, the run times every beat once at mount, slows quick actions to fill their caption, and lets the machine keep running between beats unless that would spoil the next one. `hold` replaces `dwell`, `svg` may be several layered drawings and `onView` lets a WebGL layer follow the camera. Space pauses, Home restarts. `references/steps.md` is rewritten for it.
+- Light and heat may glow in colour: the machine and scene stay monochrome, but what they give off (a hot element, a flame, a spark, a lamp) is drawn on a WebGL layer while it is on.
+- One critter per mechanism, up to seven per figure (was two to five), so detailed machines get a full crew.
+- The crew examples' captions are shorter and some beats merged, for the continuous run.
+- `SKILL.md` and the README describe the run, props, the glow and the toaster.
+
 ## Staff Only 0.4.0 (2026-10-29)
 
 ### Changed
 
 - The crew is redrawn from scratch as real animals. `kit/critters.mjs` no longer builds critters from solids or blended lobes: each species is a painted illustration (authored shapes from the real animal, soft gradients lit from above, markings that fade into the fur, fur strokes at the edges and hair strands inside, no outlines) on a 2D rig that places it in the figure's camera. It faces its heading (mirrored left or right, seen from behind when it walks away), leans, tips its head, steps, sways its tail and reaches two-bone arms to world points. New stances: `"four"` (a side-on drawing on all fours whose legs run from `stride`) and `"hang"` (arms up, feet dangling, for a sloth on a lever). Eyes squint for `"happy"` and close with a lid for `"shut"`. The on-duty critter gets a thin rim instead of a heavier outline. Posing is a handful of transforms, so frames are cheaper than before.
 - Machines and scenes are monochrome again, drawn exactly as Anatomy draws them. `MATERIALS` and the `mat-*` tokens are gone; the only colour in a figure is on the animals (their fur and a role-coloured collar).
-- `spec.wear` is gone: every critter wears one collar in its role colour.
+- `spec.wear` is gone: every critter wears one collar in its role colour. (0.5.0 brings `spec.wear` back for props.)
 - The three crew examples use the new crew: the hamsters run on all fours, Mo hangs from the sharpener's lever, Dig holds the top of the coin, and the scenes lose their material colours.
 - `scripts/cast-sheet.mjs` shows every species at four headings and in six poses, including on all fours and hanging.
 

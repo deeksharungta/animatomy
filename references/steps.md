@@ -1,91 +1,104 @@
-# The step player
+# The run
 
-Every Staff Only figure is a full picture played one step at a time. It opens on the whole scene (the machine on its desk or bench, a wall behind it, a few props), then walks through the mechanism: each step plays one piece of the action, zooms the camera onto the crew member doing it, and says in a sentence what happened. `examples/pencil-sharpener/` is the reference.
+Every Staff Only figure is a full picture that plays its machine as one continuous story. It opens on the whole scene (the machine on its desk or bench, a wall behind it, a few props), then follows the mechanism beat by beat without stopping: each beat plays one piece of the action, the camera eases onto the crew member doing it, and a caption says in a sentence what is happening. When the last beat ends it starts again. There are no buttons and no pauses between beats. `examples/toaster/` is the reference; `examples/pencil-sharpener/` and `examples/vending-machine/` are smaller ones.
 
 ## Contents
-1. Shape of a step player
-2. Writing the steps
+1. Shape of a run
+2. Writing the beats
 3. The scene
 4. The camera
-5. The model, step by step
-6. API
-7. Verifying
-8. Anti-patterns
+5. The model, beat by beat
+6. Pacing
+7. API
+8. Verifying
+9. Anti-patterns
 
-## 1. Shape of a step player
+## 1. Shape of a run
 
-- **Step 1 is "Meet the crew".** The whole scene, nothing moving yet, every critter at rest where it works. One sentence names each one and its job.
-- **Steps 2 to n−1 follow the action in order.** One step per handoff in the mechanism: the pencil goes in, the switch closes, the motor starts, the cutter cuts, the shavings fall. Usually 5 to 8 steps in all.
-- **The last step returns to rest** (let go, switch off, coast to a stop) with the camera pulled back, so autoplay can loop to step 1 without a jump.
-- **Under the picture:** `Step 3 of 7`, the crew member on duty with their role colour, a title of a few words, one or two sentences, and Back, a row of step dots, Play/Pause and Next. The card's corners keep Anatomy's `Fig n`, title, hint and live readout.
+- **Beat 1 is "Meet the crew".** The whole scene, nothing moving yet, every critter at rest where it works. One sentence names each one and its job. It holds a little longer than the others.
+- **Beats 2 to n−1 follow the action in order.** One beat per handoff in the mechanism: the knob is set, the lever goes down, the hook catches, the heat comes on, the strip curls, the hook trips, the toast pops. Usually 5 to 9 beats in all. A detailed machine has more handoffs, not longer beats.
+- **The last beat returns to rest** (let go, switch off, cool down) with the camera pulled back, so the loop back to beat 1 doesn't jump.
+- **Under the picture:** the crew member on duty with their role colour, a title of a few words, one or two sentences, and a thin progress bar with one segment per beat; the current segment fills in that beat's role colour. The card's corners keep Anatomy's `Fig n`, title, hint ("Plays on its own, on a loop") and live readout.
 
-## 2. Writing the steps
+## 2. Writing the beats
 
-Each step is `{ title, who, color, text, points, dwell? }`:
+Each beat is `{ title, who, color, text, points, hold?, pace? }`:
 
-- **title**: what happens, in a few words, with the crew member's name as the subject when one acts: "Mo gets lifted onto the switch", "Bun and Mochi start running".
-- **who**: who is on duty and their role, `"Mo · sensing"`. Its dot takes `color` (the role hex), so the step bar carries the same colour code as the crew.
-- **text**: one or two plain sentences: the critter's action, then the real mechanism it stands for. "The pencil pushes the short arm aside. The lever pivots, the long arm swings up with Mo hanging on it, and its end presses the microswitch." Every number in it is true to the model.
-- **points**: world points the camera must show for this step (section 4). `null` for the whole scene.
-- **dwell**: seconds autoplay waits after the step's action finishes (default 1.8). Longer on step 1 and the last step.
+- **title**: what happens, in a few words, with the crew member's name as the subject when one acts: "Rocky sets the browning", "Roo stamps the lever down".
+- **who**: who is on duty and their role, `"Mo · sensing"`. Its dot takes `color` (the role hex), so the progress bar carries the same colour code as the crew.
+- **text**: one or two plain sentences: the critter's action, then the real mechanism it stands for. "The strip pushes the hook's tail up. The hook swings off the pin, and Dig can't hold it against Mo." Every number in it is true to the model.
+- **points**: world points the camera must show for this beat (section 4). `null` for the whole scene.
+- **hold**: extra seconds on screen after the beat would otherwise end. Use it on the first and last beats only.
+- **pace**: a fixed playback speed for this beat's action, overriding the automatic one (section 6).
 
-One actor per step. If two things happen at once, the step belongs to whichever the reader should watch, and the other happens in the background.
+One actor per beat. If two things happen at once, the beat belongs to whichever the reader should watch, and the other happens in the background. Keep captions short: a beat lasts at least as long as it takes to read its caption, so a long caption slows the whole run.
 
 ## 3. The scene
 
-The full picture is what makes a step player more than a diagram. Build it with the kit like everything else:
+The full picture is what makes a run more than a diagram. Build it with the kit like everything else:
 
 - **A surface:** a desk, bench or floor slab under the machine, with grain or tile lines that end on its edges.
-- **A wall or two behind:** thin slabs at the back edge, with a quiet texture (stripes, panels) and at most one object on it (a cork board, a shelf, a clock).
-- **Two or three props** that belong to the subject and sit on the surface: a pencil cup and a notebook beside a sharpener, a mug beside a coffee grinder. Props are static and never steal a step.
-- **No colour.** The surface, walls and props are drawn like the machine, in the kit's own tones and tone hierarchy (base `lo`, structure `mid`, subject `hi`). The animals are the only colour in the picture, so they are what the eye finds.
-- The scene is part of the overview only. Fit the projection to the whole scene (`fitProjection` with the desk and wall corners), and let the steps zoom in.
+- **A wall or two behind:** thin slabs at the back edge, with a quiet texture (stripes, panels, tiles) and at most one object on it (a cork board, a shelf, a clock, a socket).
+- **Two or three props** that belong to the subject and sit on the surface: a pencil cup beside a sharpener, a mug beside a toaster. Props are static and never steal a beat. A prop can double as a perch for a critter (the toaster's stack of books under Rocky).
+- **No colour.** The surface, walls and props are drawn like the machine, in the kit's own tones and tone hierarchy (base `lo`, structure `mid`, subject `hi`). The animals are the only colour in the picture, apart from the light and heat the machine gives off (`crew.md`, section 3).
+- The scene is part of the overview only. Fit the projection to the whole scene (`fitProjection` with the desk and wall corners), and let the beats zoom in.
 
 ## 4. The camera
 
-- The camera is the SVG `viewBox`. `fitView(points, [W, H], { pad, least })` (in `kit/steps.mjs`) turns a step's world points, projected with `iso`, into a viewBox of the card's aspect, padded, clamped inside the figure, and never closer than `least` of the full size (0.34 gives up to about 3× zoom).
-- Pick points that frame the actor and what it acts on: Mo, his lever, the switch box and the point of the pencil; the whole wheel and the pinion it drives. Leave the next actor just out of frame, so Next reveals it.
-- The player eases between views (about 0.55 s), and lines keep their weight at any zoom because the kit draws them with `non-scaling-stroke`.
+- The camera is the SVG `viewBox`. `fitView(points, [W, H], { pad, least })` (in `kit/steps.mjs`) turns a beat's world points, projected with `iso`, into a viewBox of the card's aspect, padded, clamped inside the figure, and never closer than `least` of the full size (0.32 gives about 3× zoom).
+- Pick points that frame the actor and what it acts on: Mo, the strip he rides and the hook's tail; Ember and the contacts. The next actor can be in frame or just outside it.
+- The camera eases toward each beat's view while the machine keeps moving (`ease`, about 0.45 s), and lines keep their weight at any zoom because the kit draws them with `non-scaling-stroke`.
+- A figure drawn in layers (a back SVG, a WebGL canvas, a front SVG) passes every SVG as `svg: [back, front]`, and `onView(viewBox)` lets the canvas follow the same camera (`webgl.md`).
 - Build the views at build time and pass them to the page as numbers.
 
-## 5. The model, step by step
+## 5. The model, beat by beat
 
-The figure keeps Anatomy's single model; the player decides when it runs:
+The figure keeps Anatomy's single model; the run decides what it is asked to do:
 
-- **`enter(i, how)`** sets that step's targets: step 2 pushes the pencil in (`target = 1`), the last step pulls it out. `how` is `"start"`, `"next"`, `"back"`, `"jump"` or `"loop"`. On the first entry of each step, save a snapshot of the state; on `"back"`, restore it, so Back always shows the step as it began.
+- **`enter(i, how)`** sets that beat's targets: beat 3 pushes the lever down (`hand = true`), the last one turns the knob back. `how` is `"start"`, `"next"` or `"loop"`. On `"loop"` reset what should start fresh (a new slice of bread) and keep what should persist.
 - **`update(dt)`** advances the model and draws, exactly as a normal tick would.
-- **`done(i)`** says when the step's action has finished: the switch closed and Mo's hop settled, the wheel at full speed, the cone at 18 mm. The player stops calling `update` then and freezes the frame, so each step ends on a clear picture. With autoplay on it waits `dwell`, then goes to the next step.
-- **Physics doesn't wait for the camera.** If the motor starts the moment the switch closes, it starts during the switch step; end that step soon after (`closeT > 1.1`) and let the next step show the wheel at speed. Never fake the order.
-- **Loop:** after the last step, step 1 resets the model (a fresh pencil fades in) and keeps what should persist (the shavings pile).
-- **Jump:** clicking a later dot fast-forwards every step in between with `update(1/30)` until each is done, so the state is always one the model could reach.
+- **`done(i)`** says when the beat's action has finished: the knob at its setting, the hook over the pin, the strip at the trip temperature. The run moves on once the action is done and the caption has had time to be read.
+- **The machine never stops.** Between the end of one beat's action and the start of the next, the model keeps running (the strip keeps heating, the spring keeps settling) unless that would carry it into the next beat's action before its caption is up; then it waits at the end of the action (section 6).
+- **Physics doesn't wait for the camera.** If the heaters come on the moment the contacts close, they come on during the contacts beat; the next beat shows them glowing. Never fake the order.
+- **Slow processes run fast.** A toast takes four minutes; a beat should take seconds. Give the model a time warp per beat (the toaster's `WARP` runs the heating beats at 30× and the cool-down at 60×) and show the real clock in the readout.
 
-## 6. API
+## 6. Pacing
+
+Give `mountSteps` the model step without drawing (`advance`) and a way to copy and restore the state (`save`, `load`). When it mounts, it plays the whole story once, unseen, to time each beat:
+
+- **Reading time.** A beat never ends before its caption can be read: about 0.23 s a word, 2.4 s at least, plus its `hold`.
+- **Slow quick actions down.** A beat whose action is much shorter than its caption plays at a slower speed, so the motion fills the caption instead of finishing and sitting still (never below `slowest`, 0.35 by default). A beat's `pace` overrides this.
+- **Flow or wait.** For each beat the timing run checks whether letting the machine run on through the caption would finish the next beat's action before it starts. If not, the machine flows on; if so, it waits at the end of the action.
+- Without `advance`, `save` and `load` every beat plays at full speed and the machine waits after each action.
+
+## 7. API
 
 ```js
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 
-const views = STEPS.map((s) => (s.points ? fitView(s.points.map(at), [W, H], { pad: 18, least: 0.34 }) : [0, 0, W, H]));
-const body = `<style>${crewCss()}${STEPS_CSS}</style>` + k.plateHtml({ …, body: `<div class="iso-stage" tabindex="0" role="group" aria-label="…">${svg}</div>${stepsHtml(STEPS)}` });
+const views = STEPS.map((s) => (s.points ? fitView(s.points.map(at), [W, H], { pad: 22, least: 0.32 }) : [0, 0, W, H]));
+const body = `<style>${crewCss()}${STEPS_CSS}</style>` + k.plateHtml({ …, hint: "Plays on its own, on a loop", body: `<div class="iso-stage" tabindex="0" role="group" aria-label="…">${svg}</div>${stepsHtml(STEPS)}` });
 // page script: kitScript() + crewScript() + stepsScript() + live
-STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, update, done });
+STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, update, done, advance, save, load, onView });
 ```
 
-`mountSteps` owns the animation loop: it calls `update` while the step plays, eases the camera, runs autoplay, stops when offscreen or idle, and handles keys (Left and Right arrows step, Space plays and pauses, Home goes to step 1). Clicking the picture is Next. Under reduced motion it never autoplays, and each step jumps straight to its finished state and view.
+`mountSteps` owns the animation loop: it calls `update` at each beat's pace, eases the camera, fills the progress bar, moves on when a beat is done and read, loops after the last beat, and stops drawing while the figure is offscreen. Space pauses and resumes; Home starts again from beat 1. Under reduced motion each beat jumps straight to its finished state and view, and the run moves on every few seconds.
 
-## 7. Verifying
+## 8. Verifying
 
-- **A contact sheet of every step in both themes:** let autoplay run, capture each step once its action is done, and read every PNG. Each step's actor is in frame, big enough to read, and lit; the caption matches what the frame shows.
-- **Back and Next agree.** Go forward to the last step, then back to step 1 one step at a time: every step looks as it did on the way forward.
-- **Every `done` is reachable.** A step whose condition never comes true freezes autoplay. Jump from step 1 to the last dot; the fast-forward must finish.
-- **The line check** passes in the overview (`scripts/lines.mjs` reads the page at load, which is step 1).
-- **390 px wide:** the step text wraps and the buttons fit; the zoomed steps make the crew readable on a phone, which is what the overview can't do.
+- **Time the run.** Log each beat's start time and how long its action took (the run sets `data-action-took` on the caption box). No beat should flip before its caption can be read, and the whole loop should be a comfortable watch (the toaster takes a little over a minute, the sharpener about half a minute).
+- **A contact sheet of every beat in both themes:** with reduced motion each beat shows its finished state; capture each once and read every PNG. Each beat's actor is in frame, big enough to read, and lit; the caption matches what the frame shows.
+- **Every `done` is reachable.** A beat whose condition never comes true stalls the run. The timing run gives up after 40 s of model time per beat; a beat that hits that is a bug.
+- **The line check** passes in the overview (`scripts/lines.mjs` reads the page at load, which is beat 1).
+- **390 px wide:** the caption wraps and the progress bar fits; the zoomed beats make the crew readable on a phone, which is what the overview can't do.
 
-## 8. Anti-patterns
+## 9. Anti-patterns
 
-- **A step where nothing moves.** Every step after the first plays an action; a step that only re-frames belongs in another step's caption.
+- **A beat where nothing moves.** Every beat after the first plays an action; a beat that only re-frames belongs in another beat's caption.
 - **Zooming into empty space.** Points that miss the actor, or a view so tight the part it acts on is cut off.
-- **Captions that repeat the legend.** Say what happened in this step, not who the crew are again.
-- **Steps that end mid-motion.** `done` waits until the action settles, so the frozen frame reads.
-- **Coloured machines.** Any tint on a housing, prop or wall competes with the crew. The machine and the scene stay in the kit's tones.
+- **Captions that repeat the legend.** Say what happens in this beat, not who the crew are again.
+- **Long captions.** Each word adds a quarter of a second to the run. Two short sentences.
+- **Stop-and-go.** Freezing the machine at the end of every beat. The run flows; it only waits when running on would spoil the next beat.
+- **Coloured machines.** Any tint on a housing, prop or wall competes with the crew. The machine and the scene stay in the kit's tones; only light and heat glow.
 - **Words in the drawing.** Titles and captions live under the picture, never on it.

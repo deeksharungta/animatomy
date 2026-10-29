@@ -1,34 +1,31 @@
+// The run: a figure plays its model as one continuous story, beat after beat, with no stops.
+// Each beat has a camera view and a caption; the moment a beat's action is done the next one starts,
+// and the camera eases onto it while the machine keeps moving. After the last beat it starts again.
 export const STEPS_CSS = `
-.so-steps{display:grid;gap:10px;padding:14px 18px 16px;border-top:1px solid var(--anatomy-faint)}
-.so-steps-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.so-steps-count{font:600 11px/1 var(--anatomy-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--anatomy-muted)}
-.so-steps-title{margin:0;font:600 19px/1.25 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--anatomy-strong);text-wrap:balance}
-.so-steps-text{margin:0;max-width:62ch;color:var(--anatomy-text);font-size:14px;line-height:1.55;min-height:3.1em}
-.so-steps-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.so-steps-dots{display:flex;gap:6px;flex:1;min-width:0}
-.so-steps-dot{flex:1;min-width:14px;height:6px;border-radius:3px;border:0;padding:0;background:var(--anatomy-faint);cursor:pointer}
-.so-steps-dot[aria-current="step"]{background:var(--crew-step,var(--anatomy-hi))}
-.so-steps-dot[data-done]{background:var(--anatomy-lo)}
-.so-steps-btn{font:600 13px/1 ui-sans-serif,system-ui,sans-serif;color:var(--anatomy-strong);background:var(--anatomy-card);border:1px solid var(--anatomy-lo);border-radius:999px;padding:8px 14px;cursor:pointer}
-.so-steps-btn[data-primary]{background:var(--anatomy-strong);color:var(--anatomy-card);border-color:var(--anatomy-strong)}
-.so-steps-btn:disabled{opacity:.4;cursor:default}
-.so-steps-btn:focus-visible,.so-steps-dot:focus-visible{outline:2px solid var(--anatomy-muted);outline-offset:2px}
-.so-steps-who{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--anatomy-mono);color:var(--anatomy-muted)}
+.so-steps{display:grid;gap:8px;padding:14px 18px 16px;border-top:1px solid var(--anatomy-faint)}
+.so-steps-who{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--anatomy-mono);color:var(--anatomy-muted);min-height:12px}
 .so-steps-who i{width:10px;height:10px;border-radius:50%;background:var(--crew-step,var(--anatomy-lo));display:inline-block}
-.iso-svg.so-zoom{transition:none}
-@media (max-width:560px){.so-steps-dots{order:-1;flex-basis:100%}.so-steps-btn{flex:1}}
+.so-steps-title{margin:0;font:600 19px/1.25 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--anatomy-strong);text-wrap:balance}
+.so-steps-text{margin:0;max-width:62ch;color:var(--anatomy-text);font-size:14px;line-height:1.55;min-height:4.65em}
+.so-steps-track{display:flex;gap:4px;margin-top:4px}
+.so-steps-track i{flex:1;height:3px;border-radius:2px;background:var(--anatomy-faint);overflow:hidden;position:relative}
+.so-steps-track i[data-done]{background:var(--anatomy-lo)}
+.so-steps-track i[data-now]::after{content:"";position:absolute;inset:0;background:var(--crew-step,var(--anatomy-hi));transform-origin:left;transform:scaleX(var(--so-beat,0))}
+.so-steps[data-paused] .so-steps-who::after{content:"paused";margin-left:6px;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
+.so-steps p{transition:opacity .25s ease}
+.so-steps[data-swap] p{opacity:.35}
+@media (prefers-reduced-motion:reduce){.so-steps p{transition:none}}
 `;
 
 const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 export function stepsHtml(steps) {
-  const dots = steps.map((s, i) => `<button type="button" class="so-steps-dot" data-step="${i}" aria-label="Step ${i + 1}: ${esc(s.title)}"></button>`).join("");
   const first = steps[0];
   return `<div class="so-steps" data-steps>
-<div class="so-steps-head"><span class="so-steps-count" data-steps-count>Step 1 of ${steps.length}</span><span class="so-steps-who" data-steps-who>${first.who ? `<i></i>${esc(first.who)}` : ""}</span></div>
+<span class="so-steps-who" data-steps-who>${first.who ? `<i></i>${esc(first.who)}` : ""}</span>
 <p class="so-steps-title" data-steps-title aria-live="polite">${esc(first.title)}</p>
 <p class="so-steps-text" data-steps-text>${esc(first.text)}</p>
-<div class="so-steps-bar"><button type="button" class="so-steps-btn" data-steps-back>Back</button><div class="so-steps-dots">${dots}</div><button type="button" class="so-steps-btn" data-steps-play aria-pressed="true">Pause</button><button type="button" class="so-steps-btn" data-steps-next data-primary>Next</button></div>
+<div class="so-steps-track" aria-hidden="true">${steps.map(() => "<i></i>").join("")}</div>
 </div>`;
 }
 
@@ -48,79 +45,118 @@ export function fitView(points, [W, H], { pad = 24, least = 0.38 } = {}) {
   return [x, y, w, h];
 }
 
-export function mountSteps({ root, svg, stage, steps, views, enter, update, done, size, dwell = 1.8, autoplay = true, colors = [] }) {
+// steps: [{ title, who, text, hold?, pace? }], views: one viewBox per beat, colors: one per beat.
+// enter(i, how) sets the model up for beat i ("start", "next" or "loop"); update(dt) advances it;
+// done(i) says when beat i's action is over. A beat never ends before its caption can be read
+// (about 0.23 s a word, 2.4 s at least). Give `advance` (the model step without drawing) and
+// `save`/`load` (copy and restore the model state), and the run plays the whole story once,
+// unseen, when it mounts, to time each beat's action; a quick action is then slowed so it fills
+// its caption (never below `slowest`, 0.35 = 35% speed). A beat's own `pace` overrides that.
+// After a beat's action is done the machine keeps running while the caption is read, unless the
+// timing run found that this would carry it into the next beat's action; then it waits, so the
+// story never runs ahead of its caption.
+// `hold` keeps a beat on screen a little longer, for the opening overview and the closing shot.
+// Space pauses and resumes; Home starts again.
+export function mountSteps({ root, svg, stage, steps, views, enter, update, done, size, colors = [], ease = 0.45, advance, save, load, slowest = 0.35, onView }) {
   const still = matchMedia("(prefers-reduced-motion: reduce)");
+  const box = root.querySelector("[data-steps]") ?? root;
   const ui = {
-    count: root.querySelector("[data-steps-count]"),
     who: root.querySelector("[data-steps-who]"),
     title: root.querySelector("[data-steps-title]"),
     text: root.querySelector("[data-steps-text]"),
-    back: root.querySelector("[data-steps-back]"),
-    next: root.querySelector("[data-steps-next]"),
-    play: root.querySelector("[data-steps-play]"),
-    dots: [...root.querySelectorAll("[data-step]")],
+    bars: [...root.querySelectorAll(".so-steps-track i")],
   };
   const full = [0, 0, size[0], size[1]];
-  let index = 0, auto = autoplay && !still.matches, finished = false, wait = 0, frame = 0, last = 0, visible = false;
+  let index = 0, playing = true, finished = false, held = 0, age = 0, frame = 0, last = 0, visible = false, swap = 0;
   let cam = views[0] ? [...views[0]] : [...full];
-  const write = () => svg.setAttribute("viewBox", cam.map((v) => v.toFixed(2)).join(" "));
+  // `svg` may be one element or several layered ones (a back and a front drawing round a canvas);
+  // onView(viewBox) lets a WebGL layer follow the camera.
+  const svgs = [].concat(svg);
+  const write = () => { const box = cam.map((v) => v.toFixed(2)).join(" "); for (const el of svgs) el.setAttribute("viewBox", box); onView?.(cam); };
   const label = () => {
     const s = steps[index];
-    ui.count.textContent = `Step ${index + 1} of ${steps.length}`;
     ui.title.textContent = s.title;
     ui.text.textContent = s.text;
     ui.who.innerHTML = s.who ? `<i></i>${s.who.replace(/</g, "&lt;")}` : "";
     root.style.setProperty("--crew-step", colors[index] || "var(--anatomy-hi)");
-    ui.dots.forEach((dot, i) => {
-      if (i === index) dot.setAttribute("aria-current", "step"); else dot.removeAttribute("aria-current");
-      dot.toggleAttribute("data-done", i < index);
-    });
-    ui.play.textContent = auto ? "Pause" : "Play";
-    ui.play.setAttribute("aria-pressed", String(auto));
+    ui.bars.forEach((bar, i) => { bar.toggleAttribute("data-now", i === index); bar.toggleAttribute("data-done", i < index); });
+    box.toggleAttribute("data-paused", !playing);
   };
   const settle = (at = index, cap = 1800) => { let n = 0; while (!done(at) && n++ < cap) update(1 / 30); };
-  const go = (to, how = "next") => {
-    if (to < 0) to = steps.length - 1;
-    if (to >= steps.length) { to = 0; how = "loop"; }
-    if (how === "jump" && to > index) {
-      for (let k = index; k < to; k++) { settle(k); enter(k + 1, "next"); }
-    } else enter(to, how);
+  const words = (s) => `${s.title} ${s.text}`.trim().split(/\s+/).length;
+  const readFor = (s) => Math.max(2.4, words(s) * 0.23);
+  const pace = steps.map((s) => s.pace ?? 1);
+  const flow = steps.map(() => false);
+  if (advance && save && load) {
+    const saved = save();
+    const run = (seconds) => { for (let t = 0; t < seconds; t += 1 / 30) advance(1 / 30); };
+    steps.forEach((s, i) => {
+      enter(i, i ? "next" : "start");
+      let t = 0;
+      while (!done(i) && t < 40) { advance(1 / 30); t += 1 / 30; }
+      if (s.pace == null) pace[i] = Math.max(slowest, Math.min(1, t / (readFor(s) * 0.9)));
+      if (i === steps.length - 1) return;
+      // Would running on through the caption finish the next beat before it starts?
+      const atDone = save();
+      const next = () => { enter(i + 1, "next"); let n = 0; while (!done(i + 1) && n < 40) { advance(1 / 30); n += 1 / 30; } return n; };
+      const waited = next();
+      load(atDone);
+      run(Math.max(0, readFor(s) + (s.hold ?? 0) - t / pace[i]) * pace[i]);
+      const later = save();
+      flow[i] = next() >= waited * 0.85;
+      load(flow[i] ? later : atDone);
+    });
+    load(saved);
+  }
+  const go = (to) => {
+    const how = to >= steps.length ? "loop" : to === 0 ? "start" : "next";
+    if (to >= steps.length) to = 0;
+    enter(to, how);
     index = to;
     finished = false;
-    wait = 0;
-    if (still.matches) { settle(); cam = [...views[index]]; write(); }
+    held = 0;
+    age = 0;
+    swap = 0.18;
+    box.setAttribute("data-swap", "");
+    if (still.matches) { settle(); cam = [...(views[index] ?? full)]; write(); }
     label();
     run();
   };
   const tick = (now) => {
     const dt = last ? Math.min((now - last) / 1000, 1 / 30) : 1 / 60;
     last = now;
-    if (!finished) { update(dt); finished = done(index); }
-    else if (auto) { wait += dt; if (wait > (steps[index].dwell ?? dwell)) go(index + 1, "next"); }
+    if (swap > 0 && (swap -= dt) <= 0) box.removeAttribute("data-swap");
+    if (playing) {
+      age += dt;
+      if (still.matches) {
+        // Reduced motion: each beat is shown at its end, and the run moves on every few seconds.
+        if ((held += dt) > Math.max(3.5, steps[index].hold ?? 0)) go(index + 1);
+      } else {
+        const s = steps[index];
+        if (!finished || flow[index]) update(dt * pace[index]);
+        if (!finished && (finished = done(index))) box.dataset.actionTook = age.toFixed(1);
+        if (finished && age >= readFor(s) && (held += dt) >= (s.hold ?? 0)) go(index + 1);
+      }
+      const fill = Math.min(1, age / (readFor(steps[index]) + (steps[index].hold ?? 0)));
+      root.style.setProperty("--so-beat", fill.toFixed(3));
+    }
     const target = views[index] ?? full;
-    const k = still.matches ? 1 : 1 - Math.exp(-dt / 0.55);
+    const k = still.matches ? 1 : 1 - Math.exp(-dt / ease);
     let moving = false;
     cam = cam.map((v, i) => { const n = v + (target[i] - v) * k; if (Math.abs(target[i] - n) > 0.05) moving = true; return Math.abs(target[i] - n) > 0.05 ? n : target[i]; });
     write();
-    const idle = finished && !auto && !moving;
-    frame = visible && !idle ? requestAnimationFrame(tick) : 0;
+    frame = visible && (playing || moving || swap > 0) ? requestAnimationFrame(tick) : 0;
   };
   const run = () => { if (!frame && visible) { last = 0; frame = requestAnimationFrame(tick); } };
-  ui.next.addEventListener("click", () => { auto = false; go(index + 1, "next"); });
-  ui.back.addEventListener("click", () => { auto = false; go(index - 1, "back"); });
-  ui.play.addEventListener("click", () => { auto = !auto; label(); run(); });
-  ui.dots.forEach((dot, i) => dot.addEventListener("click", () => { auto = false; go(i, i > index ? "jump" : "back"); }));
-  stage.addEventListener("click", () => { auto = false; go(index + 1, "next"); });
+  const toggle = () => { playing = !playing; label(); run(); };
   stage.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowRight") { event.preventDefault(); auto = false; go(index + 1, "next"); }
-    else if (event.key === "ArrowLeft") { event.preventDefault(); auto = false; go(index - 1, "back"); }
-    else if (event.key === " ") { event.preventDefault(); auto = !auto; label(); run(); }
-    else if (event.key === "Home") { event.preventDefault(); auto = false; go(0, "back"); }
+    if (event.key === " ") { event.preventDefault(); toggle(); }
+    else if (event.key === "Home") { event.preventDefault(); playing = true; go(0); }
   });
   new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" }).observe(stage);
   write();
   enter(0, "start");
   if (still.matches) settle();
   label();
-  return { go: (i) => go(i, "jump"), get index() { return index; } };
+  return { go, toggle, get index() { return index; }, get playing() { return playing; } };
 }
