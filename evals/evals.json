@@ -1,6 +1,24 @@
 {
-  "skill_name": "anatomy",
+  "skill_name": "staff-only",
   "evals": [
+    {
+      "id": 101,
+      "prompt": "Make me an interactive figure of a pop-up toaster with the crew inside, showing how it knows the toast is done. One HTML file, light theme.",
+      "expected_output": "A single standalone light HTML page built with the kit: a real classic pop-up toaster in cutaway, monochrome, with many small parts (carriage, lever, catch, bimetal strip, nichrome elements, spring). A crew of two to five critters built with kit/critters.mjs, each on one mechanism and wearing its role colour: hamsters (power) run the elements, a crab or other holder (holding) on the catch, a sloth (sensing) on the bimetal strip, a kangaroo (spring) under the carriage. Every crew member's motion is its part's motion, driven from one small model (temperature, strip deflection, catch release, spring launch); paws land on real handles with no reach warnings; exactly one critter is lit at a time, the one whose part is moving. No speech bubbles or words in the drawing; the crew is named in the legend. A cast sheet was rendered and read, and 4x close-ups of every critter in both themes were taken and looked at. The figure is a step player built with kit/steps.mjs: it opens on the whole scene (the machine on a surface with a wall and two or three props, all in pale MATERIALS colours), then plays one step per handoff in the mechanism, each with a title, who is on duty, a true caption and a camera view that zooms onto the actor, and ends by returning to rest. Back restores each step as it began, autoplay loops, and every step was captured in both themes and read.",
+      "files": []
+    },
+    {
+      "prompt": "Explain a token-bucket rate limiter (20 tokens, refills 5 per second, one token per request) as a Staff Only figure for my blog. Dark theme, single HTML file.",
+      "expected_output": "A standalone dark HTML page: Anatomy's craft for the machine (a real physical object that is a token bucket: hopper, dispenser, gate) plus a crew. The refill mechanism has one operator (for example squirrels as moving, or hamsters as power), the gate that rejects requests has a holding operator, and each critter's motion is the part's motion from the model (5 tokens per second, capacity 20, rejection when empty). The readout shows true numbers. Paws land on real handles, one critter is lit at a time, role colours follow the eight fixed roles, the machine stays monochrome, and nothing passes through anything. The cast sheet and 4x crew close-ups were read in both themes. The figure is a step player built with kit/steps.mjs: it opens on the whole scene (the machine on a surface with a wall and two or three props, all in pale MATERIALS colours), then plays one step per handoff in the mechanism, each with a title, who is on duty, a true caption and a camera view that zooms onto the actor, and ends by returning to rest. Back restores each step as it began, autoplay loops, and every step was captured in both themes and read.",
+      "files": [],
+      "id": 102
+    },
+    {
+      "id": 103,
+      "prompt": "add a crew to the arcade cabinet example",
+      "expected_output": "The arcade-cabinet example rebuilt with a crew from kit/critters.mjs and crewScript(): the coin chute, the coin switch, the joystick microswitch and the CRT each get at most one operator whose motion is that part's motion (for example a mouse sorting the coin at the switch, a crab holding the microswitch), two to five critters in all, placed on the viewer's side of their handles, drawn in their physical slot in the painter's order, posed every frame from the cabinet's own state. The original audit still passes, the line check prints 0, the reach check prints nothing, and close-ups of each critter in both themes were read. The figure is a step player built with kit/steps.mjs: it opens on the whole scene (the machine on a surface with a wall and two or three props, all in pale MATERIALS colours), then plays one step per handoff in the mechanism, each with a title, who is on duty, a true caption and a camera view that zooms onto the actor, and ends by returning to rest. Back restores each step as it began, autoplay loops, and every step was captured in both themes and read.",
+      "files": []
+    },
     {
       "id": 1,
       "prompt": "I'm writing a blog post about how a token-bucket rate limiter works. Can you make me one interactive isometric illustration for it, the polished kind (like Linear's site), as a single HTML file I can just open? My blog has a white background. The bucket holds 20 tokens, refills 5 per second, and each request takes one token; requests get rejected when it's empty.",

@@ -1,5 +1,34 @@
 # Changelog
 
+## Staff Only 0.2.0 (2026-10-27)
+
+### Added
+
+- The step player. `kit/steps.mjs`: `stepsHtml`, `STEPS_CSS`, `fitView` and `mountSteps`, which plays a figure's model one step at a time with Next, Back, step dots, autoplay, camera zoom by `viewBox`, keys and reduced motion; `stepsScript()` inlines it. `references/steps.md`.
+- `MATERIALS` in `kit/critters.mjs`: pale material colours for machines and scenes, emitted by `crewCss()` in both themes.
+- `examples/pencil-sharpener`: the reference figure, an electric sharpener on a desk with a full scene and seven steps.
+
+### Changed
+
+- Every Staff Only figure is now a full, softly coloured scene played step by step. `SKILL.md` gains a "Write the steps" step, scene and materials in "Plan the world", the step bar in "Frame it", the step player in "Make it live" and step checks in verification.
+
+## Staff Only 0.1.0 (2026-10-27)
+
+Forked from Anatomy at commit `1482e84` (Printable sheets, #126). Everything below that heading is Anatomy's history.
+
+### Added
+
+- The crew. `kit/critters.mjs`: `critter(spec, pose, P)` builds a cute isometric animal from kit spheres and a new `ellipsoidOf` (an ellipsoid shaded like `sphereOf`, with an optional clip plane), `critterSvg` draws it, `paintCritter` updates it in place each frame, `crewCss()` gives each species and each of eight roles its own token set in light and dark. Seven species (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo), five role items (hat, scarf, band, cap, goggles), poses with paw targets, stride, lean, look, hop, squash and four eye states, and a reach report for paws that can't reach their handle.
+- `scripts/cast-sheet.mjs`: every species at four headings and in four poses, in either theme.
+- `scripts/inline-kit.mjs`: `crewScript()` inlines `kit/lathe.mjs` and `kit/critters.mjs` as one `CREW` namespace.
+- `examples/dial-indicator-crew`: the dial indicator, staffed by Pip the squirrel and Mo the sloth, with the on-duty light and a build-time reach check.
+- `references/crew.md`: casting, roles and colours, the cast, building, posing, reach, the duty light, motion, order, performance, verification, adding a species, anti-patterns.
+- `scripts/critters.test.mjs`: the crew builds for every species, heading, role item and eye state without a NaN, and `ellipsoidOf` matches `sphereOf` on a sphere.
+
+### Changed
+
+- `SKILL.md`: renamed to `staff-only`; the one idea now includes the crew; a "Cast the crew" step after the parts list; crew rules; crew checks in verification; crew files in the setup table. The community gallery is Anatomy's and is not used.
+
 All notable changes to Anatomy are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Releases follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html); entries from before the first release are dated.
 
 ## [Unreleased]

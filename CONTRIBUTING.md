@@ -1,3 +1,5 @@
+> Staff Only is a fork of [Anatomy](https://github.com/wheresryan22/anatomy). The rules below are Anatomy's and still apply to the kit and its examples. Crew changes live in `kit/critters.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md` and `examples/dial-indicator-crew`; keep them out of Anatomy's files so the fork can follow upstream.
+
 # Contributing to Anatomy
 
 Thank you for helping. Anatomy is judged by how its figures look at 4× zoom, so most of this guide is about checking your work before anyone else does.

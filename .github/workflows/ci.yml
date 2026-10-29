@@ -37,6 +37,13 @@ jobs:
           node examples/dial-indicator/build.mjs
           node examples/dial-indicator/build.mjs --light
 
+      - name: Dial indicator, staffed
+        run: |
+          node examples/dial-indicator-crew/build.mjs 2> crew.txt
+          node examples/dial-indicator-crew/build.mjs --light 2>> crew.txt
+          if [ -s crew.txt ]; then cat crew.txt; exit 1; fi
+          node scripts/cast-sheet.mjs --light
+
       - name: Desk computer
         run: |
           node examples/desk-computer/build.mjs
