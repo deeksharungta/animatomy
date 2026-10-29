@@ -26,7 +26,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 | Format | One interactive figure | A full scene played step by step: Next, Back, autoplay, the camera zooms onto whoever is working, a caption per step |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (crew builder, ellipsoid primitive, role, fur and material tokens), `kit/steps.mjs` (the step player) and `scripts/cast-sheet.mjs` |
-| Examples | 8 | 10: adds `examples/pencil-sharpener` and `examples/dial-indicator-crew` |
+| Examples | 8 | 11: adds `examples/pencil-sharpener`, `examples/vending-machine` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
 Everything else, from the craft rules to the audit, the line check, WebGL, the 3D mode and printable sheets, is Anatomy's, unchanged. `ANATOMY-README.md` is Anatomy's own README, kept for reference.
@@ -83,10 +83,12 @@ Try the examples:
 ```sh
 node examples/pencil-sharpener/build.mjs --light
 open examples/pencil-sharpener/pencil-sharpener-light.html
+node examples/vending-machine/build.mjs --light
+open examples/vending-machine/vending-machine-light.html
 node scripts/cast-sheet.mjs --light
 open cast-sheet-light.html
 ```
 
 ## Credits and license
 
-Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the step player (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/pencil-sharpener`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).
+Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the step player (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).
