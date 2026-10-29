@@ -3100,7 +3100,20 @@ const toneVars = (name, hex) => {
 };
 const TONES = ["fur", "belly", "dark", "skin", "mark"];
 
-// The subject: the thing the machine works on (the bread, the pencil, the coin) wears a soft halo, so the
+// The subject: the thing the machine works on (the bread, the pencil, the coin) is the one object in the
+// machine drawn in its own colour, so the reader can follow it through. subjectCss(selector, light, dark)
+// gives a group the kit's tone tokens in that colour, so every solid inside it keeps its shading and lit state.
+function subjectCss(sel, light, dark = light) {
+  const ramp = (hex, darkTheme) => {
+    const [h, s, l] = hexToHsl(hex);
+    const L = (k) => hsl(h, s, Math.min(97, l * k));
+    const base = darkTheme ? 0.82 : 1;
+    return `--anatomy-paper:${L(base)};--anatomy-face:${L(base * 1.06)};--anatomy-top:${L(base * 1.12)};--anatomy-shade-0:${L(base * 0.72)};--anatomy-shade-1:${L(base * 0.8)};--anatomy-shade-2:${L(base * 0.88)};--anatomy-shade-3:${L(base * 0.95)};--anatomy-lit-top:${L(base * 1.16)};--anatomy-lit-shade:${L(base * 0.98)}`;
+  };
+  return `${sel}{${ramp(light, false)}}.iso[data-theme="dark"] ${sel},.iso:not([data-theme]) ${sel}{${ramp(dark, true)}}`;
+}
+
+// Older figures: a soft halo round the subject instead of its colour. The thing the machine works on wears it, so the
 // reader can follow it through the machine. Put subjectDefs() once in the figure's defs and draw the subject
 // inside subjectSvg(); a group that the page refills each frame takes class "so-subject" itself.
 const subjectDefs = () => `<filter id="so-subject" x="-60%" y="-60%" width="220%" height="220%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.2" result="d"/><feGaussianBlur in="d" stdDeviation="3.2" result="b"/><feFlood style="flood-color:var(--so-subject);flood-opacity:var(--so-subject-a)" result="c"/><feComposite in="c" in2="b" operator="in" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;

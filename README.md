@@ -22,7 +22,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
 | Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
-| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur and a collar in their role colour), a soft glow on the thing the machine works on (the bread, the pencil, the coin), and the light and heat the machine gives off, drawn with WebGL |
+| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur and a collar in their role colour), the thing the machine works on in its own colour (the toaster's golden bread), and the light and heat the machine gives off, drawn with WebGL |
 | Format | One interactive figure | A full scene played as one continuous story on a loop: the camera eases onto whoever is working, a caption per beat, no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |

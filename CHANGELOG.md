@@ -1,5 +1,11 @@
 # Changelog
 
+## Staff Only 0.9.0 (2026-10-29)
+
+### Changed
+
+- The subject is drawn in its own colour instead of glowing. `subjectCss(selector, light, dark)` in `kit/critters.mjs` gives a group the kit's tone tokens in one colour, so its solids keep their shading. The toaster's bread is first: a golden crust, a pale crumb, and a toast colour over both as it browns (it used to turn dark grey). The glow was dropped: it carried no information and leaked out where the bread was hidden behind the boards.
+
 ## Staff Only 0.8.0 (2026-10-29)
 
 ### Added

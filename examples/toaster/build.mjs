@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { critter, critterSvg, crewCss, ellipsoidOf, subjectDefs, subjectSvg } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, ellipsoidOf } from "../../kit/critters.mjs";
 import { kitScript, glScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { glCamera } from "../../kit/gl.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
@@ -489,8 +489,9 @@ function bread(y, extra = "") {
     const u = (i * 0.6180339 + 0.13) % 1, v = (i * 0.7548777 + 0.41) % 1;
     holes.push(at([C.BREAD.x0 + 10 + u * (C.BREAD.x1 - C.BREAD.x0 - 20), y + t / 2, C.UP + 8 + v * (C.BREAD.h - 26)]));
   }
-  const inner = Ln(crust, { tone: "faint" });
-  return `${S(paths, { tone: "mid", inner })}${D(holes, { size: 0.45, tone: "lo" })}<path class="tz-toast" data-toast d="${paths.fill}" style="opacity:${dyn0.brown}"/>${extra}`;
+  // The bread is the one thing in the machine drawn in its own colour: golden crust, pale crumb, and a
+  // toast colour laid over both as it browns. The kit's shading shows through, and its lines go on top.
+  return `${S(paths, { tone: "mid" })}<g class="tz-bread"><path class="tz-crust" d="${paths.fill}"/><path class="tz-crumb" d="${crust}"/><path class="tz-toast" data-toast d="${paths.fill}" style="opacity:${dyn0.brown}"/></g>${Ln(crust, { tone: "faint" })}${D(holes, { size: 0.45, tone: "lo" })}${Ln(paths.outline, { tone: "mid" })}${extra}`;
 }
 
 function mechPlate() {
@@ -633,7 +634,7 @@ const mv = (name, html) => `<g data-part="${name}">${html}</g>`;
 
 const WIN = ringX(C.FACE, -41, -25, 47, 62, 2);
 const parts = [
-    `<defs>${subjectDefs()}<clipPath id="tz-up"><path d="${clipUpper}"/></clipPath><clipPath id="tz-low"><path d="${clipLower}"/></clipPath></defs>`,
+    `<defs><clipPath id="tz-up"><path d="${clipUpper}"/></clipPath><clipPath id="tz-low"><path d="${clipLower}"/></clipPath></defs>`,
     room(),
     desk(),
     propsBack(),
@@ -642,13 +643,13 @@ const parts = [
     shellBack(),
     board(C.BOARDS[0], C.BOARD.z1),
     guards(C.SLOTS[0] - 7),
-    `<g clip-path="url(#tz-low)">${mv("carriage-b", rack(C.SLOTS[0]) + subjectSvg(bread(C.SLOTS[0])))}</g>`,
+    `<g clip-path="url(#tz-low)">${mv("carriage-b", rack(C.SLOTS[0]) + bread(C.SLOTS[0]))}</g>`,
     guards(C.SLOTS[0] + 7),
     topPlate(),
-    `<g clip-path="url(#tz-up)">${mv("carriage-b2", subjectSvg(bread(C.SLOTS[0])))}</g>`,
+    `<g clip-path="url(#tz-up)">${mv("carriage-b2", bread(C.SLOTS[0]))}</g>`,
     board(C.BOARDS[1], C.BOARD.z1),
     guards(C.SLOTS[1] - 7),
-    mv("carriage-f", rack(C.SLOTS[1]) + subjectSvg(bread(C.SLOTS[1]))),
+    mv("carriage-f", rack(C.SLOTS[1]) + bread(C.SLOTS[1])),
     guards(C.SLOTS[1] + 7),
     board(C.BOARDS[2], C.FRONT_CUT),
     "|",
@@ -1080,7 +1081,12 @@ const keys = [
 
 const css = `${crewCss()}${STEPS_CSS}
 .so-void{fill:var(--anatomy-halo);opacity:.55;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
-.tz-toast{fill:#000;stroke:none}
+.tz-bread{--tz-crust:#C88A45;--tz-crumb:#F2E0BC;--tz-toasted:#6E4119}
+.iso[data-theme="dark"] .tz-bread,.iso:not([data-theme]) .tz-bread{--tz-crust:#A8743A;--tz-crumb:#DCC69C;--tz-toasted:#5A3412}
+.tz-bread path{stroke:none}
+.tz-crust{fill:var(--tz-crust);opacity:.9}
+.tz-crumb{fill:var(--tz-crumb);opacity:.92}
+.tz-toast{fill:var(--tz-toasted)}
 .tz-stage{position:relative;touch-action:pan-y;overflow:hidden}
 .tz-stage>svg,.tz-stage>canvas{display:block;width:100%;height:auto}
 .tz-stage>.tz-layer{position:absolute;inset:0;height:100%!important;pointer-events:none}
