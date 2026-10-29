@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { critter, critterSvg, crewCss, ellipsoidOf } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, ellipsoidOf, subjectDefs } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
 
@@ -413,9 +413,9 @@ const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
   label:
-    "An electric pencil sharpener on a desk, with its front walls and the front of its lid cut away, run by cartoon animals. A pencil cup, a notebook and an eraser sit beside it, and a cork board hangs on the wall. A pencil comes down through the throat collar. Mo the sloth, in a blue cap, hangs from the switch lever; the pencil pushes the lever's short arm aside, which lifts Mo and the long arm up onto a microswitch. Two hamsters in yellow headbands run in a wire wheel whose pinion turns the cutter carrier's crown teeth. Chomp the beaver, in violet goggles, stands on the carrier and gnaws round the pencil as it turns, cutting the cone. Shavings drop through the deck into a drawer.",
+    "An electric pencil sharpener on a desk, with its front walls and the front of its lid cut away, run by cartoon animals. A pencil cup, a notebook and an eraser sit beside it, and a cork board hangs on the wall. A pencil, softly glowing, comes down through the throat collar. Mo the sloth, in glasses, hangs from the switch lever; the pencil pushes the lever's short arm aside, which lifts Mo and the long arm up onto a microswitch. Two hamsters in yellow sweatbands run in a wire wheel whose pinion turns the cutter carrier's crown teeth. Chomp the beaver stands on the carrier and gnaws round the pencil as it turns, cutting the cone. Shavings drop through the deck into a drawer.",
   body: [
-    `<defs><clipPath id="pencil-up"><rect x="-200" y="-400" width="1000" height="${(yCollar + 400).toFixed(1)}"/></clipPath><clipPath id="pencil-low"><rect x="-200" y="${yCollar.toFixed(1)}" width="1000" height="2000"/></clipPath></defs>`,
+    `<defs>${subjectDefs()}<clipPath id="pencil-up"><rect x="-200" y="-400" width="1000" height="${(yCollar + 400).toFixed(1)}"/></clipPath><clipPath id="pencil-low"><rect x="-200" y="${yCollar.toFixed(1)}" width="1000" height="2000"/></clipPath></defs>`,
     room(),
     desk(),
     propsBack(),
@@ -434,7 +434,7 @@ const svg = k.figureSvg({
     `<g data-part="button">${dyn0.button}</g>`,
     crew(MO, pose0.mo, "mo"),
     `<g data-part="c-back">${chompFront ? "" : crew(CHOMP, chompPose, "chomp", true)}</g>`,
-    `<g data-part="pencil-low" clip-path="url(#pencil-low)">${dyn0.pencil}</g>`,
+    `<g data-part="pencil-low" class="so-subject" clip-path="url(#pencil-low)">${dyn0.pencil}</g>`,
     `<g data-part="c-front">${chompFront ? crew(CHOMP, chompPose, "chomp", true) : ""}</g>`,
     `<g data-part="chips-up">${dyn0.chipsUp}</g>`,
     wheelBack(),
@@ -442,7 +442,7 @@ const svg = k.figureSvg({
     crew(BUN, pose0.bun, "bun"),
     wheelFront(),
     lid(),
-    `<g data-part="pencil-up" clip-path="url(#pencil-up)">${dyn0.pencil}</g>`,
+    `<g data-part="pencil-up" class="so-subject" clip-path="url(#pencil-up)">${dyn0.pencil}</g>`,
     collarRim,
     `<g data-part="star">${dyn0.star}</g>`,
     propsFront(),

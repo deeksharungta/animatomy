@@ -1,5 +1,15 @@
 # Changelog
 
+## Staff Only 0.8.0 (2026-10-29)
+
+### Added
+
+- The subject glows. `subjectDefs()` and `subjectSvg()` in `kit/critters.mjs` put a soft halo (warm white in dark, highlighter gold in light) on the thing the machine works on, so the reader can follow it through the machine: the toaster's bread, the sharpener's pencil, the vending machine's coin and the dial indicator's gauge blocks.
+
+### Fixed
+
+- The sharpener, vending machine and dial indicator descriptions no longer mention the caps, scarves and goggles their crews stopped wearing.
+
 ## Staff Only 0.7.0 (2026-10-29)
 
 ### Added

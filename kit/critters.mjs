@@ -1079,6 +1079,12 @@ const toneVars = (name, hex) => {
 };
 const TONES = ["fur", "belly", "dark", "skin", "mark"];
 
+// The subject: the thing the machine works on (the bread, the pencil, the coin) wears a soft halo, so the
+// reader can follow it through the machine. Put subjectDefs() once in the figure's defs and draw the subject
+// inside subjectSvg(); a group that the page refills each frame takes class "so-subject" itself.
+export const subjectDefs = () => `<filter id="so-subject" x="-60%" y="-60%" width="220%" height="220%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.2" result="d"/><feGaussianBlur in="d" stdDeviation="3.2" result="b"/><feFlood style="flood-color:var(--so-subject);flood-opacity:var(--so-subject-a)" result="c"/><feComposite in="c" in2="b" operator="in" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+export const subjectSvg = (html) => `<g class="so-subject">${html}</g>`;
+
 // Older figures passed a material palette to crewCss. Machines take no colour now, so it is ignored.
 export const paletteOf = () => ({});
 
@@ -1089,6 +1095,7 @@ export function crewCss() {
     `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
     `.crew{--so-ground:#000}`,
     `.iso{--so-zap:#FFE14D;--so-zap-core:#FFFBE8}.iso[data-theme="light"]{--so-zap:#E8A600;--so-zap-core:#FFF4C2}`,
+    `.iso{--so-subject:#FFE9A6;--so-subject-a:.55}.iso[data-theme="light"]{--so-subject:#F5BE2E;--so-subject-a:.5}.so-subject{filter:url(#so-subject)}`,
   ];
   for (const [name, a] of Object.entries(ART)) {
     rules.push(`.crew[data-species="${name}"]{${TONES.filter((t) => a.colors[t]).map((t) => toneVars(t, a.colors[t])).join(";")};--so-eye:${a.colors.eye ?? "#120c08"};--so-nose:${a.colors.nose ?? a.colors.skin};--so-claw:${a.colors.claw ?? "#efe6da"};--so-whisker:${a.colors.whisker ?? "#f6f1e8"};--so-teeth:${a.colors.teeth ?? "#f4efe6"}}`);

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { critter, critterSvg, crewCss, ellipsoidOf } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, ellipsoidOf, subjectDefs, subjectSvg } from "../../kit/critters.mjs";
 import { kitScript, glScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { glCamera } from "../../kit/gl.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
@@ -633,7 +633,7 @@ const mv = (name, html) => `<g data-part="${name}">${html}</g>`;
 
 const WIN = ringX(C.FACE, -41, -25, 47, 62, 2);
 const parts = [
-    `<defs><clipPath id="tz-up"><path d="${clipUpper}"/></clipPath><clipPath id="tz-low"><path d="${clipLower}"/></clipPath></defs>`,
+    `<defs>${subjectDefs()}<clipPath id="tz-up"><path d="${clipUpper}"/></clipPath><clipPath id="tz-low"><path d="${clipLower}"/></clipPath></defs>`,
     room(),
     desk(),
     propsBack(),
@@ -642,13 +642,13 @@ const parts = [
     shellBack(),
     board(C.BOARDS[0], C.BOARD.z1),
     guards(C.SLOTS[0] - 7),
-    `<g clip-path="url(#tz-low)">${mv("carriage-b", rack(C.SLOTS[0]) + bread(C.SLOTS[0]))}</g>`,
+    `<g clip-path="url(#tz-low)">${mv("carriage-b", rack(C.SLOTS[0]) + subjectSvg(bread(C.SLOTS[0])))}</g>`,
     guards(C.SLOTS[0] + 7),
     topPlate(),
-    `<g clip-path="url(#tz-up)">${mv("carriage-b2", bread(C.SLOTS[0]))}</g>`,
+    `<g clip-path="url(#tz-up)">${mv("carriage-b2", subjectSvg(bread(C.SLOTS[0])))}</g>`,
     board(C.BOARDS[1], C.BOARD.z1),
     guards(C.SLOTS[1] - 7),
-    mv("carriage-f", rack(C.SLOTS[1]) + bread(C.SLOTS[1])),
+    mv("carriage-f", rack(C.SLOTS[1]) + subjectSvg(bread(C.SLOTS[1]))),
     guards(C.SLOTS[1] + 7),
     board(C.BOARDS[2], C.FRONT_CUT),
     "|",

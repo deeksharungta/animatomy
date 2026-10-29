@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { critter, critterSvg, crewCss, ellipsoidOf } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, ellipsoidOf, subjectDefs } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
 
@@ -521,14 +521,15 @@ const state0 = { phi: 0, wheel: 0.4, omega: 0, snack: "row", drop: { c: [42, 34,
 const dyn0 = dynamic({ ...k, ...L, ellipsoidOf }, P, C, state0);
 const pose0 = poses(C, state0);
 const crew = (spec, pose, part, duty = false) => critterSvg(critter(spec, pose, P), { part, duty });
-const layer = (name) => `<g data-part="coin-${name}"></g>`;
+const layer = (name) => `<g data-part="coin-${name}" class="so-subject"></g>`;
 
 const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
   label:
-    "A snack vending machine in a hallway, with its front glass, right side and top cut away, run by cartoon animals. In the control column on the left, a coin drops behind the keypad panel and rolls down a rail into the paws of Dig the mole, in blue goggles, who feels it and lets it through a gate. It rolls down a second rail and drops to Pip the squirrel, in a green scarf, who stacks it in the cash box. Three trays hold three spiral coils of snacks each. The middle-right coil, B3, is driven by a belt from a wire wheel where two hamsters in yellow headbands run; one turn of the coil pushes the front snack off the tray into the bin at the bottom.",
+    "A snack vending machine in a hallway, with its front glass, right side and top cut away, run by cartoon animals. In the control column on the left, a softly glowing coin drops behind the keypad panel and rolls down a rail into the paws of Dig the mole, who feels it and lets it through a gate. It rolls down a second rail and drops to Pip the squirrel, who stacks it in the cash box. Three trays hold three spiral coils of snacks each. The middle-right coil, B3, is driven by a belt from a wire wheel where two hamsters run; one turn of the coil pushes the front snack off the tray into the bin at the bottom.",
   body: [
+    `<defs>${subjectDefs()}</defs>`,
     room(),
     props(),
     cabinetBack(),

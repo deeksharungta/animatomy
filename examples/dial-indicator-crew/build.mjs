@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import { kitScript, crewScript } from "../../scripts/inline-kit.mjs";
-import { critter, critterSvg, crewCss } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, subjectDefs, subjectSvg } from "../../kit/critters.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const theme = process.argv.includes("--light") ? "light" : "dark";
@@ -126,8 +126,7 @@ function carriage() {
   out.push(L(k.lineOnTop([CARRIAGE.x, 15.5], [CARRIAGE.x + CARRIAGE.w, 15.5], CARRIAGE_TOP, P), { tone: "faint" }));
   BLOCKS.forEach((height, index) => {
     const plan = { x: -24 + STEP * index, y: -12, w: BLOCK_W, d: 24, r: 1 };
-    out.push(S(k.slabOf(plan, CARRIAGE_TOP, height, P, 3, 0.5), { tone: "hi", crease: "lo" }));
-    out.push(L(k.planOutline(k.insetPlan(plan, 2), CARRIAGE_TOP + height, P, 3), { tone: "faint" }));
+    out.push(subjectSvg(S(k.slabOf(plan, CARRIAGE_TOP, height, P, 3, 0.5), { tone: "hi", crease: "lo" }) + L(k.planOutline(k.insetPlan(plan, 2), CARRIAGE_TOP + height, P, 3), { tone: "faint" })));
   });
   const handle = [CARRIAGE.x + CARRIAGE.w - 8, CARRIAGE.y + CARRIAGE.d + 3];
   out.push(S(k.slabOf({ x: handle[0] - 2, y: CARRIAGE.y + CARRIAGE.d - 1, w: 4, d: 4, r: 1 }, CARRIAGE_Z + 1, 3, P, 2), { tone: "mid", crease: "none" }));
@@ -209,8 +208,9 @@ const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
   label:
-    "A dial indicator on a surface plate, run by two cartoon animals. Pip the squirrel, in a green scarf, pushes a carriage of three gauge blocks, 18, 14 and 10 tall, along two rails by its handle. The dial's plunger rides on the block beneath it, and Mo the sloth, in a blue cap, stands on the dial's hub and walks the needle round by the same amount.",
+    "A dial indicator on a surface plate, run by two cartoon animals. Pip the squirrel pushes a carriage of three softly glowing gauge blocks, 18, 14 and 10 tall, along two rails by its handle. The dial's plunger rides on the block beneath it, and Mo the sloth, in glasses, stands on the dial's hub and walks the needle round by the same amount.",
   body: [
+    `<defs>${subjectDefs()}</defs>`,
     plate(),
     rails(),
     fixture(),
