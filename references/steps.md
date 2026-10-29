@@ -38,7 +38,7 @@ The full picture is what makes a step player more than a diagram. Build it with 
 - **A surface:** a desk, bench or floor slab under the machine, with grain or tile lines that end on its edges.
 - **A wall or two behind:** thin slabs at the back edge, with a quiet texture (stripes, panels) and at most one object on it (a cork board, a shelf, a clock).
 - **Two or three props** that belong to the subject and sit on the surface: a pencil cup and a notebook beside a sharpener, a mug beside a coffee grinder. Props are static and never steal a step.
-- **Colours** come from `MATERIALS` in `kit/critters.mjs`: muted, light tones (shell, steel, iron, brass, plastic, wood, desk, wall, paint, rubber, paper, graphite). Wrap each part in `<g data-c="mat-steel">…</g>`; `crewCss()` maps every material to the kit's tokens in both themes, outlines included. Never paint the machine or the scene in a role colour: the crew is the only bold colour, so it is what the eye finds.
+- **No colour.** The surface, walls and props are drawn like the machine, in the kit's own tones and tone hierarchy (base `lo`, structure `mid`, subject `hi`). The animals are the only colour in the picture, so they are what the eye finds.
 - The scene is part of the overview only. Fit the projection to the whole scene (`fitProjection` with the desk and wall corners), and let the steps zoom in.
 
 ## 4. The camera
@@ -87,5 +87,5 @@ STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, 
 - **Zooming into empty space.** Points that miss the actor, or a view so tight the part it acts on is cut off.
 - **Captions that repeat the legend.** Say what happened in this step, not who the crew are again.
 - **Steps that end mid-motion.** `done` waits until the action settles, so the frozen frame reads.
-- **Rainbow machines.** Bright material colours compete with the crew. Keep materials pale and low in saturation.
+- **Coloured machines.** Any tint on a housing, prop or wall competes with the crew. The machine and the scene stay in the kit's tones.
 - **Words in the drawing.** Titles and captions live under the picture, never on it.

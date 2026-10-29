@@ -1,5 +1,15 @@
 # Changelog
 
+## Staff Only 0.4.0 (2026-10-29)
+
+### Changed
+
+- The crew is redrawn from scratch as real animals. `kit/critters.mjs` no longer builds critters from solids or blended lobes: each species is a painted illustration (authored shapes from the real animal, soft gradients lit from above, markings that fade into the fur, fur strokes at the edges and hair strands inside, no outlines) on a 2D rig that places it in the figure's camera. It faces its heading (mirrored left or right, seen from behind when it walks away), leans, tips its head, steps, sways its tail and reaches two-bone arms to world points. New stances: `"four"` (a side-on drawing on all fours whose legs run from `stride`) and `"hang"` (arms up, feet dangling, for a sloth on a lever). Eyes squint for `"happy"` and close with a lid for `"shut"`. The on-duty critter gets a thin rim instead of a heavier outline. Posing is a handful of transforms, so frames are cheaper than before.
+- Machines and scenes are monochrome again, drawn exactly as Anatomy draws them. `MATERIALS` and the `mat-*` tokens are gone; the only colour in a figure is on the animals (their fur and a role-coloured collar).
+- `spec.wear` is gone: every critter wears one collar in its role colour.
+- The three crew examples use the new crew: the hamsters run on all fours, Mo hangs from the sharpener's lever, Dig holds the top of the coin, and the scenes lose their material colours.
+- `scripts/cast-sheet.mjs` shows every species at four headings and in six poses, including on all fours and hanging.
+
 ## Staff Only 0.3.0 (2026-10-29)
 
 ### Added

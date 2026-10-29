@@ -51,10 +51,10 @@ const C = {
   CLOSE: (14 * Math.PI) / 180,
 };
 
-const MO = { species: "sloth", name: "Mo", size: 21, role: "sensing", wear: "cap" };
-const BUN = { species: "hamster", name: "Bun", size: 15, role: "power", wear: "band" };
-const MOCHI = { species: "hamster", name: "Mochi", size: 15, role: "power", wear: "band" };
-const CHOMP = { species: "beaver", name: "Chomp", size: 20, role: "cutting", wear: "goggles" };
+const MO = { species: "sloth", name: "Mo", size: 21, role: "sensing" };
+const BUN = { species: "hamster", name: "Bun", size: 15, role: "power" };
+const MOCHI = { species: "hamster", name: "Mochi", size: 15, role: "power" };
+const CHOMP = { species: "beaver", name: "Chomp", size: 20, role: "cutting" };
 
 const outTop = C.BOTTOM_IN + C.TRAVEL + C.BODY_LEN + C.FERRULE + C.ERASER;
 const DESK = { x: -121, y: -116, w: 236, d: 224, r: 6 };
@@ -71,7 +71,7 @@ const S = (paths, style) => k.solidSvg(paths, style);
 const Ln = (d, style) => k.lineSvg(d, style);
 const D = (points, style) => k.dotsSvg(points, style);
 const K = { ...k, ...L, ellipsoidOf };
-const M = (mat, html) => `<g data-c="mat-${mat}">${html}</g>`;
+const M = (mat, html) => `${html}`;
 
 const ngon = (r, n = 8) => Array.from({ length: n }, (_, i) => [r * Math.cos(((i + 0.5) / n) * Math.PI * 2), r * Math.sin(((i + 0.5) / n) * Math.PI * 2)]);
 const rodAlong = (o, a, u, r, s0, s1, n = 8) => L.prismOf(L.frameOf(o, a, u, L.cross3(a, u)), ngon(r, n), s0, s1, P);
@@ -114,9 +114,9 @@ function dynamic(K, P, C, S) {
   if (tw > 0.02) {
     const c = at([ax, ay, tipZ - 1]), r = 7 * tw, q = r * 0.22;
     const d = `M${c[0]} ${c[1] - r}L${c[0] + q} ${c[1] - q}L${c[0] + r} ${c[1]}L${c[0] + q} ${c[1] + q}L${c[0]} ${c[1] + r}L${c[0] - q} ${c[1] + q}L${c[0] - r} ${c[1]}L${c[0] - q} ${c[1] - q}Z`;
-    star = `<g data-c="mat-paper"><path class="crew-patch" d="${d}"/><path class="iso-line" data-tone="mid" d="${d}"/></g>`;
+    star = `<path class="iso-fill" d="${d}"/><path class="iso-line" data-tone="mid" d="${d}"/>`;
   }
-  out.pencil = `<g data-c="mat-graphite">${K.solidSvg(lead, { tone: "hi", crease: "none" })}</g><g data-c="mat-wood">${K.solidSvg(wood, { tone: "hi", crease: "none" })}</g><g data-c="mat-paint">${K.solidSvg(body, { tone: "hi", lit: S.duty === "", crease: "lo" })}</g><g data-c="mat-steel">${K.solidSvg(ferrule, { tone: "mid" })}${K.lineSvg(bands, { tone: "lo" })}</g><g data-c="mat-rubber">${K.solidSvg(eraser, { tone: "mid" })}</g>`;
+  out.pencil = `${K.solidSvg(lead, { tone: "hi", crease: "none" })}${K.solidSvg(wood, { tone: "hi", crease: "none" })}${K.solidSvg(body, { tone: "hi", lit: S.duty === "", crease: "lo" })}${K.solidSvg(ferrule, { tone: "mid" })}${K.lineSvg(bands, { tone: "lo" })}${K.solidSvg(eraser, { tone: "mid" })}`;
   out.star = star;
 
   const g = S.gamma;
@@ -133,9 +133,9 @@ function dynamic(K, P, C, S) {
   const pad = [P0[0] + vs[0], P0[1], P0[2] + vs[1]];
   const end = [P0[0] + vl[0], P0[1], P0[2] + vl[1]];
   out.end = end;
-  out.crank = `<g data-c="mat-iron">${K.solidSvg(bar(vl, 1), { tone: "hi", lit: S.duty === "mo" })}${K.solidSvg(bar(vs, 0.9), { tone: "hi", lit: S.duty === "mo" })}</g><g data-c="mat-plastic">${K.solidSvg(along(pad, C.PAD_R, -1.7, 1.7, 12), { tone: "hi" })}${K.solidSvg(along(end, 1.7, -1.6, 1.6, 10), { tone: "hi" })}</g>`;
+  out.crank = `${K.solidSvg(bar(vl, 1), { tone: "hi", lit: S.duty === "mo" })}${K.solidSvg(bar(vs, 0.9), { tone: "hi", lit: S.duty === "mo" })}${K.solidSvg(along(pad, C.PAD_R, -1.7, 1.7, 12), { tone: "hi" })}${K.solidSvg(along(end, 1.7, -1.6, 1.6, 10), { tone: "hi" })}`;
   const btnLow = Math.min(C.BOX_Z - 0.3, Math.max(C.BOX_Z - 1.4, end[2] + 1.7));
-  out.button = `<g data-c="mat-plastic">${K.solidSvg(K.slabOf({ x: C.BOX.x + 3, y: C.BOX.y + 2.5, w: 3, d: 3, r: 0.6 }, btnLow, C.BOX_Z - btnLow, P, 3), { tone: "hi", lit: S.on })}</g>`;
+  out.button = `${K.solidSvg(K.slabOf({ x: C.BOX.x + 3, y: C.BOX.y + 2.5, w: 3, d: 3, r: 0.6 }, btnLow, C.BOX_Z - btnLow, P, 3), { tone: "hi", lit: S.on })}`;
 
   const W = C.WHEEL, wr = W.r;
   const rungs = [], spokes = [];
@@ -148,13 +148,13 @@ function dynamic(K, P, C, S) {
     const t = S.wheel + (i / 6) * Math.PI * 2 + 0.26;
     spokes.push(K.segment([W.x0, W.y + 3.5 * Math.cos(t), W.z + 3.5 * Math.sin(t)], [W.x0, W.y + wr * Math.cos(t), W.z + wr * Math.sin(t)], P));
   }
-  out.rungs = `<g data-c="mat-iron">${K.lineSvg(rungs.join(""), { tone: "mid" })}</g>`;
-  out.spokes = `<g data-c="mat-iron">${K.lineSvg(spokes.join(""), { tone: "mid" })}</g>`;
+  out.rungs = `${K.lineSvg(rungs.join(""), { tone: "mid" })}`;
+  out.spokes = `${K.lineSvg(spokes.join(""), { tone: "mid" })}`;
   const pinF = K.frameAlong([C.PIN.x0, C.A[1], W.z], [1, 0, 0]);
-  out.pinion = `<g data-c="mat-brass">${K.lineSvg(K.ribsOf(pinF, 0, C.PIN.x1 - C.PIN.x0, C.PIN.r + 0.02, 14, P, { phase: S.wheel }), { tone: "mid" })}</g>`;
+  out.pinion = `${K.lineSvg(K.ribsOf(pinF, 0, C.PIN.x1 - C.PIN.x0, C.PIN.r + 0.02, 14, P, { phase: S.wheel }), { tone: "mid" })}`;
 
   const teeth = K.radialTicks(ax, ay, C.CAR_R - 0.4, 40, 1000, C.CAR_TOP, [3.4, 3.4], P, S.carrier);
-  out.teeth = `<g data-c="mat-brass">${K.lineSvg(teeth.minor + teeth.major, { tone: "mid" })}</g>`;
+  out.teeth = `${K.lineSvg(teeth.minor + teeth.major, { tone: "mid" })}`;
   out.bolts = K.dotsSvg([0, 1, 2].map((i) => { const t = S.carrier + (i / 3) * Math.PI * 2 + 0.5; return at([ax + 14.5 * Math.sin(t), ay - 14.5 * Math.cos(t), C.CAR_TOP]); }), { size: 0.5, tone: "mid" });
 
   const chip = (c) => {
@@ -168,12 +168,12 @@ function dynamic(K, P, C, S) {
   };
   const up = S.chips.filter((c) => c.z > C.DECK_Z + C.DECK_H).map(chip).join("");
   const low = S.chips.filter((c) => c.z < C.DECK_Z).map(chip).join("");
-  const chipSvg = (d) => (d ? `<g data-c="mat-wood"><g class="iso-solid"><path class="iso-fill" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g></g>` : "");
+  const chipSvg = (d) => (d ? `<g class="iso-solid"><path class="iso-fill" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>` : "");
   out.chipsUp = chipSvg(up);
   out.chipsLow = chipSvg(low);
   const ph = 1.5 + 7.5 * Math.min(1, S.pile);
   out.pileH = ph;
-  out.pile = `<g data-c="mat-wood">${K.solidSvg(K.ellipsoidOf([ax, ay, C.FLOOR + 2], [[19, 0, 0], [0, 19, 0], [0, 0, ph]], P, { steps: 40, clip: { n: [0, 0, 1], d: 0 } }), { tone: "mid" })}</g>`;
+  out.pile = `${K.solidSvg(K.ellipsoidOf([ax, ay, C.FLOOR + 2], [[19, 0, 0], [0, 19, 0], [0, 0, ph]], P, { steps: 40, clip: { n: [0, 0, 1], d: 0 } }), { tone: "mid" })}`;
   return out;
 }
 
@@ -183,8 +183,9 @@ function poses(C, S) {
   const vl = rot(C.LONG);
   const E = [C.PIVOT[0] + vl[0], C.PIVOT[1], C.PIVOT[2] + vl[1]];
   const mo = {
-    at: [E[0] + 0.8, E[1] + 4.2, E[2] - 17.6],
+    at: [E[0] + 0.8, E[1] + 4.2, E[2] - 20],
     heading: 0,
+    stance: "hang",
     lean: -4,
     look: [-18, 14],
     paws: { l: [E[0] + 2.6, E[1] + 1.1, E[2] - 0.9], r: [E[0] - 0.6, E[1] + 1.1, E[2] - 0.9] },
@@ -199,7 +200,8 @@ function poses(C, S) {
     return {
       at: [(W.x0 + W.x1) / 2, W.y + 22.6 * Math.sin(a), W.z - 22.6 * Math.cos(a)],
       heading: 90,
-      lean: 12 * run,
+      stance: "four",
+      lean: 4 * run,
       look: [8, 0],
       stride: { phase: (-S.wheel * W.r) / 5 + phase, amount: 0.13 * run },
       eyes: S.omega < 0.04 ? "shut" : S.omega > 0.9 ? "open" : "wide",
@@ -233,10 +235,10 @@ function base() {
   const out = [`<path class="iso-halo" d="${k.haloOf(C.HOUSE, -5, 6, P)}"/>`];
   const feet = k.corners(C.HOUSE, 12).sort((a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P));
   for (const [x, y] of feet) {
-    out.push(M("rubber", S(k.cylinder(x, y, 6.5, -5, 1.6, P, 28), { tone: "mid" }) + S(k.cylinder(x, y, 5, -3.4, 3.4, P, 28), { tone: "mid" })));
+    out.push((S(k.cylinder(x, y, 6.5, -5, 1.6, P, 28), { tone: "mid" }) + S(k.cylinder(x, y, 5, -3.4, 3.4, P, 28), { tone: "mid" })));
   }
-  out.push(M("shell", S(k.slabOf(C.HOUSE, 0, C.FLOOR, P, 6, 1.2), { tone: "mid" })));
-  out.push(M("shell", Ln(k.lineOnTop([-45, 47], [50, 47], C.FLOOR, P), { tone: "faint" }) + Ln(k.lineOnTop([47, -45], [47, 47], C.FLOOR, P), { tone: "faint" })));
+  out.push((S(k.slabOf(C.HOUSE, 0, C.FLOOR, P, 6, 1.2), { tone: "mid" })));
+  out.push((Ln(k.lineOnTop([-45, 47], [50, 47], C.FLOOR, P), { tone: "faint" }) + Ln(k.lineOnTop([47, -45], [47, 47], C.FLOOR, P), { tone: "faint" })));
   out.push(D([[44, 44], [44, -38], [-38, 44]].map(([x, y]) => at([x, y, C.FLOOR])), { size: 0.5 }));
   return out.join("");
 }
@@ -245,23 +247,23 @@ function walls() {
   const out = [];
   const back = { x: -50, y: -50, w: 100, d: 5, r: 0.8 };
   const side = { x: -50, y: -45, w: 5, d: 95, r: 0.8 };
-  out.push(M("shell", S(k.slabOf(back, C.FLOOR, C.WALL_TOP - C.FLOOR, P, 3, 0.6), { tone: "mid" })));
+  out.push((S(k.slabOf(back, C.FLOOR, C.WALL_TOP - C.FLOOR, P, 3, 0.6), { tone: "mid" })));
   out.push(Ln(k.segment([50, -45, C.FLOOR], [50, -45, C.WALL_TOP], P), { tone: "faint" }));
   out.push(Ln([40, 92].map((z) => k.segment([-45, -45, z], [50, -45, z], P)).join(""), { tone: "faint" }));
-  out.push(M("shell", S(k.slabOf(side, C.FLOOR, C.WALL_TOP - C.FLOOR, P, 3, 0.6), { tone: "mid" })));
+  out.push((S(k.slabOf(side, C.FLOOR, C.WALL_TOP - C.FLOOR, P, 3, 0.6), { tone: "mid" })));
   out.push(Ln(k.segment([-45, 50, C.FLOOR], [-45, 50, C.WALL_TOP], P), { tone: "faint" }));
   out.push(Ln([40, 92].map((z) => k.segment([-45, -45, z], [-45, 50, z], P)).join(""), { tone: "faint" }));
   const vents = [];
   for (let i = 0; i < 6; i++) vents.push(ringX(-45, 10 + i * 6, 13 + i * 6, 12, 30, 1.5));
-  out.push(M("shell", Ln(vents.join(""), { tone: "mid" })));
+  out.push((Ln(vents.join(""), { tone: "mid" })));
   out.push(D([[-45, -40, 125], [-45, 45, 125], [-45, 45, 12], [-40, -45, 125], [45, -45, 125], [45, -45, 12]].map(at), { size: 0.5 }));
-  out.push(M("paper", S(k.extrude(k.ringOf({ x: 26, y: -45, w: 18, d: 0.8, r: 0.3 }, 3), 99, 10, P), { tone: "hi", crease: "faint" }) + Ln([[28.5, 105.5, 13], [28.5, 103.5, 10], [28.5, 101.5, 12]].map(([x, z, w]) => k.segment([x, -44.2, z], [x + w, -44.2, z], P)).join(""), { tone: "mid", free: true })));
+  out.push((S(k.extrude(k.ringOf({ x: 26, y: -45, w: 18, d: 0.8, r: 0.3 }, 3), 99, 10, P), { tone: "hi", crease: "faint" }) + Ln([[28.5, 105.5, 13], [28.5, 103.5, 10], [28.5, 101.5, 12]].map(([x, z, w]) => k.segment([x, -44.2, z], [x + w, -44.2, z], P)).join(""), { tone: "mid", free: true })));
   out.push(D([[27.5, -44.2, 107.8], [42.5, -44.2, 107.8]].map(at), { size: 0.45 }));
-  out.push(M("brass", S(k.slabOf({ x: 16, y: -45, w: 8, d: 4, r: 0.8 }, 80, 8, P, 3, 0.4), { tone: "hi" })));
+  out.push((S(k.slabOf({ x: 16, y: -45, w: 8, d: 4, r: 0.8 }, 80, 8, P, 3, 0.4), { tone: "hi" })));
   out.push(D([[18, -41, 88], [22, -41, 88]].map(at), { size: 0.45 }));
   out.push(k.wireSvg(at([-44.6, -9, 116]), at([20, -42, 88]), { via: [at([-44.6, -44.6, 116]), at([20, -44.6, 116])], tone: "lo", size: 0.9 }).replace('class="iso-line"', 'class="iso-line" data-part="wire"'));
   out.push(k.wireSvg(at([20, -41, 82]), at([20, -10, 78.5]), { tone: "lo", size: 0.9 }).replace('class="iso-line"', 'class="iso-line" data-part="wire2"'));
-  out.push(M("plastic", S(k.slabOf(C.BOX, C.BOX_Z, C.BOX_H, P, 3, 0.4), { tone: "hi" })));
+  out.push((S(k.slabOf(C.BOX, C.BOX_Z, C.BOX_H, P, 3, 0.4), { tone: "hi" })));
   out.push(D([[-41, -9.6, C.BOX_Z + 6.2], [-41, -2.4, C.BOX_Z + 6.2]].map(([x, y, z]) => at([x + 3, y + 3.6, z + 1.3])), { size: 0.45 }));
   out.push(Ln(k.planOutline(k.insetPlan(C.BOX, 1.6), C.BOX_Z + C.BOX_H, P, 3), { tone: "faint" }));
   return out.join("");
@@ -273,7 +275,7 @@ function drawerBack() {
   out.push(S(k.slabOf(Dr, z0, 2, P, 3, 0.4), { tone: "lo" }));
   out.push(S(k.slabOf({ x: Dr.x, y: Dr.y, w: Dr.w, d: 2, r: 0.5 }, z0 + 2, h - 2, P, 2), { tone: "mid" }));
   out.push(S(k.slabOf({ x: Dr.x, y: Dr.y + 2, w: 2, d: Dr.d - 2, r: 0.5 }, z0 + 2, h - 2, P, 2), { tone: "mid" }));
-  return M("plastic", out.join(""));
+  return (out.join(""));
 }
 
 function drawerFront() {
@@ -286,28 +288,28 @@ function drawerFront() {
   out.push(S(k.slabOf({ x: pull.x, y: pull.y, w: 2.4, d: 2.4, r: 0.4 }, z0 + 11, 3, P, 2), { tone: "mid" }));
   out.push(S(k.slabOf({ x: pull.x + pull.w - 2.4, y: pull.y, w: 2.4, d: 2.4, r: 0.4 }, z0 + 11, 3, P, 2), { tone: "mid" }));
   out.push(S(k.slabOf({ x: pull.x, y: pull.y + 2.4, w: pull.w, d: 2.2, r: 1 }, z0 + 10.5, 4, P, 3, 0.3), { tone: "mid" }));
-  return M("plastic", out.join(""));
+  return (out.join(""));
 }
 
 function deck() {
   const out = [];
   for (const g of [{ x: -45, y: -36, w: 4, d: 3 }, { x: -45, y: -2, w: 4, d: 3 }, { x: -36, y: -45, w: 3, d: 4 }, { x: 0, y: -45, w: 3, d: 4 }]) {
-    out.push(M("iron", S(k.slabOf({ ...g, r: 0.5 }, C.DECK_Z - 9, 9, P, 2), { tone: "hi" })));
+    out.push((S(k.slabOf({ ...g, r: 0.5 }, C.DECK_Z - 9, 9, P, 2), { tone: "hi" })));
   }
-  out.push(M("steel", S(k.slabOf(C.DECK, C.DECK_Z, C.DECK_H, P, 4, 0.6), { tone: "hi" }) + Ln(k.planOutline(k.insetPlan(C.DECK, 3), C.DECK_Z + C.DECK_H, P, 4), { tone: "faint" })));
+  out.push((S(k.slabOf(C.DECK, C.DECK_Z, C.DECK_H, P, 4, 0.6), { tone: "hi" }) + Ln(k.planOutline(k.insetPlan(C.DECK, 3), C.DECK_Z + C.DECK_H, P, 4), { tone: "faint" })));
   out.push(D(k.corners(C.DECK, 6).map(([x, y]) => at([x, y, C.DECK_Z + C.DECK_H])), { size: 0.5 }));
   out.push(`<path class="so-void" d="${k.ring(C.A[0], C.A[1], C.HOLE_R, C.DECK_Z + C.DECK_H, P, 48)}"/>`);
   const F = L.frameAlong([C.A[0], C.A[1], C.CAR_Z], [0, 0, 1]);
-  out.push(M("brass", S(L.ringBand(0, C.CAR_TOP - C.CAR_Z, C.CAR_IN, C.CAR_R, F, P, { hole: [C.CAR_TOP - C.CAR_Z, C.CAR_IN] }), { tone: "hi", crease: "lo" })));
+  out.push((S(L.ringBand(0, C.CAR_TOP - C.CAR_Z, C.CAR_IN, C.CAR_R, F, P, { hole: [C.CAR_TOP - C.CAR_Z, C.CAR_IN] }), { tone: "hi", crease: "lo" })));
   out.push(`<path class="so-void" d="${k.ring(C.A[0], C.A[1], C.CAR_IN, C.CAR_TOP, P, 48)}"/>`);
-  out.push(M("brass", Ln(k.ring(C.A[0], C.A[1], C.CAR_R - 4.2, C.CAR_TOP, P, 64), { tone: "faint" }) + Ln(k.knurl(C.A[0], C.A[1], C.CAR_R, C.CAR_Z, C.CAR_TOP, 60, P, 0), { tone: "faint" })));
+  out.push((Ln(k.ring(C.A[0], C.A[1], C.CAR_R - 4.2, C.CAR_TOP, P, 64), { tone: "faint" }) + Ln(k.knurl(C.A[0], C.A[1], C.CAR_R, C.CAR_Z, C.CAR_TOP, 60, P, 0), { tone: "faint" })));
   return out.join("");
 }
 
 function crankStatic(front) {
   const [px, py, pz] = C.PIVOT;
-  if (!front) return M("iron", S(k.slabOf({ x: px - 3, y: py - 3.6, w: 6, d: 1.2, r: 0.4 }, pz - 3, C.LID_Z - pz + 3, P, 2), { tone: "hi" }));
-  return M("iron", [
+  if (!front) return (S(k.slabOf({ x: px - 3, y: py - 3.6, w: 6, d: 1.2, r: 0.4 }, pz - 3, C.LID_Z - pz + 3, P, 2), { tone: "hi" }));
+  return ([
     S(rodAlong([px, py - 3.6, pz], [0, 1, 0], [1, 0, 0], 1.1, 0, 7.2, 10), { tone: "mid" }),
     S(k.slabOf({ x: px - 3, y: py + 2.4, w: 6, d: 1.2, r: 0.4 }, pz - 3, C.LID_Z - pz + 3, P, 2), { tone: "mid" }),
     D([at([px, py + 3.6, pz])], { size: 0.5, tone: "hi" }),
@@ -317,14 +319,14 @@ function crankStatic(front) {
 function wheelBack() {
   const W = C.WHEEL, y = W.y, z = W.z;
   const out = [];
-  out.push(M("brass", S(rodAlong([C.PIN.x0, y, z], [1, 0, 0], [0, 1, 0], C.PIN.r, 0, C.PIN.x1 - C.PIN.x0, 16), { tone: "hi", crease: "lo" })));
+  out.push((S(rodAlong([C.PIN.x0, y, z], [1, 0, 0], [0, 1, 0], C.PIN.r, 0, C.PIN.x1 - C.PIN.x0, 16), { tone: "hi", crease: "lo" })));
   out.push(`<g data-part="pinion">${dyn0.pinion}</g>`);
-  out.push(M("iron", S(rodAlong([C.PIN.x1, y, z], [1, 0, 0], [0, 1, 0], 1.2, 0, 3, 8), { tone: "hi" }) + S(k.slabOf({ x: 18, y: y - 4, w: 4, d: 8, r: 0.8 }, C.FLOOR, 76 - C.FLOOR, P, 3, 0.4), { tone: "hi" })));
-  out.push(M("steel", S(rodAlong([17.4, y, z], [1, 0, 0], [0, 1, 0], 3.2, 0, 5.2, 12), { tone: "hi" })));
+  out.push((S(rodAlong([C.PIN.x1, y, z], [1, 0, 0], [0, 1, 0], 1.2, 0, 3, 8), { tone: "hi" }) + S(k.slabOf({ x: 18, y: y - 4, w: 4, d: 8, r: 0.8 }, C.FLOOR, 76 - C.FLOOR, P, 3, 0.4), { tone: "hi" })));
+  out.push((S(rodAlong([17.4, y, z], [1, 0, 0], [0, 1, 0], 3.2, 0, 5.2, 12), { tone: "hi" })));
   out.push(D([at([22.6, y, z + 2]), at([22.6, y, z - 2])], { size: 0.45 }));
-  out.push(M("iron", S(rodAlong([22.6, y, z], [1, 0, 0], [0, 1, 0], 1.2, 0, W.x0 - 22.6, 8), { tone: "hi" }) + Ln(ringYZ(W.x0, y, z, W.r), { tone: "hi" })));
+  out.push((S(rodAlong([22.6, y, z], [1, 0, 0], [0, 1, 0], 1.2, 0, W.x0 - 22.6, 8), { tone: "hi" }) + Ln(ringYZ(W.x0, y, z, W.r), { tone: "hi" })));
   out.push(`<g data-part="spokes">${dyn0.spokes}</g>`);
-  out.push(M("steel", S(rodAlong([W.x0 - 0.8, y, z], [1, 0, 0], [0, 1, 0], 3.5, 0, 1.6, 12), { tone: "hi" })));
+  out.push((S(rodAlong([W.x0 - 0.8, y, z], [1, 0, 0], [0, 1, 0], 3.5, 0, 1.6, 12), { tone: "hi" })));
   out.push(`<g data-part="rungs">${dyn0.rungs}</g>`);
   return out.join("");
 }
@@ -332,8 +334,8 @@ function wheelBack() {
 function wheelFront() {
   const W = C.WHEEL, y = W.y, z = W.z;
   const out = [];
-  out.push(M("iron", Ln(ringYZ(W.x1, y, z, W.r), { tone: "hi" }) + S(rodAlong([W.x1, y, z], [1, 0, 0], [0, 1, 0], 1.2, 0, 1.6, 8), { tone: "hi" })));
-  out.push(M("steel", S(rodAlong([W.x1 + 1.6, y, z], [1, 0, 0], [0, 1, 0], 2.2, 0, 1.6, 12), { tone: "hi" })));
+  out.push((Ln(ringYZ(W.x1, y, z, W.r), { tone: "hi" }) + S(rodAlong([W.x1, y, z], [1, 0, 0], [0, 1, 0], 1.2, 0, 1.6, 8), { tone: "hi" })));
+  out.push((S(rodAlong([W.x1 + 1.6, y, z], [1, 0, 0], [0, 1, 0], 2.2, 0, 1.6, 12), { tone: "hi" })));
   out.push(D([at([W.x1 + 3.2, y, z])], { size: 0.5, tone: "hi" }));
   return out.join("");
 }
@@ -341,14 +343,14 @@ function wheelFront() {
 function lid() {
   const out = [];
   const [ax, ay] = C.A;
-  out.push(M("steel", S(k.cylinder(ax, ay, 6, 117, C.LID_Z - 117, P, 32), { tone: "hi", crease: "none" }) + Ln(k.sideArc(ax, ay, 6, 121, P, 20), { tone: "faint" })));
+  out.push((S(k.cylinder(ax, ay, 6, 117, C.LID_Z - 117, P, 32), { tone: "hi", crease: "none" }) + Ln(k.sideArc(ax, ay, 6, 121, P, 20), { tone: "faint" })));
   const ring = [[-50, -50], [50, -50], [50, -30], [8, -30], [8, 8], [-28, 8], [-28, -30], [-50, -30]];
-  out.push(M("shell", S(k.extrude(ring, C.LID_Z, C.LID_H, P, { convex: false }), { tone: "mid", crease: "faint" })));
+  out.push((S(k.extrude(ring, C.LID_Z, C.LID_H, P, { convex: false }), { tone: "mid", crease: "faint" })));
   out.push(D([[-46, -46], [46, -46], [46, -34], [4, 4], [-24, 4], [-46, -34]].map(([x, y]) => at([x, y, C.LID_Z + C.LID_H])), { size: 0.5 }));
-  out.push(M("shell", Ln(k.segment([-50, -38, C.LID_Z + C.LID_H], [50, -38, C.LID_Z + C.LID_H], P), { tone: "faint" })));
-  out.push(M("plastic", S(k.cylinder(36, -42, 2.6, C.LID_Z + C.LID_H, 1.2, P, 20), { tone: "hi" })));
+  out.push((Ln(k.segment([-50, -38, C.LID_Z + C.LID_H], [50, -38, C.LID_Z + C.LID_H], P), { tone: "faint" })));
+  out.push((S(k.cylinder(36, -42, 2.6, C.LID_Z + C.LID_H, 1.2, P, 20), { tone: "hi" })));
   out.push(`<g data-part="led">${S(k.cylinder(36, -42, 1.6, C.LID_Z + C.LID_H + 1.2, 0.8, P, 16), { tone: "hi", lit: true })}</g>`);
-  out.push(M("steel", S(k.cylinder(ax, ay, 8, C.LID_Z + C.LID_H, 4, P, 40, 0.5), { tone: "hi" }) + Ln(k.knurl(ax, ay, 8, C.LID_Z + C.LID_H, C.LID_Z + C.LID_H + 4, 48, P, 0), { tone: "faint" })));
+  out.push((S(k.cylinder(ax, ay, 8, C.LID_Z + C.LID_H, 4, P, 40, 0.5), { tone: "hi" }) + Ln(k.knurl(ax, ay, 8, C.LID_Z + C.LID_H, C.LID_Z + C.LID_H + 4, 48, P, 0), { tone: "faint" })));
   out.push(`<path class="so-void" d="${k.ring(ax, ay, 4.6, C.LID_Z + C.LID_H + 4, P, 32)}"/>`);
   return out.join("");
 }
@@ -357,15 +359,15 @@ const collarRim = Ln(k.sideArc(C.A[0], C.A[1], 4.7, C.LID_Z + C.LID_H + 4, P, 24
 
 function room() {
   const out = [];
-  out.push(M("wall", S(k.slabOf({ x: -121, y: -122, w: 236, d: 6, r: 0.6 }, -19, ROOM_TOP + 19, P, 2), { tone: "mid" })));
-  out.push(M("wall", Ln(Array.from({ length: 19 }, (_, i) => k.segment([-112 + i * 12, -116, -5], [-112 + i * 12, -116, ROOM_TOP], P)).join(""), { tone: "faint" })));
-  out.push(M("wall", S(k.slabOf({ x: -127, y: -122, w: 6, d: 152, r: 0.6 }, -19, ROOM_TOP + 19, P, 2), { tone: "mid" })));
-  out.push(M("wall", Ln(Array.from({ length: 12 }, (_, i) => k.segment([-121, -108 + i * 12, -5], [-121, -108 + i * 12, ROOM_TOP], P)).join(""), { tone: "faint" })));
+  out.push((S(k.slabOf({ x: -121, y: -122, w: 236, d: 6, r: 0.6 }, -19, ROOM_TOP + 19, P, 2), { tone: "mid" })));
+  out.push((Ln(Array.from({ length: 19 }, (_, i) => k.segment([-112 + i * 12, -116, -5], [-112 + i * 12, -116, ROOM_TOP], P)).join(""), { tone: "faint" })));
+  out.push((S(k.slabOf({ x: -127, y: -122, w: 6, d: 152, r: 0.6 }, -19, ROOM_TOP + 19, P, 2), { tone: "mid" })));
+  out.push((Ln(Array.from({ length: 12 }, (_, i) => k.segment([-121, -108 + i * 12, -5], [-121, -108 + i * 12, ROOM_TOP], P)).join(""), { tone: "faint" })));
   const board = { x: 52, y: -116, w: 56, d: 2, r: 0.6 };
-  out.push(M("desk", S(k.slabOf(board, 92, 44, P, 2), { tone: "mid" }) + Ln(ringY(-114, 55, 105, 95, 133, 1.5), { tone: "faint" })));
+  out.push((S(k.slabOf(board, 92, 44, P, 2), { tone: "mid" }) + Ln(ringY(-114, 55, 105, 95, 133, 1.5), { tone: "faint" })));
   const notes = [[58, 112, 16, 14], [78, 104, 14, 18], [94, 116, 10, 12], [60, 98, 12, 10]];
-  out.push(M("paper", notes.map(([x, z, w, h]) => S(k.slabOf({ x, y: -114, w, d: 0.5, r: 0.2 }, z, h, P, 2), { tone: "mid" })).join("")));
-  out.push(M("plastic", notes.map(([x, z, w, h]) => S(L.sphereOf([x + w / 2, -113.2, z + h - 2], 1.1, P, { steps: 16 }), { tone: "hi" })).join("")));
+  out.push((notes.map(([x, z, w, h]) => S(k.slabOf({ x, y: -114, w, d: 0.5, r: 0.2 }, z, h, P, 2), { tone: "mid" })).join("")));
+  out.push((notes.map(([x, z, w, h]) => S(L.sphereOf([x + w / 2, -113.2, z + h - 2], 1.1, P, { steps: 16 }), { tone: "hi" })).join("")));
   return out.join("");
 }
 
@@ -373,7 +375,7 @@ function desk() {
   const out = [];
   const grain = [];
   for (let y = DESK.y + 9; y < DESK.y + DESK.d - 8; y += 11) grain.push(k.lineOnTop([DESK.x, y], [DESK.x + DESK.w, y], -5, P));
-  out.push(M("desk", S(k.slabOf(DESK, -19, 14, P, 6, 1.2), { tone: "mid" }) + Ln(grain.join(""), { tone: "faint" })));
+  out.push((S(k.slabOf(DESK, -19, 14, P, 6, 1.2), { tone: "mid" }) + Ln(grain.join(""), { tone: "faint" })));
   return out.join("");
 }
 
@@ -381,26 +383,26 @@ function propsBack() {
   const out = [];
   const [cx, cy] = [80, -72];
   const pencils = [[cx - 4, cy - 2, 52, "paint"], [cx + 3, cy - 4, 44, "role-holding"], [cx + 1, cy + 4, 58, "paint"]];
-  out.push(M("plastic", S(k.cylinder(cx, cy, 13, -5, 27, P, 48, 0.6), { tone: "hi" })));
+  out.push((S(k.cylinder(cx, cy, 13, -5, 27, P, 48, 0.6), { tone: "hi" })));
   out.push(`<path class="so-void" d="${k.ring(cx, cy, 11.6, 22, P, 48)}"/>`);
   for (const [x, y, h] of pencils.sort((a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P))) {
     const hex = Array.from({ length: 6 }, (_, i) => [x + 3 * Math.cos((i * Math.PI) / 3 + Math.PI / 6), y + 3 * Math.sin((i * Math.PI) / 3 + Math.PI / 6)]);
-    out.push(M("paint", S(k.extrude(hex, 6, h - 12, P), { tone: "hi" })));
-    out.push(M("steel", S(k.cylinder(x, y, 3.2, h - 6, 4, P, 20), { tone: "hi" })));
-    out.push(M("rubber", S(k.cylinder(x, y, 3, h - 2, 4, P, 20, 0.5), { tone: "hi" })));
+    out.push((S(k.extrude(hex, 6, h - 12, P), { tone: "hi" })));
+    out.push((S(k.cylinder(x, y, 3.2, h - 6, 4, P, 20), { tone: "hi" })));
+    out.push((S(k.cylinder(x, y, 3, h - 2, 4, P, 20, 0.5), { tone: "hi" })));
   }
-  out.push(M("plastic", Ln(k.sideArc(cx, cy, 13, 18, P, 32), { tone: "faint" })));
+  out.push((Ln(k.sideArc(cx, cy, 13, 18, P, 32), { tone: "faint" })));
   const book = { x: -104, y: 52, w: 46, d: 36, r: 2 };
-  out.push(M("paper", S(k.slabOf(book, -5, 2.6, P, 3, 0.4), { tone: "mid" })));
-  out.push(M("paper", Ln(Array.from({ length: 6 }, (_, i) => k.lineOnTop([book.x + 6, book.y + 7 + i * 5], [book.x + book.w, book.y + 7 + i * 5], -2.4, P)).join(""), { tone: "faint" })));
-  out.push(M("rubber", Ln(k.lineOnTop([book.x + 6, book.y], [book.x + 6, book.y + book.d], -2.4, P), { tone: "mid" })));
+  out.push((S(k.slabOf(book, -5, 2.6, P, 3, 0.4), { tone: "mid" })));
+  out.push((Ln(Array.from({ length: 6 }, (_, i) => k.lineOnTop([book.x + 6, book.y + 7 + i * 5], [book.x + book.w, book.y + 7 + i * 5], -2.4, P)).join(""), { tone: "faint" })));
+  out.push((Ln(k.lineOnTop([book.x + 6, book.y], [book.x + 6, book.y + book.d], -2.4, P), { tone: "mid" })));
   out.push(D(Array.from({ length: 7 }, (_, i) => at([book.x + 2.6, book.y + 4 + i * 4.6, -2.4])), { size: 0.6, tone: "mid" }));
   return out.join("");
 }
 
 function propsFront() {
   const e = { x: 64, y: 58, w: 22, d: 12, r: 2.5 };
-  return M("rubber", S(k.slabOf(e, -5, 7, P, 4, 0.8), { tone: "hi" }) + Ln(k.sideSeam(e, -1, P, 4), { tone: "faint" }));
+  return (S(k.slabOf(e, -5, 7, P, 4, 0.8), { tone: "hi" }) + Ln(k.sideSeam(e, -1, P, 4), { tone: "faint" }));
 }
 
 const crew = (spec, pose, part, duty = false) => critterSvg(critter(spec, pose, P), { part, duty });

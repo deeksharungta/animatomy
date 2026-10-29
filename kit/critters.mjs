@@ -1,203 +1,17 @@
+// The Staff Only crew. Each animal is a painted illustration on a 2D rig: authored shapes facing left,
+// standing on y = 0 and about 100 units tall, filled with soft gradients, fur at the edges and strands
+// inside, no outlines. critter(spec, pose, P) places one in the figure's camera: it faces left or right
+// by its heading, shows its back when it walks away, leans, hops, looks up and down, and reaches its paws
+// to points in the world. critterSvg draws it at build time and paintCritter updates it each frame.
 import { iso, depthOf, pathOf } from "./iso-kit.mjs";
-import { sphereOf, solidOf, ringBand, disc, ribsOf, spokesOf, prismOf, frameAlong, frameOf, viewOf, lightOf, pointOf, hullOf, scaleOf, add3, sub3, mul3, unit3, len3, cross3, dot3 } from "./lathe.mjs";
+import { frameAlong, viewOf, lightOf, pointOf, hullOf, add3, mul3, unit3, len3, cross3, dot3 } from "./lathe.mjs";
 
 const TAU = Math.PI * 2;
-const RAD = Math.PI / 180;
 
-export const ROLES = {
-  power: { hex: "#F5C518", word: "power", does: "motors, current, anything that runs" },
-  holding: { hex: "#E5484D", word: "holding", does: "latches, clamps, brakes, grips" },
-  cutting: { hex: "#8E4EC6", word: "cutting", does: "blades, cutters, grinders, shredders" },
-  sensing: { hex: "#3E9BDB", word: "sensing and timing", does: "gauges, thermostats, timers, switches that read" },
-  moving: { hex: "#46A758", word: "moving", does: "carriages, rollers, conveyors, feeders" },
-  heat: { hex: "#F76B15", word: "heat", does: "heating elements, igniters" },
-  fluid: { hex: "#12A594", word: "fluid", does: "pumps, hoses, valves, cooling" },
-  spring: { hex: "#E93D82", word: "spring", does: "springs, launchers, returns" },
-};
-
-export const SPECIES = {
-  hamster: {
-    fur: "#D9A273", belly: "#F4E6D2", dark: "#A8744B",
-    body: { r: 0.27, h: 0.5, z: 0.06, egg: 0.16 },
-    head: { r: 0.22, x: 0.04, z: 0.67 },
-    ears: { kind: "round", r: 0.07, az: 44, el: 50, inner: "pink" },
-    snout: { kind: "cheeks", r: 0.085 },
-    nose: { r: 0.024, c: "pink" },
-    eyes: { r: 0.034, az: 28, el: 14 },
-    blush: true,
-    arms: { len: 0.17, r: 0.048, paw: 0.05, c: "dark" },
-    legs: { r: 0.06, foot: 0.065, c: "dark" },
-    tail: { kind: "stub", r: 0.05 },
-  },
-  mouse: {
-    fur: "#A9A2B4", belly: "#ECE7EF", dark: "#857C91",
-    body: { r: 0.21, h: 0.48, z: 0.06, egg: 0.14 },
-    head: { r: 0.2, x: 0.04, z: 0.66 },
-    ears: { kind: "round", r: 0.1, az: 46, el: 62, inner: "pink" },
-    snout: { kind: "muzzle", r: 0.07, x: 0.17, z: -0.03, c: "belly" },
-    nose: { r: 0.022, c: "pink" },
-    eyes: { r: 0.032, az: 26, el: 14 },
-    blush: true,
-    arms: { len: 0.16, r: 0.04, paw: 0.042, c: "pink" },
-    legs: { r: 0.05, foot: 0.06, c: "pink" },
-    tail: { kind: "thin", r: 0.022, c: "pink" },
-  },
-  squirrel: {
-    fur: "#C8743F", belly: "#F1DCC2", dark: "#9C5428",
-    body: { r: 0.21, h: 0.5, z: 0.06, egg: 0.14 },
-    head: { r: 0.19, x: 0.05, z: 0.68 },
-    ears: { kind: "point", r: 0.05, h: 0.13, az: 40, el: 58, inner: "pink" },
-    snout: { kind: "muzzle", r: 0.065, x: 0.16, z: -0.04, c: "belly" },
-    nose: { r: 0.022, c: "nose" },
-    eyes: { r: 0.033, az: 27, el: 14 },
-    blush: true,
-    arms: { len: 0.17, r: 0.04, paw: 0.045, c: "dark" },
-    legs: { r: 0.055, foot: 0.065, c: "dark" },
-    tail: { kind: "bushy", r: 0.11 },
-  },
-  beaver: {
-    fur: "#A0683F", belly: "#D9B48C", dark: "#6B4A35",
-    body: { r: 0.27, h: 0.52, z: 0.05, egg: 0.18 },
-    head: { r: 0.2, x: 0.04, z: 0.68 },
-    ears: { kind: "round", r: 0.045, az: 62, el: 44, inner: "dark" },
-    snout: { kind: "muzzle", r: 0.09, x: 0.15, z: -0.04, c: "belly" },
-    nose: { r: 0.03, c: "nose" },
-    teeth: true,
-    eyes: { r: 0.032, az: 30, el: 18 },
-    blush: true,
-    arms: { len: 0.17, r: 0.048, paw: 0.05, c: "dark" },
-    legs: { r: 0.06, foot: 0.075, c: "dark" },
-    tail: { kind: "paddle", r: 0.17, c: "dark" },
-  },
-  sloth: {
-    fur: "#9C8572", belly: "#B7A28D", dark: "#5C4838", face: "#EBDFCB",
-    body: { r: 0.22, h: 0.54, z: 0.06, egg: 0.1 },
-    head: { r: 0.2, x: 0.03, z: 0.7 },
-    ears: { kind: "none" },
-    snout: { kind: "none" },
-    mask: true,
-    nose: { r: 0.03, c: "nose" },
-    eyes: { r: 0.03, az: 25, el: 6 },
-    patches: true,
-    blush: true,
-    arms: { len: 0.4, r: 0.05, paw: 0.05, c: "fur", claws: true },
-    legs: { r: 0.06, foot: 0.06, c: "fur" },
-    tail: { kind: "none" },
-  },
-  mole: {
-    fur: "#5E5668", belly: "#776E82", dark: "#4A4352",
-    body: { r: 0.25, h: 0.52, z: 0.06, egg: 0.12 },
-    head: { r: 0.2, x: 0.04, z: 0.68 },
-    ears: { kind: "none" },
-    snout: { kind: "long", r: 0.07, len: 0.16, c: "pink" },
-    nose: { r: 0.03, c: "pinkdark" },
-    eyes: { r: 0.022, az: 30, el: 16 },
-    blush: true,
-    arms: { len: 0.16, r: 0.05, paw: 0.07, c: "pink" },
-    legs: { r: 0.06, foot: 0.065, c: "dark" },
-    tail: { kind: "stub", r: 0.035 },
-  },
-  kangaroo: {
-    fur: "#C9925E", belly: "#EED7B9", dark: "#9E6A3C",
-    body: { r: 0.22, h: 0.56, z: 0.06, egg: 0.22 },
-    head: { r: 0.17, x: 0.05, z: 0.73 },
-    ears: { kind: "point", r: 0.05, h: 0.17, az: 30, el: 62, inner: "pink" },
-    snout: { kind: "muzzle", r: 0.07, x: 0.15, z: -0.03, c: "fur" },
-    nose: { r: 0.025, c: "nose" },
-    eyes: { r: 0.03, az: 30, el: 14 },
-    blush: true,
-    arms: { len: 0.15, r: 0.038, paw: 0.042, c: "fur" },
-    legs: { r: 0.07, foot: 0.08, long: 0.12, c: "dark" },
-    tail: { kind: "thick", r: 0.09 },
-  },
-};
-
-export const MATERIALS = {
-  shell: { hex: "#E3EBE5", use: "housing, lids, covers" },
-  inside: { hex: "#E6ECE6", use: "inner walls and backs of a cutaway" },
-  steel: { hex: "#CBD3DD", use: "decks, plates, brackets, gears" },
-  iron: { hex: "#A9B2BF", use: "axles, posts, pins, heavy parts" },
-  brass: { hex: "#E4D6B4", use: "bushings, bearings, terminals" },
-  plastic: { hex: "#E2D8EC", use: "knobs, buttons, switch bodies" },
-  wood: { hex: "#E8CFAA", use: "pencil wood, shavings, light timber" },
-  desk: { hex: "#C9A27A", use: "desk tops, benches, floors" },
-  wall: { hex: "#EFEBE4", use: "room walls behind the scene" },
-  paint: { hex: "#9FB4D3", use: "the subject's painted body" },
-  rubber: { hex: "#EDBDB6", use: "erasers, feet, grips" },
-  paper: { hex: "#FBF8F1", use: "notebooks, labels, paper" },
-  graphite: { hex: "#4B4B52", use: "pencil lead, dark inserts" },
-};
-
-const FIXED = { eye: "#1E1712", white: "#FFFDF7", pink: "#E7A3A0", pinkdark: "#C9706C", nose: "#2A1D16" };
-
-const hexToHsl = (hex) => {
-  const n = parseInt(hex.slice(1), 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => v / 255);
-  const hi = Math.max(r, g, b), lo = Math.min(r, g, b), l = (hi + lo) / 2;
-  if (hi === lo) return [0, 0, l * 100];
-  const d = hi - lo, s = l > 0.5 ? d / (2 - hi - lo) : d / (hi + lo);
-  const h = hi === r ? (g - b) / d + (g < b ? 6 : 0) : hi === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  return [h * 60, s * 100, l * 100];
-};
-const hsl = (h, s, l) => `hsl(${h.toFixed(0)} ${Math.max(0, Math.min(100, s)).toFixed(0)}% ${Math.max(0, Math.min(100, l)).toFixed(1)}%)`;
-
-export function tokensOf(hex, theme) {
-  const [h, s, l] = hexToHsl(hex);
-  if (theme === "light") {
-    return {
-      paper: hsl(h, s, l), face: hsl(h, s, l + 3), top: hsl(h, s, l + 7),
-      "shade-0": hsl(h, s, l - 13), "shade-1": hsl(h, s, l - 7), "shade-2": hsl(h, s, l - 2), "shade-3": hsl(h, s, l + 4),
-      "lit-top": hsl(h, s, l + 9), "lit-shade": hsl(h, s, l + 1),
-      hi: hsl(h, s * 0.55, Math.min(24, l * 0.35)), mid: hsl(h, s * 0.5, l * 0.6), lo: hsl(h, s * 0.45, l * 0.78), faint: hsl(h, s * 0.4, l - 9),
-    };
-  }
-  const d = Math.max(16, Math.min(44, l * 0.62));
-  const sd = s * 0.78;
-  return {
-    paper: hsl(h, sd, d), face: hsl(h, sd, d + 3), top: hsl(h, sd, d + 7),
-    "shade-0": hsl(h, sd, d - 8), "shade-1": hsl(h, sd, d - 4), "shade-2": hsl(h, sd, d + 1), "shade-3": hsl(h, sd, d + 6),
-    "lit-top": hsl(h, sd, d + 10), "lit-shade": hsl(h, sd, d + 3),
-    hi: hsl(h, s * 0.45, 84), mid: hsl(h, s * 0.45, 64), lo: hsl(h, s * 0.4, 46), faint: hsl(h, sd, d + 10),
-  };
-}
-
-export function paletteOf() {
-  const out = {};
-  for (const [name, sp] of Object.entries(SPECIES)) {
-    for (const key of ["fur", "belly", "dark", "face"]) if (sp[key]) out[`${name}-${key}`] = sp[key];
-  }
-  for (const [name, role] of Object.entries(ROLES)) out[`role-${name}`] = role.hex;
-  for (const [name, mat] of Object.entries(MATERIALS)) out[`mat-${name}`] = mat.hex;
-  return { ...out, ...FIXED };
-}
-
-const tokenCss = (tokens) => Object.entries(tokens).map(([key, value]) => `--anatomy-${key}:${value}`).join(";");
-
-export function crewCss(palette = paletteOf()) {
-  const rules = [
-    `.crew{--anatomy-weight:.8px}`,
-    `.crew[data-duty] .iso-edge{stroke:var(--crew-duty);stroke-width:1.15px}`,
-    `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
-    `.crew-patch{stroke:none;fill:var(--anatomy-top)}`,
-    `.crew-patch[data-shade="mid"]{fill:var(--anatomy-paper)}`,
-    `.crew-gleam{stroke:none;fill:#fffdf7}`,
-  ];
-  for (const [key, hex] of Object.entries(palette)) {
-    rules.push(`.iso [data-c="${key}"]{${tokenCss(tokensOf(hex, "dark"))}}`);
-    rules.push(`.iso[data-theme="light"] [data-c="${key}"],.iso [data-theme="light"] [data-c="${key}"]{${tokenCss(tokensOf(hex, "light"))}}`);
-  }
-  rules.push(`.iso [data-c="eye"] .iso-edge,.iso [data-c="nose"] .iso-edge{stroke:var(--anatomy-shade-0)}`);
-  return rules.join("\n");
-}
-
-const rot = (v, axis, a) => {
-  const c = Math.cos(a), s = Math.sin(a), k = unit3(axis);
-  return add3(add3(mul3(v, c), mul3(cross3(k, v), s)), mul3(k, dot3(k, v) * (1 - c)));
-};
-
+// ---------- an ellipsoid for machine parts (eggs, domes, piles), in kit solid form
 const BANDS = [0, 0.2, 0.42, 0.62];
 
-export function ellipsoidOf(centre, [a, b, c], P, { steps = 32, clip = null } = {}) {
+export function ellipsoidOf(centre, [a, b, c], P, { steps = 32, clip = null, bands = null, shade0 = true } = {}) {
   const bc = cross3(b, c), ca = cross3(c, a), ab = cross3(a, b);
   const det = dot3(a, bc);
   const inv = (w) => [dot3(bc, w) / det, dot3(ca, w) / det, dot3(ab, w) / det];
@@ -220,392 +34,1025 @@ export function ellipsoidOf(centre, [a, b, c], P, { steps = 32, clip = null } = 
   const cut = Nu ? circle(Nu, Hc) : [];
   const outline = pathOf(hullOf([...rim.filter(inside), ...cut].map(map)), true);
   const capOf = (t) => {
+    if (t == null || t >= 1) return "";
+    if (t <= -1) return outline;
     const pts = rim.filter((u) => dot3(u, Lu) >= t && inside(u));
     for (const u of circle(Lu, t)) if (dot3(u, Vu) >= -1e-9 && inside(u)) pts.push(u);
     for (const u of cut) if (dot3(u, Vu) >= -1e-9 && dot3(u, Lu) >= t) pts.push(u);
     if (dot3(Vu, Lu) > t && inside(Vu)) pts.push(Vu);
     return pts.length > 2 ? pathOf(hullOf(pts.map(map)), true) : "";
   };
-  return { fill: outline, outline, crease: "", top: "", shades: [outline, capOf(BANDS[1]), capOf(BANDS[2]), capOf(BANDS[3])], seamless: true };
+  const bs = bands ?? BANDS.slice(1);
+  return { fill: outline, outline, crease: "", top: "", shades: [shade0 ? outline : "", capOf(bs[0]), capOf(bs[1]), capOf(bs[2])], seamless: true };
 }
 
-const along = (centre, axis, half, r0, r1 = r0) => {
-  const F = frameAlong(centre, axis);
-  return [centre, [mul3(F.a, half), mul3(F.u, r0), mul3(F.v, r1)]];
-};
+// ---------- drawing
+const RAD = Math.PI / 180;
+const n1 = (v) => { const r = Math.round(v * 10) / 10; return Object.is(r, -0) ? "0" : String(r); };
+const pt = (p) => `${n1(p[0])},${n1(p[1])}`;
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const add = (a, b, t = 1) => [a[0] + b[0] * t, a[1] + b[1] * t];
+const len = (a) => Math.hypot(a[0], a[1]);
+const unit = (a) => { const l = len(a) || 1; return [a[0] / l, a[1] / l]; };
+const rotp = ([x, y], a, [cx, cy] = [0, 0]) => { const c = Math.cos(a), s = Math.sin(a), dx = x - cx, dy = y - cy; return [cx + dx * c - dy * s, cy + dx * s + dy * c]; };
 
-const ellipseOn = (c, n, r, P, { squash = 1, spin = 0, steps = 16, lift = 0 } = {}) => {
-  const F = frameAlong(add3(c, mul3(unit3(n), lift)), n);
-  const u = rot(F.u, F.a, spin), v = rot(F.v, F.a, spin);
-  const pts = Array.from({ length: steps }, (_, i) => {
-    const t = (i / steps) * TAU;
-    return iso(add3(F.o, add3(mul3(u, r * Math.cos(t)), mul3(v, r * squash * Math.sin(t)))), P);
-  });
-  return pathOf(pts, true);
-};
-
-const arcOn = (c, n, r, P, { bend = 1, spin = 0, steps = 9 } = {}) => {
-  const F = frameAlong(c, n);
-  const u = rot(F.u, F.a, spin), v = rot(F.v, F.a, spin);
-  const pts = Array.from({ length: steps }, (_, i) => {
-    const t = Math.PI * (i / (steps - 1));
-    return iso(add3(c, add3(mul3(u, r * Math.cos(t)), mul3(v, -bend * r * 0.55 * Math.sin(t)))), P);
-  });
-  return pathOf(pts);
-};
-
-const bandOnSphere = (c, axis, R, z0, z1, P, V, steps = 40) => {
-  const F = frameAlong(c, axis);
-  const ring = (z) => {
-    const rho = Math.sqrt(Math.max(0, R * R - z * z)) * 1.035;
-    return Array.from({ length: steps + 1 }, (_, i) => {
-      const t = (i / steps) * TAU;
-      const radial = add3(mul3(F.u, Math.cos(t)), mul3(F.v, Math.sin(t)));
-      return { p: add3(add3(c, mul3(F.a, z)), mul3(radial, rho)), seen: dot3(radial, V) > -0.05 };
-    });
+function rng(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  const top = ring(z1), bottom = ring(z0);
-  const seen = top.map((q, i) => q.seen && bottom[i].seen);
-  let start = seen.findIndex((s, i) => s && !seen[(i - 1 + steps) % steps]);
-  if (start < 0) start = 0;
-  const idx = [];
-  for (let k = 0; k <= steps; k++) {
-    const i = (start + k) % steps;
-    if (!seen[i]) break;
-    idx.push(i);
+}
+
+// A smooth curve through points (Catmull-Rom as cubic Béziers). A third element marks a corner.
+function curve(pts, closed = true, steps = 8) {
+  const n = pts.length;
+  const at = (i) => pts[closed ? ((i % n) + n) % n : Math.max(0, Math.min(n - 1, i))];
+  const segs = [];
+  for (let i = 0; i < (closed ? n : n - 1); i++) {
+    const p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
+    const c1 = p1[2] ? p1 : [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = p2[2] ? p2 : [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    segs.push([p1, c1, c2, p2]);
   }
-  if (idx.length < 2) return "";
-  const pts = [...idx.map((i) => iso(top[i].p, P)), ...idx.reverse().map((i) => iso(bottom[i].p, P))];
-  return pathOf(pts, true);
-};
-
-export function critter(spec, pose, P) {
-  const sp = typeof spec.species === "string" ? SPECIES[spec.species] : spec.species;
-  const name = typeof spec.species === "string" ? spec.species : spec.name;
-  if (!sp) throw new Error(`unknown species ${spec.species}`);
-  const H = spec.size;
-  const V = viewOf(P);
-  const Lgt = lightOf(P);
-  const parts = [];
-  const cOf = (key) => (["fur", "belly", "dark", "face"].includes(key) ? `${name}-${key}` : key);
-  const front = (c, r) => depthOf(add3(c, mul3(V, r)), P);
-  const put = (part) => parts.push(part);
-  const ball = (key, c, at, r, extra = 0) => put({ key, kind: "solid", c, paths: sphereOf(at, r, P, { steps: Math.max(16, Math.min(48, Math.round(r * scaleOf(P) * 4))) }), depth: front(at, r) + extra, at, r });
-  const blob = (key, c, beads, split = null) => {
-    const groups = split ? [beads.filter((b) => dot3(sub3(b.at, split), V) < 0), beads.filter((b) => dot3(sub3(b.at, split), V) >= 0)] : [beads];
-    groups.forEach((list, g) => {
-      if (!list.length) return;
-      const sorted = [...list].sort((a, b) => front(a.at, a.r) - front(b.at, b.r));
-      const balls = sorted.map((b) => sphereOf(b.at, b.r, P, { steps: Math.max(14, Math.min(28, Math.round(b.r * scaleOf(P) * 3))) }));
-      const depth = split ? (g === 0 ? Math.min(...list.map((b) => front(b.at, 0))) : Math.max(...list.map((b) => front(b.at, b.r)))) : Math.max(...list.map((b) => front(b.at, b.r * 0.5)));
-      put({ key: `${key}${g}`, kind: "blob", c, balls, depth });
-    });
-  };
-
-  const heading = (pose.heading ?? 0) * RAD;
-  const f0 = [Math.cos(heading), Math.sin(heading), 0];
-  const side = [-Math.sin(heading), Math.cos(heading), 0];
-  const up0 = [0, 0, 1];
-  const lean = (pose.lean ?? 0) * RAD;
-  const f = add3(mul3(f0, Math.cos(lean)), mul3(up0, -Math.sin(lean)));
-  const up = add3(mul3(up0, Math.cos(lean)), mul3(f0, Math.sin(lean)));
-  const squash = pose.squash ?? 0;
-  const sx = 1 + 0.1 * squash, sz = 1 - 0.14 * squash;
-  const base = add3(pose.at, [0, 0, (pose.hop ?? 0)]);
-  const hipZ = sp.body.z + 0.08;
-  const hip = add3(base, mul3(up0, hipZ * H));
-  const W = ([x, y, z]) => add3(hip, add3(add3(mul3(f, x * H * sx), mul3(side, y * H * sx)), mul3(up, (z - hipZ) * H * sz)));
-  const D = ([x, y, z]) => unit3(add3(add3(mul3(f, x), mul3(side, y)), mul3(up, z)));
-
-  const ell = (key, c, centre, axes, extra = 0, opts = {}) => {
-    const r = Math.max(...axes.map(len3));
-    put({ key, kind: "solid", c, paths: ellipsoidOf(centre, axes, P, { steps: Math.max(18, Math.min(44, Math.round(r * scaleOf(P) * 3))), ...opts }), depth: front(centre, r) + extra });
-  };
-  const B = sp.body;
-  const bodyBase = W([0, 0, B.z]);
-  const bodyLen = B.h * H * sz;
-  const R = B.r * H * sx;
-  const bodyMid = add3(bodyBase, mul3(up, bodyLen * 0.5));
-  const bodyDepth = front(bodyMid, R);
-  ell("body", cOf("fur"), bodyMid, [mul3(f, R), mul3(side, R), mul3(up, bodyLen * 0.5)]);
-  if ((B.egg ?? 0) > 0.12) ell("hips", cOf("fur"), add3(bodyBase, mul3(up, bodyLen * 0.3)), [mul3(f, R * 1.06), mul3(side, R * 1.06), mul3(up, bodyLen * 0.3)], 0.0002);
-
-  const bellyZ = -0.12;
-  const bellyN = unit3(add3(f, mul3(up, 0.15)));
-  const bellyAt = add3(add3(bodyMid, mul3(up, bodyLen * 0.5 * bellyZ)), mul3(f, R * Math.sqrt(1 - bellyZ * bellyZ) * 0.98));
-  if (dot3(bellyN, V) > 0.05) put({ key: "belly", kind: "patch", c: cOf("belly"), d: ellipseOn(bellyAt, bellyN, B.r * H * 0.5, P, { squash: 1.35 }), depth: bodyDepth + 0.001, shade: "mid", edge: "faint" });
-
-  const Hd = sp.head;
-  const yaw = (pose.look?.[0] ?? 0) * RAD, pitch = (pose.look?.[1] ?? 0) * RAD;
-  const hf0 = rot(f, up, yaw);
-  const hs = rot(side, up, yaw);
-  const hf = rot(hf0, hs, -pitch);
-  const hu = rot(up, hs, -pitch);
-  const headC = W([Hd.x, 0, Hd.z]);
-  const hr = Hd.r * H;
-  const headDepth = front(headC, hr);
-  const HD = ([x, y, z]) => unit3(add3(add3(mul3(hf, x), mul3(hs, y)), mul3(hu, z)));
-  const onHead = (az, el, out = 1) => {
-    const dir = HD([Math.cos(el * RAD) * Math.cos(az * RAD), Math.cos(el * RAD) * Math.sin(az * RAD), Math.sin(el * RAD)]);
-    return { dir, p: add3(headC, mul3(dir, hr * out)) };
-  };
-  ball("head", cOf("fur"), headC, hr);
-  const flat = (p, axis, r, t = 0.2) => along(p, axis, r * t, r, r);
-
-  const feature = (key, colour, p, n, r, extra, opt) => {
-    if (dot3(n, V) > 0.06) put({ key, kind: "patch", c: colour, d: ellipseOn(p, n, r, P, opt), depth: headDepth + extra, shade: "mid", edge: opt?.edge ?? "faint" });
-  };
-
-  if (sp.mask) {
-    const m = onHead(0, -4);
-    feature("mask", cOf("face"), m.p, m.dir, hr * 0.7, 0.0005, { squash: 0.78 });
-  }
-  if (sp.patches) {
-    for (const s of [-1, 1]) {
-      const e = onHead(s * sp.eyes.az, sp.eyes.el);
-      feature(`patch${s}`, cOf("dark"), e.p, e.dir, hr * 0.17, 0.0007, { squash: 0.6, spin: -s * 0.35 });
+  const d = `M${pt(pts[0])}` + segs.map((s) => `C${pt(s[1])} ${pt(s[2])} ${pt(s[3])}`).join("") + (closed ? "Z" : "");
+  const poly = [];
+  for (const [a, b, c, e] of segs) {
+    for (let j = 0; j < steps; j++) {
+      const t = j / steps, u = 1 - t;
+      poly.push([u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * e[0], u * u * u * a[1] + 3 * u * u * t * b[1] + 3 * u * t * t * c[1] + t * t * t * e[1]]);
     }
   }
+  if (!closed) poly.push(pts[n - 1]);
+  return { d, poly };
+}
 
-  const E = spec.wear === "hat" || spec.wear === "cap" ? { kind: "none" } : sp.ears;
-  if (E.kind === "round") {
-    for (const s of [-1, 1]) {
-      const at = onHead(s * E.az, E.el, 0.93);
-      const axis = unit3(add3(mul3(hf, 0.85), mul3(at.dir, 0.35)));
-      const er = E.r * H;
-      const dep = front(at.p, er);
-      ell(`ear${s}`, cOf("fur"), ...flat(at.p, axis, er));
-      if (dot3(axis, V) > 0.1) put({ key: `earIn${s}`, kind: "patch", c: E.inner === "dark" ? cOf("dark") : "pink", d: ellipseOn(add3(at.p, mul3(axis, er * 0.19)), axis, er * 0.6, P), depth: dep + 0.0005 });
-    }
-  } else if (E.kind === "point") {
-    for (const s of [-1, 1]) {
-      const at = onHead(s * E.az, E.el, 0.85);
-      const axis = unit3(add3(mul3(at.dir, 0.7), mul3(hu, 0.6)));
-      const er = E.r * H, eh = E.h * H;
-      const tipC = add3(at.p, mul3(axis, eh * 0.5));
-      const [, axes] = along(tipC, axis, eh * 0.55, er, er * 0.55);
-      ell(`ear${s}`, cOf("fur"), tipC, axes);
-    }
+const area = (poly) => { let s = 0; for (let i = 0; i < poly.length; i++) { const a = poly[i], b = poly[(i + 1) % poly.length]; s += a[0] * b[1] - b[0] * a[1]; } return s / 2; };
+function inside(poly, x, y) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
   }
+  return c;
+}
+const bounds = (poly) => poly.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [1e9, 1e9, -1e9, -1e9]);
 
-  const N = sp.snout;
-  let noseAt = onHead(0, -8, 1.0).p, noseDir = hf;
-  if (N.kind === "cheeks") {
-    for (const s of [-1, 1]) {
-      const at = add3(headC, add3(add3(mul3(hf, hr * 0.78), mul3(hs, s * hr * 0.42)), mul3(hu, -hr * 0.38)));
-      ball(`cheek${s}`, cOf("belly"), at, N.r * H, 0);
-    }
-    noseAt = add3(headC, add3(mul3(hf, hr * 1.0), mul3(hu, -hr * 0.12)));
-  } else if (N.kind === "muzzle") {
-    const at = add3(headC, add3(mul3(hf, hr * 0.82 + (N.x ?? 0) * 0), mul3(hu, (N.z ?? -0.04) * H)));
-    const mr = N.r * H;
-    ball("muzzle", cOf(N.c ?? "belly"), at, mr, 0);
-    noseAt = add3(at, add3(mul3(hf, mr * 0.92), mul3(hu, mr * 0.35)));
-  } else if (N.kind === "long") {
-    const base = add3(headC, add3(mul3(hf, hr * 0.7), mul3(hu, -hr * 0.18)));
-    const tip = add3(base, mul3(hf, N.len * H));
-    ell("snout", N.c ?? "pink", ...along(mul3(add3(base, tip), 0.5), hf, N.len * H * 0.6, N.r * H, N.r * H * 0.85));
-    noseAt = add3(tip, mul3(hf, N.r * H * 0.45));
+function resample(poly, gap, closed = true) {
+  const out = [];
+  let carry = 0;
+  const n = poly.length;
+  for (let i = 0; i < (closed ? n : n - 1); i++) {
+    const a = poly[i], b = poly[(i + 1) % n];
+    const l = len(sub(b, a));
+    let t = carry;
+    while (t < l) { out.push(add(a, sub(b, a), t / l)); t += gap; }
+    carry = t - l;
   }
-  const nr = sp.nose.r * H;
-  ball("nose", sp.nose.c, noseAt, nr, 0);
-  if (sp.teeth && dot3(hf, V) > -0.2) {
-    const at = add3(noseAt, add3(mul3(hu, -nr * 3.2), mul3(hf, -nr * 0.6)));
-    const F = frameOf(at, hf, unit3(cross3(hu, hf)), hu);
-    const tw = nr * 1.9, th = nr * 2.4;
-    const paths = prismOf(F, [[-tw, 0], [tw, 0], [tw, -th], [-tw, -th]], -nr * 0.25, nr * 0.25, P);
-    put({ key: "teeth", kind: "solid", c: "white", paths, depth: front(at, nr * 2) + 0.002 });
-  }
+  return out;
+}
 
+// Fur along an edge: short strokes that start just inside and lean with the coat's flow.
+// Returns three paths split by how the edge faces the light.
+function tufts(poly, { len: L = 2, gap = 1.5, flow = [0.35, 1], lean = 0.55, seed = 1, light = [-0.6, -0.8], only = null }) {
+  const r = rng(seed);
+  const sgn = area(poly) > 0 ? 1 : -1;
+  const pts = resample(poly, gap);
+  const out = { lit: "", mid: "", shade: "" };
+  const fl = unit(flow);
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i], q = pts[(i + 1) % pts.length], o = pts[(i - 1 + pts.length) % pts.length];
+    const t = unit(sub(q, o));
+    const nrm = [t[1] * sgn, -t[0] * sgn];
+    if (only && !only(p, nrm)) continue;
+    const l = L * (0.65 + 0.7 * r());
+    const dir = unit(add(nrm, fl, lean));
+    const b = add(p, nrm, -l * 0.55);
+    const tip = add(b, dir, l * 1.25);
+    const c = add(add(b, dir, l * 0.6), [-dir[1], dir[0]], (r() - 0.5) * l * 0.5);
+    const lit = nrm[0] * light[0] + nrm[1] * light[1];
+    const key = lit > 0.3 ? "lit" : lit < -0.35 ? "shade" : "mid";
+    out[key] += `M${pt(b)}Q${pt(c)} ${pt(tip)}`;
+  }
+  return out;
+}
+
+// Hair strands inside a shape, along the coat's flow.
+function strands(poly, { count = 60, len: L = 4, flow = [0.35, 1], seed = 7, light = [-0.6, -0.8] }) {
+  const r = rng(seed);
+  const [x0, y0, x1, y1] = bounds(poly);
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, w = x1 - x0, h = y1 - y0;
+  const fl = unit(flow);
+  const out = { lit: "", shade: "" };
+  let tries = 0, made = 0;
+  while (made < count && tries < count * 8) {
+    tries++;
+    const x = x0 + r() * w, y = y0 + r() * h;
+    if (!inside(poly, x, y)) continue;
+    made++;
+    const l = L * (0.6 + 0.8 * r());
+    const bend = (r() - 0.5) * 0.6;
+    const d = unit(add(fl, [-fl[1], fl[0]], bend));
+    const a = [x, y], b = add(a, d, l), c = add(add(a, d, l * 0.5), [-d[1], d[0]], bend * l * 0.4);
+    const side = ((x - cx) / w) * light[0] + ((y - cy) / h) * light[1];
+    out[side > 0.12 && r() < 0.8 ? "lit" : "shade"] += `M${pt(a)}Q${pt(c)} ${pt(b)}`;
+  }
+  return out;
+}
+
+// A limb outline around a centreline with a width at each point; round at both ends.
+function limb(cl, ws) {
+  const left = [], right = [];
+  for (let i = 0; i < cl.length; i++) {
+    const t = unit(sub(cl[Math.min(cl.length - 1, i + 1)], cl[Math.max(0, i - 1)]));
+    const nrm = [-t[1], t[0]];
+    left.push(add(cl[i], nrm, ws[i] / 2));
+    right.push(add(cl[i], nrm, -ws[i] / 2));
+  }
+  const t0 = unit(sub(cl[1], cl[0])), t1 = unit(sub(cl[cl.length - 1], cl[cl.length - 2]));
+  const tip = add(cl[cl.length - 1], t1, ws[ws.length - 1] * 0.45);
+  const root = add(cl[0], t0, -ws[0] * 0.45);
+  return [root, ...left, tip, ...right.reverse()];
+}
+
+// Two-bone reach: shoulder to target, elbow bent toward `bend`.
+function reach2(S, T, l1, l2, bend = [0.4, 1]) {
+  let d = sub(T, S);
+  let dist = len(d);
+  const max = l1 + l2 - 0.01, min = Math.abs(l1 - l2) + 0.5;
+  const short = Math.max(0, dist - (l1 + l2));
+  if (dist > max) { d = unit(d); T = add(S, d, max); dist = max; }
+  if (dist < min) { d = unit(d); T = add(S, d, min); dist = min; }
+  const phi = Math.atan2(T[1] - S[1], T[0] - S[0]);
+  const a = Math.acos(Math.max(-1, Math.min(1, (l1 * l1 + dist * dist - l2 * l2) / (2 * l1 * dist))));
+  const e1 = [S[0] + l1 * Math.cos(phi + a), S[1] + l1 * Math.sin(phi + a)];
+  const e2 = [S[0] + l1 * Math.cos(phi - a), S[1] + l1 * Math.sin(phi - a)];
+  const score = (e) => (e[0] - S[0]) * bend[0] + (e[1] - S[1]) * bend[1];
+  return { E: score(e1) >= score(e2) ? e1 : e2, W: T, short };
+}
+
+// ---------- the cast
+// The crew, drawn facing left, standing on y = 0, about 100 units tall (y down).
+// Each species has `up` (sitting or standing, paws free) and `four` (on all fours, in profile).
+const sh = (pts, dx, dy) => pts.map(([x, y, c]) => (c ? [x + dx, y + dy, c] : [x + dx, y + dy]));
+const shd = (d, dx, dy) => d.replace(/(-?[\d.]+),(-?[\d.]+)/g, (_, x, y) => `${+(+x + dx).toFixed(2)},${+(+y + dy).toFixed(2)}`);
+// A hind foot pointing left: heel at x = heel, toes at x = -l.
+const footPts = (l, w, heel = 2.5) => [[heel, 0.4], [heel * 0.8, -w * 0.8], [-l * 0.3, -w], [-l * 0.78, -w * 0.82], [-l, -w * 0.38], [-l * 0.92, w * 0.18], [-l * 0.3, w * 0.25]];
+const toeClaws = (l, w, n, cl) => Array.from({ length: n }, (_, i) => { const y = -w * 0.62 + (w * 0.7 * i) / Math.max(1, n - 1); return `M${-l * 0.96},${y.toFixed(2)}Q${(-l - cl * 0.6).toFixed(2)},${(y - cl * 0.05).toFixed(2)} ${(-l - cl).toFixed(2)},${(y + cl * 0.4).toFixed(2)}`; }).join("");
+const toeLines = (l, w) => `M${-l * 0.95},${(-w * 0.5).toFixed(2)}L${(-l * 0.72).toFixed(2)},${(-w * 0.55).toFixed(2)}M${-l * 0.97},${(-w * 0.1).toFixed(2)}L${(-l * 0.72).toFixed(2)},${(-w * 0.2).toFixed(2)}`;
+const leg = (hip, l1, l2, w, bend, x, foot, offset, far = false, tone) => ({ hip, l1, l2, w, bend, foot: { x, ...foot }, offset, far, tone });
+
+const HAMSTER_HEAD_UP = {
+  pivot: [-8, -56],
+  pts: [[-38, -62], [-37, -68], [-33, -76], [-24, -83], [-12, -86], [0, -84], [9, -77], [12, -67], [8, -58], [-2, -52], [-14, -49], [-26, -51], [-34, -55]],
+  strands: 45, flow: [1, 0.25], tuft: 1.4,
+  marks: [
+    { pts: [[-36.5, -60], [-34, -67], [-26, -69], [-16, -64], [-11, -55], [-19, -50.5], [-29, -52]], tone: "belly" },
+    { pts: [[-9, -63], [-2, -68], [5, -63], [3, -55], [-5, -53]], tone: "dark", op: 0.5 },
+    { pts: [[-30, -79], [-20, -84], [-8, -83], [-14, -77], [-24, -75]], tone: "dark", op: 0.35 },
+  ],
+  eye: { at: [-22, -71.5], rx: 4.3, ry: 4.8, rot: -12 },
+  nose: [[-39.6, -63.6], [-37.4, -66.2], [-34.8, -64.6], [-36.6, -61.6]],
+  mouth: "M-37.4,-61.4Q-36.6,-58.6 -33.6,-58",
+  whiskers: { at: [-33.5, -62], n: 7, from: 150, to: 212, len: 19 },
+  ears: {
+    near: { pts: [[-4, -83], [-4, -91], [1, -96.5], [8, -95], [11, -88], [7, -81]], inner: [[-1, -84.5], [-0.5, -90.5], [3, -94], [7.5, -91.5], [8, -86], [5, -83]] },
+    far: { pts: [[-21, -84], [-21, -90], [-16, -94], [-10, -91], [-9, -85]], inner: [[-19, -86], [-18.5, -89.5], [-15, -91.5], [-11.5, -89], [-11.5, -86]] },
+  },
+};
+
+const SLOTH_HEAD = {
+  pivot: [-6, -60],
+  pts: [[-32, -70], [-31, -77], [-26, -84], [-16, -89], [-4, -89], [6, -84], [10, -75], [8, -66], [0, -60], [-12, -58], [-24, -60], [-30, -64]],
+  strands: 40, flow: [0.6, 1], tuft: 2.6,
+  marks: [
+    { pts: [[-26, -84], [-14, -90], [-1, -88], [-5, -82], [-17, -81]], tone: "dark", op: 0.45 },
+    { pts: [[-31.5, -68], [-31, -77], [-25, -83], [-15, -84], [-8.5, -78], [-8, -68], [-14, -62], [-24, -61.5]], tone: "mark", soft: false },
+    { pts: [[-28, -76], [-21, -79.5], [-11, -78], [-3, -74.5], [-7, -71], [-18, -71.5], [-26, -72.5]], tone: "dark" },
+  ],
+  eye: { at: [-20, -75.2], rx: 2.3, ry: 2.5, rot: -8 },
+  nose: [[-33.4, -69.4], [-31.6, -72.4], [-28.2, -71.8], [-28.6, -68.4], [-31, -67.2]],
+  mouth: "M-31.6,-66.4Q-26,-62.8 -18.6,-65.2",
+};
+
+const ART = {
+  hamster: {
+    colors: { fur: "#C98446", belly: "#F4E8D8", dark: "#8A4F27", skin: "#E5A9A1", mark: "#F4E8D8", eye: "#120b07", nose: "#D88F8B", claw: "#F5EEE6", whisker: "#FFFBF4" },
+    coat: { flow: [0.3, 1], tuft: 1.6, gap: 0.9, tw: 0.55, strand: 4.5, sw: 0.4 },
+    up: {
+      pivot: [2, -6], box: [-58, -100, 40, 4], shadow: [0, 38, 6.5],
+      body: {
+        pts: [[-20, 0], [-30, -7], [-35, -20], [-34, -34], [-28, -46], [-18, -55], [-4, -60], [10, -58], [22, -50], [31, -37], [35, -22], [33, -9], [24, -1], [4, 1]],
+        strands: 80,
+        marks: [{ pts: [[-17, -1], [-29, -9], [-32, -23], [-29, -37], [-21, -47], [-11, -43], [-8, -28], [-9, -11]], tone: "belly", front: true }],
+        ao: [[-15, -48, 15, 6]],
+      },
+      collar: { d: "M-30,-47.8Q-14,-41.5 3,-50", w: 1.3, tag: [-19.5, -43.4, 1.7] },
+      head: HAMSTER_HEAD_UP,
+      arms: { near: [-22, -44], far: [-15, -47], l1: 8.5, l2: 8.5, w: [9, 6, 4.2], bend: [0.45, 1], rest: { near: [-31, -36], far: [-29, -39] }, paw: { len: 5.5, w: 4.2, tone: "skin", toes: 4 } },
+      feet: { near: { at: [-13, 0], pts: footPts(13.5, 3.8, 3), tone: "skin", toes: toeLines(13.5, 3.8) }, far: { at: [-22, -1.2], pts: footPts(11, 3.2, 2), tone: "skin" } },
+    },
+    four: {
+      pivot: [0, -30], box: [-76, -64, 46, 4], shadow: [-8, 46, 6.5],
+      body: {
+        pts: [[-30, -12], [-40, -24], [-40, -40], [-28, -52], [-6, -58], [16, -56], [32, -48], [42, -34], [42, -20], [34, -9], [16, -6], [-4, -6], [-20, -8]],
+        strands: 90, flow: [1, 0.3],
+        marks: [{ pts: [[-30, -11], [-16, -7], [4, -6.5], [22, -7], [34, -11], [22, -17], [0, -16], [-18, -17]], tone: "belly" }],
+        ao: [[-31, -31, 9, 14]],
+      },
+      collar: { d: "M-29,-49Q-35,-32 -28,-15", w: 1.3, tag: [-32.6, -20, 1.7] },
+      head: {
+        pivot: [-30, -34],
+        pts: [[-70, -25], [-68.5, -32], [-62, -41], [-50, -49], [-36, -52], [-25, -46], [-21, -34], [-24, -22], [-36, -14], [-50, -13], [-62, -16], [-68, -20]],
+        strands: 45, flow: [1, 0.2], tuft: 1.4,
+        marks: [
+          { pts: [[-69, -22], [-65, -30], [-54, -31], [-42, -25], [-36, -16], [-50, -14], [-62, -16]], tone: "belly" },
+          { pts: [[-34, -38], [-27, -41], [-23, -34], [-26, -26], [-33, -27]], tone: "dark", op: 0.5 },
+        ],
+        eye: { at: [-51, -37], rx: 4, ry: 4.5, rot: -6 },
+        nose: [[-72, -26.5], [-69.6, -29.6], [-67, -27.6], [-69, -24.6]],
+        mouth: "M-69.4,-23.6Q-67.6,-20.6 -64.6,-20.2",
+        whiskers: { at: [-64.5, -25], n: 7, from: 155, to: 210, len: 19 },
+        ears: {
+          near: { pts: [[-36, -49], [-36, -56.5], [-30, -61.5], [-24, -59], [-22.5, -51.5]], inner: [[-33.5, -51], [-33.5, -56], [-29.5, -59], [-25.5, -56.5], [-25, -52.5]] },
+          far: { pts: [[-44, -51], [-43.5, -57], [-39, -60], [-34.5, -56]], inner: [[-42.5, -52.5], [-42, -56], [-39, -58], [-36.5, -55.5]] },
+        },
+      },
+      legs: [
+        leg([24, -24], 9, 9, [15, 7, 4.6], [-1, 0.25], 22, { pts: footPts(10.5, 3.2), tone: "skin" }, 0.55, true),
+        leg([-22, -22], 8, 8, [11, 6, 4], [1, 0.15], -28, { pts: footPts(8, 2.8, 2), tone: "skin" }, 0.1, true),
+        leg([20, -22], 9, 9, [15, 7, 4.6], [-1, 0.25], 16, { pts: footPts(10.5, 3.2), tone: "skin" }, 0.05),
+        leg([-24, -20], 8, 8, [11, 6, 4], [1, 0.15], -34, { pts: footPts(8, 2.8, 2), tone: "skin" }, 0.6),
+      ],
+    },
+  },
+
+  mouse: {
+    colors: { fur: "#9A6A44", belly: "#F1ECE3", dark: "#5C3C24", skin: "#E8B3AC", mark: "#F1ECE3", eye: "#0e0907", nose: "#E09A96", whisker: "#F7F2EA" },
+    coat: { flow: [0.3, 1], tuft: 1.3, gap: 0.85, tw: 0.5, strand: 4, sw: 0.38 },
+    up: {
+      pivot: [2, -6], box: [-62, -100, 100, 4], shadow: [14, 42, 6],
+      body: {
+        pts: [[-14, 0], [-22, -8], [-25, -20], [-24, -32], [-20, -42], [-12, -50], [0, -53], [12, -50], [22, -41], [28, -28], [29, -14], [25, -4], [14, 0], [0, 1]],
+        strands: 60,
+        marks: [{ pts: [[-12, -1], [-20, -9], [-23, -20], [-22, -32], [-17, -41], [-10, -37], [-8, -24], [-8, -10]], tone: "belly", front: true }],
+        ao: [[-12, -45, 12, 5]],
+      },
+      collar: { d: "M-24,-44Q-10,-38.5 4,-46.5", w: 1.2, tag: [-14, -41, 1.6] },
+      head: {
+        pivot: [-6, -49],
+        pts: [[-41, -57], [-38, -61], [-30, -66], [-20, -71], [-8, -73], [2, -70], [8, -62], [7, -53], [0, -47], [-10, -46], [-22, -49], [-33, -53]],
+        strands: 36, flow: [1, 0.15], tuft: 1.2,
+        marks: [{ pts: [[-37, -54], [-26, -52.5], [-14, -48.5], [-8, -47], [-20, -46.6], [-32, -51]], tone: "belly" }],
+        eye: { at: [-20, -63], rx: 4.5, ry: 4.7, rot: -14 },
+        nose: [[-43, -57.5], [-41, -59.6], [-38.8, -58.4], [-40.4, -55.8]],
+        mouth: "M-40.6,-55.6Q-39,-53.2 -35.6,-52.6",
+        whiskers: { at: [-36, -56], n: 8, from: 152, to: 214, len: 22 },
+        ears: {
+          near: { pts: [[-4, -70], [-6, -80], [-3, -90], [4, -96], [12, -94], [15, -86], [12, -76], [6, -69]], inner: [[-1.5, -72], [-3, -80], [-0.5, -88], [4.5, -92.5], [10, -91], [12, -85], [9.5, -77], [5, -72]], tuft: 0.7 },
+          far: { pts: [[-16, -71], [-18, -80], [-15, -88], [-9, -90], [-5, -84], [-5, -75]], inner: [[-14.5, -73], [-16, -80], [-13.5, -86], [-9, -87.5], [-6.5, -83], [-6.5, -76]] },
+        },
+      },
+      arms: { near: [-15, -40], far: [-10, -43], l1: 7.5, l2: 7.5, w: [7, 5, 3.4], bend: [0.45, 1], rest: { near: [-26, -34], far: [-24, -37] }, paw: { len: 4.6, w: 3.4, tone: "skin", toes: 4 } },
+      feet: { near: { at: [-10, 0], pts: footPts(16, 3, 3), tone: "skin", toes: toeLines(16, 3) }, far: { at: [-17, -1.2], pts: footPts(13, 2.6, 2), tone: "skin" } },
+      tail: { pivot: [24, -6], back: "over", tone: "skin", line: { cl: [[22, -6], [40, -2.5], [60, -1.5], [78, -2.5], [92, -6], [98, -11]], w: [5.5, 3.6, 2.8, 2.1, 1.4, 0.8], rings: true } },
+    },
+    four: {
+      pivot: [0, -26], box: [-74, -66, 106, 4], shadow: [6, 50, 6],
+      body: {
+        pts: [[-28, -12], [-36, -22], [-36, -34], [-26, -44], [-8, -48], [12, -47], [28, -41], [38, -30], [39, -18], [32, -9], [16, -6], [-4, -6], [-18, -8]],
+        strands: 70, flow: [1, 0.3],
+        marks: [{ pts: [[-28, -11], [-14, -7], [4, -6.5], [22, -7], [32, -10], [20, -14], [0, -14], [-18, -15]], tone: "belly" }],
+        ao: [[-28, -28, 8, 12]],
+      },
+      collar: { d: "M-27,-42Q-32,-28 -26,-15", w: 1.2, tag: [-30, -19, 1.6] },
+      head: {
+        pivot: [-30, -30],
+        pts: [[-70, -26], [-66, -30], [-58, -36], [-46, -42], [-34, -44], [-24, -38], [-22, -28], [-28, -19], [-40, -16], [-54, -18], [-64, -22]],
+        strands: 34, flow: [1, 0.15], tuft: 1.2,
+        marks: [{ pts: [[-66, -23], [-56, -21], [-44, -18], [-36, -17.5], [-48, -16.4], [-60, -19]], tone: "belly" }],
+        eye: { at: [-48, -34], rx: 4.2, ry: 4.4, rot: -10 },
+        nose: [[-72, -26.5], [-70, -28.8], [-67.6, -27.4], [-69.4, -24.8]],
+        mouth: "M-69.6,-24.6Q-68,-22 -64.6,-21.6",
+        whiskers: { at: [-64.5, -25], n: 8, from: 155, to: 214, len: 22 },
+        ears: {
+          near: { pts: [[-34, -42], [-36, -52], [-33, -61], [-26, -65], [-19, -62], [-17, -53], [-21, -44]], inner: [[-32, -44], [-33.5, -52], [-31, -59], [-26, -62], [-21, -59.5], [-19.5, -53], [-22.5, -46]], tuft: 0.7 },
+          far: { pts: [[-42, -43], [-44, -52], [-41, -59], [-35, -60], [-33, -52]], inner: [[-41, -45], [-42.5, -52], [-40, -57], [-36, -57.5], [-34.5, -52]] },
+        },
+      },
+      legs: [
+        leg([24, -20], 9, 9, [12, 6, 3.6], [-1, 0.25], 24, { pts: footPts(13, 2.6), tone: "skin" }, 0.55, true),
+        leg([-22, -20], 7, 7, [9, 5, 3.2], [1, 0.15], -26, { pts: footPts(7, 2.4, 1.5), tone: "skin" }, 0.1, true),
+        leg([20, -18], 9, 9, [12, 6, 3.6], [-1, 0.25], 16, { pts: footPts(13, 2.6), tone: "skin" }, 0.05),
+        leg([-24, -18], 7, 7, [9, 5, 3.2], [1, 0.15], -32, { pts: footPts(7, 2.4, 1.5), tone: "skin" }, 0.6),
+      ],
+      tail: { pivot: [36, -14], tone: "skin", line: { cl: [[34, -14], [54, -8], [74, -5], [92, -6], [104, -12]], w: [5, 3.2, 2.4, 1.6, 0.8], rings: true } },
+    },
+  },
+
+  squirrel: {
+    colors: { fur: "#B2552A", belly: "#F4EADB", dark: "#5E2A13", skin: "#4A3A33", mark: "#EAD6BE", eye: "#0b0705", nose: "#2B1E18", claw: "#2A1F1A", whisker: "#2B201A" },
+    coat: { flow: [0.3, 1], tuft: 1.5, gap: 0.9, tw: 0.55, strand: 4.5, sw: 0.4 },
+    up: {
+      pivot: [2, -6], box: [-40, -108, 56, 4], shadow: [8, 36, 6],
+      body: {
+        pts: [[-14, 0], [-20, -10], [-22, -24], [-20, -38], [-14, -50], [-4, -58], [6, -58], [14, -50], [20, -36], [24, -20], [24, -8], [18, -1], [4, 1]],
+        strands: 55,
+        marks: [{ pts: [[-12, -1], [-18, -10], [-20, -24], [-18, -37], [-12, -48], [-6, -42], [-5, -26], [-6, -10]], tone: "belly", front: true }],
+        ao: [[-10, -52, 10, 4]],
+      },
+      collar: { d: "M-20,-52Q-7,-47 6,-55", w: 1.2, tag: [-12, -49.4, 1.6] },
+      head: {
+        pivot: [-4, -56],
+        pts: [[-34, -62], [-31, -67], [-24, -73], [-14, -78], [-4, -79], [5, -75], [9, -67], [7, -58], [0, -53], [-10, -53], [-22, -56], [-30, -59]],
+        strands: 34, flow: [1, 0.2], tuft: 1.3,
+        marks: [{ pts: [[-31, -59.5], [-22, -58], [-12, -55.5], [-6, -54], [-14, -53], [-26, -56]], tone: "belly" }],
+        eye: { at: [-15, -68.5], rx: 3.8, ry: 4.1, rot: -14, ring: 1.4 },
+        nose: [[-35.5, -62.5], [-33.6, -64.6], [-31.4, -63.4], [-33, -61]],
+        mouth: "M-33.8,-60.8Q-32.4,-58.4 -29.4,-57.8",
+        whiskers: { at: [-29.5, -61], n: 6, from: 152, to: 210, len: 15, opacity: 0.6, width: 0.3 },
+        ears: {
+          near: { pts: [[-2, -75], [-1.5, -84], [2, -93, 1], [6.5, -84], [8, -74]], inner: [[0.5, -76], [0.8, -83], [2.4, -89], [5, -83], [5.6, -76]], brush: { at: [2, -92], len: 8, n: 9, spread: 50, tilt: 10 } },
+          far: { pts: [[-10, -76], [-10, -84], [-7, -91, 1], [-3, -84], [-3, -77]], inner: [[-8.5, -77], [-8.5, -83], [-7, -88], [-5, -83], [-4.8, -78]], brush: { at: [-7, -90], len: 7, n: 7, spread: 45, tilt: 5 } },
+        },
+      },
+      arms: { near: [-13, -44], far: [-8, -47], l1: 9.5, l2: 9.5, w: [6.5, 4.6, 3.2], bend: [0.45, 1], tone: "fur", rest: { near: [-23, -38], far: [-21, -41] }, paw: { len: 4.8, w: 3.2, tone: "skin", toes: 4, claws: 4, clawLen: 1.6 } },
+      feet: { near: { at: [-8, 0], pts: footPts(18, 3, 3), tone: "skin", toes: toeLines(18, 3), claws: toeClaws(18, 3, 4, 2), clawW: 0.4 }, far: { at: [-14, -1.4], pts: footPts(15, 2.6, 2), tone: "skin" } },
+      tail: {
+        pivot: [20, -8], back: "over",
+        pts: [[16, -4], [28, -8], [42, -14], [50, -28], [53, -46], [50, -64], [42, -82], [30, -96], [16, -103], [4, -100], [-1, -91], [4, -84], [12, -88], [22, -84], [30, -70], [33, -52], [31, -36], [26, -24], [18, -14]],
+        strands: 70, flow: [0.2, -1], tuft: 3.4, gap: 0.7, lean: 0.15, tw: 0.6, strandLen: 7,
+      },
+    },
+    four: {
+      pivot: [0, -26], box: [-66, -84, 100, 4], shadow: [10, 52, 6],
+      body: {
+        pts: [[-26, -14], [-34, -24], [-32, -36], [-20, -44], [0, -47], [18, -44], [30, -36], [36, -24], [34, -12], [24, -6], [6, -6], [-12, -9]],
+        strands: 60, flow: [1, 0.3],
+        marks: [{ pts: [[-26, -13], [-12, -8], [6, -6.5], [22, -7], [30, -11], [18, -16], [0, -16], [-16, -17]], tone: "belly" }],
+        ao: [[-26, -30, 7, 11]],
+      },
+      collar: { d: "M-23,-44Q-28,-30 -22,-17", w: 1.2, tag: [-26, -21, 1.6] },
+      head: {
+        pivot: [-26, -34],
+        pts: [[-62, -30], [-59, -35], [-52, -41], [-42, -46], [-32, -46], [-24, -40], [-22, -30], [-28, -22], [-40, -19], [-52, -22], [-58, -26]],
+        strands: 30, flow: [1, 0.2], tuft: 1.3,
+        marks: [{ pts: [[-59, -27], [-50, -24.5], [-40, -21.5], [-34, -20.5], [-42, -19.6], [-54, -22.6]], tone: "belly" }],
+        eye: { at: [-43, -36], rx: 3.8, ry: 4, rot: -12, ring: 1.4 },
+        nose: [[-63.5, -30.5], [-61.6, -32.6], [-59.4, -31.4], [-61, -29]],
+        mouth: "M-61.6,-28.8Q-60,-26.4 -57,-25.8",
+        whiskers: { at: [-57.5, -29], n: 6, from: 155, to: 210, len: 15, opacity: 0.6, width: 0.3 },
+        ears: {
+          near: { pts: [[-30, -44], [-30, -53], [-27, -62, 1], [-23, -53], [-22, -44]], inner: [[-28.5, -46], [-28.4, -52], [-27, -58], [-25, -52], [-24.4, -46]], brush: { at: [-27, -61], len: 8, n: 9, spread: 50, tilt: 10 } },
+          far: { pts: [[-36, -45], [-36, -53], [-33, -60, 1], [-30, -52], [-30, -46]], inner: [[-35, -47], [-34.8, -52], [-33.2, -57], [-31.6, -52], [-31.4, -47]], brush: { at: [-33, -59], len: 7, n: 7, spread: 45, tilt: 5 } },
+        },
+      },
+      legs: [
+        leg([22, -20], 10, 11, [13, 6, 3.4], [-1, 0.25], 22, { pts: footPts(15, 2.6), tone: "skin" }, 0.55, true),
+        leg([-20, -20], 8, 8, [8, 4.6, 3], [1, 0.15], -24, { pts: footPts(6.5, 2.2, 1.5), tone: "skin" }, 0.1, true),
+        leg([18, -18], 10, 11, [13, 6, 3.4], [-1, 0.25], 14, { pts: footPts(15, 2.6), tone: "skin" }, 0.05),
+        leg([-22, -18], 8, 8, [8, 4.6, 3], [1, 0.15], -30, { pts: footPts(6.5, 2.2, 1.5), tone: "skin" }, 0.6),
+      ],
+      tail: {
+        pivot: [32, -30],
+        pts: [[28, -32], [40, -44], [54, -58], [68, -72], [82, -80], [94, -78], [99, -68], [92, -58], [78, -52], [64, -42], [50, -30], [36, -22]],
+        strands: 55, flow: [1, -0.6], tuft: 3.2, gap: 0.7, lean: 0.2, tw: 0.6, strandLen: 7,
+      },
+    },
+  },
+
+  beaver: {
+    colors: { fur: "#6E4527", belly: "#8C6040", dark: "#3A2516", skin: "#45392F", mark: "#8E6A50", eye: "#0b0705", nose: "#1E1612", claw: "#D9CCBA", whisker: "#E7DED2", teeth: "#E08A2E" },
+    coat: { flow: [0.3, 1], tuft: 1.8, gap: 0.9, tw: 0.6, strand: 5, sw: 0.45 },
+    up: {
+      pivot: [2, -6], box: [-46, -96, 78, 4], shadow: [12, 46, 7],
+      body: {
+        pts: [[-18, 0], [-28, -8], [-33, -22], [-32, -38], [-26, -50], [-16, -58], [-2, -62], [12, -60], [24, -52], [32, -38], [35, -22], [32, -8], [22, 0], [2, 1]],
+        strands: 85,
+        marks: [{ pts: [[-16, -1], [-27, -10], [-30, -24], [-28, -38], [-21, -48], [-12, -42], [-10, -26], [-10, -10]], tone: "belly", front: true, op: 0.8 }],
+        ao: [[-14, -57, 14, 5]],
+      },
+      collar: { d: "M-30,-54Q-14,-48 4,-57", w: 1.4, tag: [-19, -51.2, 1.8] },
+      head: {
+        pivot: [-10, -58],
+        pts: [[-37, -66], [-36, -72], [-31, -79], [-21, -84], [-9, -85], [1, -81], [5, -72], [3, -62], [-5, -56], [-17, -55], [-28, -57.5], [-34, -61]],
+        strands: 40, flow: [1, 0.3], tuft: 1.6,
+        marks: [{ pts: [[-37, -64], [-35, -72], [-27, -74], [-20, -67], [-21, -59], [-30, -58]], tone: "mark" }],
+        eye: { at: [-21, -75.5], rx: 2.4, ry: 2.6, rot: -10 },
+        nose: [[-39, -69], [-37, -73], [-33, -72.4], [-33.2, -68.8], [-36.4, -67.4]],
+        teeth: "M-35.4,-62.4L-31.2,-62.4L-31.6,-56.4Q-33.3,-55.4 -35,-56.4Z", teethLine: "M-33.3,-62.2L-33.3,-55.8",
+        mouth: "M-36,-63Q-31,-63.6 -26.5,-61.2",
+        whiskers: { at: [-31, -66], n: 6, from: 160, to: 215, len: 13, opacity: 0.5 },
+        ears: {
+          near: { pts: [[-3, -79], [-3, -85], [1, -88.5], [5.5, -86], [6, -80]], inner: [[-1, -80.5], [-1, -84.5], [1.5, -86.5], [4, -84.5], [4, -81]] },
+          far: { pts: [[-15, -82], [-14, -87.5], [-10, -89], [-7.5, -85]] },
+        },
+      },
+      arms: { near: [-24, -46], far: [-18, -49], l1: 9, l2: 9, w: [10, 7, 4.6], bend: [0.45, 1], rest: { near: [-33, -38], far: [-31, -41] }, paw: { len: 5.6, w: 4.4, tone: "skin", toes: 4, claws: 4, clawLen: 1.8 } },
+      feet: { near: { at: [-14, 0], pts: footPts(20, 4.4, 4), tone: "skin", toes: toeLines(20, 4.4), claws: toeClaws(20, 4.4, 4, 2.2) }, far: { at: [-22, -1.4], pts: footPts(16, 3.6, 3), tone: "skin" } },
+      tail: { pivot: [24, -4], back: "over", tone: "skin", pts: [[22, -4], [32, -9.5], [50, -11.5], [66, -8.5], [73, -3], [67, 2], [48, 3], [30, 1]], tufts: false, strands: 0, scales: 3.2 },
+    },
+    four: {
+      pivot: [0, -30], box: [-70, -62, 98, 4], shadow: [12, 58, 7],
+      body: {
+        pts: [[-30, -12], [-40, -22], [-42, -36], [-32, -50], [-12, -58], [12, -58], [32, -50], [44, -36], [46, -20], [38, -9], [18, -5], [-4, -5], [-20, -8]],
+        strands: 90, flow: [1, 0.3],
+        marks: [{ pts: [[-30, -11], [-16, -6], [4, -5.5], [24, -6], [38, -10], [24, -15], [0, -15], [-18, -16]], tone: "belly", op: 0.8 }],
+        ao: [[-31, -32, 8, 13]],
+      },
+      collar: { d: "M-29,-48Q-34,-32 -28,-17", w: 1.4, tag: [-32, -21, 1.8] },
+      head: {
+        pivot: [-32, -32],
+        pts: [[-67, -28], [-66, -34], [-61, -41], [-51, -46], [-39, -47], [-30, -42], [-27, -32], [-31, -22], [-43, -18], [-56, -19], [-63, -23]],
+        strands: 36, flow: [1, 0.25], tuft: 1.6,
+        marks: [{ pts: [[-67, -26], [-65, -34], [-57, -35], [-51, -28], [-53, -20], [-61, -20]], tone: "mark" }],
+        eye: { at: [-49, -38], rx: 2.3, ry: 2.5, rot: -8 },
+        nose: [[-69, -31], [-67, -35], [-63, -34.4], [-63.2, -30.8], [-66.4, -29.4]],
+        teeth: "M-65.4,-24.4L-61.2,-24.4L-61.6,-18.4Q-63.3,-17.4 -65,-18.4Z", teethLine: "M-63.3,-24.2L-63.3,-17.8",
+        mouth: "M-66,-25Q-61,-25.6 -56.5,-23.2",
+        whiskers: { at: [-61, -28], n: 6, from: 160, to: 215, len: 13, opacity: 0.5 },
+        ears: {
+          near: { pts: [[-35, -44], [-35, -50], [-31, -53.5], [-26.5, -51], [-26, -45]], inner: [[-33, -45.5], [-33, -49.5], [-30.5, -51.5], [-28, -49.5], [-28, -46]] },
+          far: { pts: [[-41, -46], [-40, -51], [-36, -52.5], [-33.5, -48.5]] },
+        },
+      },
+      legs: [
+        leg([30, -22], 10, 10, [16, 8, 5], [-1, 0.25], 30, { pts: footPts(16, 3.6, 3), tone: "skin", toes: toeLines(16, 3.6) }, 0.55, true),
+        leg([-24, -20], 8, 8, [11, 6, 4], [1, 0.15], -30, { pts: footPts(7, 3, 1.5), tone: "skin", claws: toeClaws(7, 3, 4, 1.6) }, 0.1, true),
+        leg([26, -20], 10, 10, [16, 8, 5], [-1, 0.25], 22, { pts: footPts(16, 3.6, 3), tone: "skin", toes: toeLines(16, 3.6) }, 0.05),
+        leg([-26, -18], 8, 8, [11, 6, 4], [1, 0.15], -36, { pts: footPts(7, 3, 1.5), tone: "skin", claws: toeClaws(7, 3, 4, 1.6) }, 0.6),
+      ],
+      tail: { pivot: [44, -10], tone: "skin", pts: [[38, -14], [56, -16.5], [76, -16.5], [92, -12.5], [97, -7], [91, -2.5], [72, -1.5], [54, -3.5], [38, -8]], tufts: false, strands: 0, scales: 3.2 },
+    },
+  },
+
+  sloth: {
+    colors: { fur: "#8B7A66", belly: "#A79680", dark: "#3A2E25", skin: "#5A4A3D", mark: "#ECE1D1", eye: "#0b0705", nose: "#241B16", claw: "#D8C9B2", whisker: "#E8E0D2" },
+    coat: { flow: [0.25, 1], tuft: 3, gap: 1, tw: 0.7, strand: 7, sw: 0.5 },
+    up: {
+      pivot: [2, -8], box: [-48, -94, 34, 4], shadow: [0, 36, 6],
+      body: {
+        pts: [[-20, 0], [-28, -10], [-31, -24], [-29, -40], [-22, -52], [-10, -60], [4, -61], [16, -55], [25, -42], [29, -26], [28, -10], [20, -1], [2, 1]],
+        strands: 90, lean: 0.9,
+        marks: [{ pts: [[-18, -2], [-26, -12], [-28, -26], [-24, -42], [-16, -50], [-10, -40], [-9, -24], [-10, -8]], tone: "belly", front: true, op: 0.75 }],
+        ao: [[-12, -58, 14, 5]],
+      },
+      collar: { d: "M-25,-56Q-10,-50.5 7,-59", w: 1.3, tag: [-14, -53, 1.7] },
+      head: SLOTH_HEAD,
+      arms: { near: [-20, -48], far: [-14, -51], hang: { near: [-2, -56], far: [3, -58] }, l1: 24, l2: 24, w: [9, 6.5, 4.8], bend: [0.3, 1], tone: "fur", rest: { near: [-27, -14], far: [-23, -18] }, paw: { len: 5.6, w: 4.6, tone: "fur", toes: 3, claws: 3, clawLen: 8, clawW: 0.9 } },
+      feet: { near: { at: [-14, 0], pts: footPts(10, 4, 4), tone: "fur", claws: toeClaws(10, 4, 3, 5.5), clawW: 0.8 }, far: { at: [-22, -1.4], pts: footPts(8, 3.4, 3), tone: "fur", claws: toeClaws(8, 3.4, 3, 4.5), clawW: 0.7 } },
+    },
+    four: {
+      pivot: [0, -30], box: [-76, -82, 44, 4], shadow: [-12, 52, 6.5],
+      body: {
+        pts: [[-28, -16], [-36, -28], [-32, -42], [-18, -50], [2, -52], [20, -48], [32, -38], [36, -24], [30, -14], [14, -10], [-6, -10], [-20, -12]],
+        strands: 80, lean: 0.9, flow: [0.6, 1],
+        marks: [{ pts: [[-26, -15], [-12, -11], [8, -10.5], [26, -13], [20, -18], [0, -19], [-18, -19]], tone: "belly", op: 0.7 }],
+        ao: [[-28, -38, 8, 10]],
+      },
+      collar: { d: "M-26,-50Q-33,-36 -26,-22", w: 1.3, tag: [-30, -26, 1.7] },
+      head: { ...SLOTH_HEAD, pivot: [-30, -40], pts: sh(SLOTH_HEAD.pts, -30, 26), marks: SLOTH_HEAD.marks.map((m) => ({ ...m, pts: sh(m.pts, -30, 26) })), eye: { ...SLOTH_HEAD.eye, at: [-50, -49.2] }, nose: sh(SLOTH_HEAD.nose, -30, 26), mouth: shd(SLOTH_HEAD.mouth, -30, 26) },
+      legs: [
+        leg([22, -30], 12, 12, [12, 7, 5], [-1, 0.2], 20, { pts: footPts(9, 3.6, 3), tone: "fur", claws: toeClaws(9, 3.6, 3, 5), clawW: 0.8 }, 0.55, true),
+        leg([-22, -36], 18, 18, [10, 6.5, 4.8], [1, 0.3], -52, { pts: footPts(7, 3.6, 2), tone: "fur", claws: toeClaws(7, 3.6, 3, 7), clawW: 0.9 }, 0.1, true),
+        leg([18, -28], 12, 12, [12, 7, 5], [-1, 0.2], 12, { pts: footPts(9, 3.6, 3), tone: "fur", claws: toeClaws(9, 3.6, 3, 5), clawW: 0.8 }, 0.05),
+        leg([-26, -34], 18, 18, [10, 6.5, 4.8], [1, 0.3], -60, { pts: footPts(7, 3.6, 2), tone: "fur", claws: toeClaws(7, 3.6, 3, 7), clawW: 0.9 }, 0.6),
+      ],
+    },
+  },
+
+  mole: {
+    colors: { fur: "#3B3641", belly: "#4C4652", dark: "#211E25", skin: "#E6A6A1", mark: "#4C4652", eye: "#050404", nose: "#D78A87", claw: "#F4E9DD", whisker: "#E9E2DA" },
+    coat: { flow: [0.3, 1], tuft: 0.8, gap: 0.9, tw: 0.45, strand: 3, sw: 0.35 },
+    up: {
+      pivot: [2, -6], box: [-52, -78, 40, 4], shadow: [0, 36, 6],
+      body: {
+        pts: [[-16, 0], [-24, -10], [-27, -24], [-26, -38], [-20, -50], [-10, -58], [2, -60], [14, -55], [22, -44], [26, -28], [25, -12], [18, -2], [2, 1]],
+        strands: 40,
+        ao: [[-10, -53, 12, 4]],
+      },
+      collar: { d: "M-25,-49.5Q-9,-43.5 9,-52", w: 1.4, tag: [-14, -45.6, 1.8] },
+      head: {
+        pivot: [-4, -56],
+        pts: [[-41, -61.5], [-35, -65.5], [-25, -70], [-13, -74], [-1, -74], [8, -69], [12, -60], [8, -54], [-4, -52], [-18, -54], [-31, -57.5], [-39, -59.5]],
+        strands: 28, flow: [1, 0.2], tuft: 0.7,
+        under: [],
+        eye: { at: [-21, -67], rx: 0.9, ry: 0.85 },
+        snout: [[-48.5, -62.2], [-47, -64.2], [-42.5, -64.2], [-38.5, -63.2], [-38.5, -59.8], [-42.5, -59.2], [-47, -60]],
+        nose: [[-50.4, -62], [-49, -64.2], [-47.2, -63.6], [-47.2, -60.2], [-49.2, -59.6]],
+        whiskers: { at: [-41.5, -61], n: 5, from: 160, to: 215, len: 8, opacity: 0.6 },
+      },
+      arms: { near: [-22, -40], far: [-16, -44], l1: 8.5, l2: 8.5, w: [10, 8, 6.5], bend: [0.6, 1], rest: { near: [-26, -30], far: [-24, -34] }, paw: { len: 11, w: 11, tone: "skin", toes: 5, claws: 5, clawLen: 4.4, clawW: 1.1 } },
+      feet: { near: { at: [-12, 0], pts: footPts(10, 3, 2.5), tone: "skin", claws: toeClaws(10, 3, 4, 1.6) }, far: { at: [-18, -1.2], pts: footPts(8, 2.6, 2), tone: "skin" } },
+      tail: { pivot: [20, -6], back: "over", tone: "dark", pts: [[20, -6], [28, -9], [34, -7], [33, -3], [26, -1.5], [20, -2]], strands: 0, tuft: 0.8 },
+    },
+    four: {
+      pivot: [0, -22], box: [-80, -46, 52, 4], shadow: [-10, 52, 6],
+      body: {
+        pts: [[-30, -10], [-38, -20], [-36, -32], [-24, -40], [-4, -43], [16, -41], [30, -34], [38, -24], [36, -12], [26, -5], [6, -4], [-16, -6]],
+        strands: 45, flow: [1, 0.2],
+        ao: [[-28, -24, 7, 9]],
+      },
+      collar: { d: "M-27,-38Q-32,-24 -27,-10", w: 1.4, tag: [-31, -14, 1.8] },
+      head: {
+        pivot: [-30, -24],
+        pts: [[-63, -20.5], [-57, -25.5], [-46, -32], [-34, -37], [-26, -33], [-22, -24], [-26, -14], [-38, -11], [-52, -13.5], [-61, -17]],
+        strands: 26, flow: [1, 0.15], tuft: 0.7,
+        eye: { at: [-45, -27], rx: 0.9, ry: 0.85 },
+        snout: [[-70.5, -21], [-69, -23], [-64.5, -23], [-60.5, -22], [-60.5, -18.2], [-64.5, -17.6], [-69, -18.4]],
+        nose: [[-72.4, -20.6], [-71, -22.8], [-69.2, -22.2], [-69.2, -18.8], [-71.2, -18.2]],
+        whiskers: { at: [-63.5, -19.5], n: 5, from: 160, to: 215, len: 8, opacity: 0.6 },
+      },
+      legs: [
+        leg([24, -16], 7, 6, [12, 7, 4], [-1, 0.25], 24, { pts: footPts(8, 2.6), tone: "skin" }, 0.55, true),
+        leg([-24, -18], 6, 6, [11, 8, 6.5], [1, 0.3], -34, { pts: [[3, 1], [2, -4], [-4, -6.5], [-10, -5.6], [-13, -2], [-10, 1.2], [-2, 1.6]], tone: "skin", claws: "M-12.6,-4.6Q-15.6,-4.8 -16.6,-2.6M-13.4,-2.6Q-16.6,-2.4 -17.2,0M-13,-0.6Q-16,0 -16.4,2.6M-11.6,1Q-14,2 -14,4.2", clawW: 0.9 }, 0.1, true),
+        leg([20, -14], 7, 6, [12, 7, 4], [-1, 0.25], 16, { pts: footPts(8, 2.6), tone: "skin" }, 0.05),
+        leg([-28, -16], 6, 6, [11, 8, 6.5], [1, 0.3], -42, { pts: [[3, 1], [2, -4], [-4, -6.5], [-10, -5.6], [-13, -2], [-10, 1.2], [-2, 1.6]], tone: "skin", claws: "M-12.6,-4.6Q-15.6,-4.8 -16.6,-2.6M-13.4,-2.6Q-16.6,-2.4 -17.2,0M-13,-0.6Q-16,0 -16.4,2.6M-11.6,1Q-14,2 -14,4.2", clawW: 0.9 }, 0.6),
+      ],
+      tail: { pivot: [36, -14], tone: "dark", pts: [[35, -16], [43, -18], [48, -14], [45, -10], [36, -10]], strands: 0, tuft: 0.8 },
+    },
+  },
+
+  kangaroo: {
+    colors: { fur: "#B27A4C", belly: "#EAD9C2", dark: "#4E331F", skin: "#D9A39A", mark: "#E9D7C1", eye: "#0b0705", nose: "#241912", claw: "#2C2019", whisker: "#E9DFD2" },
+    coat: { flow: [0.3, 1], tuft: 1.2, gap: 0.9, tw: 0.5, strand: 4, sw: 0.38 },
+    up: {
+      pivot: [6, -6], box: [-40, -108, 78, 4], shadow: [16, 46, 6],
+      body: {
+        pts: [[-8, -6], [-13, -18], [-15, -32], [-13, -46], [-9, -58], [-4, -66], [4, -68], [10, -62], [14, -50], [22, -38], [31, -24], [33, -12], [26, -3], [10, -1]],
+        strands: 60,
+        marks: [{ pts: [[-6, -7], [-12, -18], [-14, -32], [-12, -46], [-8, -56], [-3, -50], [-2, -34], [-2, -16]], tone: "belly", front: true }],
+        ao: [[-4, -64, 7, 3]],
+      },
+      collar: { d: "M-9,-62Q-1,-57.5 8.5,-63.5", w: 1.2, tag: [-2, -58.6, 1.5] },
+      head: {
+        pivot: [-2, -66],
+        pts: [[-34, -71], [-33, -76], [-26, -81], [-15, -84.5], [-4, -84], [4, -80], [6, -72], [2, -66], [-6, -63.5], [-17, -64.5], [-27, -66.5], [-32, -68]],
+        strands: 30, flow: [1, 0.25], tuft: 1.1,
+        marks: [{ pts: [[-33, -70.4], [-28, -70.2], [-18, -67.4], [-10, -65.4], [-22, -65.6], [-30, -68]], tone: "mark" }],
+        eye: { at: [-12.5, -78], rx: 2.7, ry: 2.9, rot: -10 },
+        nose: [[-35.6, -73.6], [-34.6, -77], [-31, -77.2], [-30.2, -73.8], [-32.8, -72]],
+        mouth: "M-33.4,-71.4Q-30.6,-69.4 -26.4,-69.4",
+        whiskers: { at: [-30, -73.4], n: 4, from: 160, to: 205, len: 8, opacity: 0.45 },
+        ears: {
+          near: { pts: [[0, -80], [-1.5, -90], [0, -100], [4, -107, 1], [7.5, -98], [8.5, -88], [6, -80]], inner: [[1.8, -82], [1.2, -90], [2.4, -98], [4.2, -103], [6, -96], [6.4, -88], [4.8, -82]] },
+          far: { pts: [[-9, -82], [-11, -92], [-9.5, -100], [-6.5, -104, 1], [-3.5, -96], [-2.5, -86]], inner: [[-7.6, -84], [-9.2, -92], [-8, -99], [-6.6, -101], [-4.8, -95], [-4.2, -87]] },
+        },
+      },
+      arms: { near: [-10, -50], far: [-6, -53], l1: 8, l2: 8, w: [6.5, 4.6, 3.2], bend: [0.45, 1], rest: { near: [-18, -40], far: [-16, -43] }, paw: { len: 4.4, w: 3, tone: "dark", toes: 4, claws: 4, clawLen: 1.4 } },
+      feet: { near: { at: [6, 0], pts: footPts(30, 4, 8), tone: "dark", toes: toeLines(30, 4) }, far: { at: [0, -1.4], pts: footPts(26, 3.4, 6), tone: "dark" } },
+      tail: { pivot: [24, -14], back: "over", pts: [[18, -28], [30, -20], [44, -11], [60, -5], [76, -2], [78, 1.5], [60, 2], [40, 1], [24, -4], [14, -12]], strands: 30, tuft: 1.2, flow: [1, 0.3] },
+    },
+    four: {
+      pivot: [6, -28], box: [-62, -86, 92, 4], shadow: [10, 54, 6],
+      body: {
+        pts: [[-22, -20], [-28, -32], [-24, -44], [-12, -52], [6, -54], [22, -50], [34, -40], [40, -26], [38, -12], [28, -4], [10, -4], [-8, -10]],
+        strands: 60, flow: [1, 0.3],
+        marks: [{ pts: [[-22, -19], [-12, -12], [6, -8], [24, -6], [32, -10], [18, -16], [0, -18], [-14, -24]], tone: "belly" }],
+        ao: [[-20, -38, 6, 10]],
+      },
+      collar: { d: "M-20,-48Q-25,-38 -20,-27", w: 1.2, tag: [-23.4, -30, 1.5] },
+      head: {
+        pivot: [-22, -40],
+        pts: [[-57, -38], [-56, -43], [-49, -48], [-38, -51.5], [-27, -51], [-19, -47], [-17, -39], [-21, -33], [-29, -30.5], [-40, -31.5], [-50, -33.5], [-55, -35]],
+        strands: 28, flow: [1, 0.25], tuft: 1.1,
+        marks: [{ pts: [[-56, -38.4], [-51, -38], [-41, -35], [-33, -33], [-45, -33.4], [-53, -36]], tone: "mark" }],
+        eye: { at: [-35.5, -45], rx: 2.7, ry: 2.9, rot: -10 },
+        nose: [[-58.6, -40.6], [-57.6, -44], [-54, -44.2], [-53.2, -40.8], [-55.8, -39]],
+        mouth: "M-56.4,-38.4Q-53.6,-36.4 -49.4,-36.4",
+        whiskers: { at: [-53, -40.4], n: 4, from: 160, to: 205, len: 8, opacity: 0.45 },
+        ears: {
+          near: { pts: [[-23, -47], [-24.5, -57], [-23, -67], [-19, -74, 1], [-15.5, -65], [-14.5, -55], [-17, -47]], inner: [[-21.2, -49], [-21.8, -57], [-20.6, -65], [-18.8, -70], [-17, -63], [-16.6, -55], [-18.2, -49]] },
+          far: { pts: [[-32, -49], [-34, -59], [-32.5, -67], [-29.5, -71, 1], [-26.5, -63], [-25.5, -53]], inner: [[-30.6, -51], [-32.2, -59], [-31, -66], [-29.6, -68], [-27.8, -62], [-27.2, -54]] },
+        },
+      },
+      legs: [
+        leg([26, -18], 9, 9, [18, 8, 5], [-1, 0.2], 18, { pts: footPts(24, 3.6, 6), tone: "dark" }, 0.55, true),
+        leg([-16, -28], 10, 10, [8, 4.6, 3], [1, 0.15], -24, { pts: footPts(5, 2.4, 1.5), tone: "dark" }, 0.1, true),
+        leg([22, -16], 9, 9, [18, 8, 5], [-1, 0.2], 12, { pts: footPts(24, 3.6, 6), tone: "dark" }, 0.05),
+        leg([-18, -26], 10, 10, [8, 4.6, 3], [1, 0.15], -30, { pts: footPts(5, 2.4, 1.5), tone: "dark" }, 0.6),
+      ],
+      tail: { pivot: [36, -24], pts: [[36, -26], [50, -17], [68, -9], [84, -4], [87, -0.5], [70, 0.5], [50, -2], [38, -10]], strands: 26, tuft: 1.2, flow: [1, 0.3] },
+    },
+  },
+};
+
+export const ROLES = {
+  power: { hex: "#F5C518", word: "power", does: "motors, current, anything that runs" },
+  holding: { hex: "#E5484D", word: "holding", does: "latches, clamps, brakes, grips" },
+  cutting: { hex: "#8E4EC6", word: "cutting", does: "blades, cutters, grinders, shredders" },
+  sensing: { hex: "#3E9BDB", word: "sensing and timing", does: "gauges, thermostats, timers, switches that read" },
+  moving: { hex: "#46A758", word: "moving", does: "carriages, rollers, conveyors, feeders" },
+  heat: { hex: "#F76B15", word: "heat", does: "heating elements, igniters" },
+  fluid: { hex: "#12A594", word: "fluid", does: "pumps, hoses, valves, cooling" },
+  spring: { hex: "#E93D82", word: "spring", does: "springs, launchers, returns" },
+};
+
+export const SPECIES = Object.fromEntries(Object.entries(ART).map(([name, a]) => [name, { colors: a.colors, arms: a.up.arms, four: !!a.four }]));
+
+// ---------- colour
+const hexToHsl = (hex) => {
+  const v = parseInt(hex.slice(1), 16);
+  const [r, g, b] = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) => x / 255);
+  const hi = Math.max(r, g, b), lo = Math.min(r, g, b), l = (hi + lo) / 2;
+  if (hi === lo) return [0, 0, l * 100];
+  const d = hi - lo, s = l > 0.5 ? d / (2 - hi - lo) : d / (hi + lo);
+  const h = hi === r ? (g - b) / d + (g < b ? 6 : 0) : hi === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h * 60, s * 100, l * 100];
+};
+const hsl = (h, s, l) => `hsl(${h.toFixed(0)} ${Math.max(0, Math.min(100, s)).toFixed(0)}% ${Math.max(0, Math.min(100, l)).toFixed(1)}%)`;
+const toneVars = (name, hex) => {
+  const [h, s, l] = hexToHsl(hex);
+  return `--so-${name}:${hsl(h, s, l)};--so-${name}-lit:${hsl(h - 4, s * 0.9, l + (100 - l) * 0.32)};--so-${name}-shade:${hsl(h + 6, Math.min(100, s * 1.1), l * 0.62)}`;
+};
+const TONES = ["fur", "belly", "dark", "skin", "mark"];
+
+// Older figures passed a material palette to crewCss. Machines take no colour now, so it is ignored.
+export const paletteOf = () => ({});
+
+export function crewCss() {
+  const rules = [
+    `.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}`,
+    `.crew[data-duty]>.so-fig{filter:url(#so-duty)}`,
+    `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
+    `.crew{--so-ground:#000}`,
+  ];
+  for (const [name, a] of Object.entries(ART)) {
+    rules.push(`.crew[data-species="${name}"]{${TONES.filter((t) => a.colors[t]).map((t) => toneVars(t, a.colors[t])).join(";")};--so-eye:${a.colors.eye ?? "#120c08"};--so-nose:${a.colors.nose ?? a.colors.skin};--so-claw:${a.colors.claw ?? "#efe6da"};--so-whisker:${a.colors.whisker ?? "#f6f1e8"};--so-teeth:${a.colors.teeth ?? "#f4efe6"}}`);
+  }
+  for (const [name, r] of Object.entries(ROLES)) rules.push(`.crew[data-role="${name}"]{--so-role:${r.hex};--so-role-dark:${hsl(...(([h, s, l]) => [h, s, l * 0.62])(hexToHsl(r.hex)))}}`);
+  return rules.join("\n");
+}
+
+// ---------- defs: gradients per tone, lit from the top left of the screen
+function defs(sp) {
+  const a = ART[sp];
+  const id = (x) => `so-${sp}-${x}`;
+  const out = [];
+  const fx = 0.5;
+  for (const t of TONES) {
+    if (!a.colors[t]) continue;
+    out.push(`<radialGradient id="${id(`v-${t}`)}" cx="${fx}" cy=".3" r=".82" fx="${fx}" fy=".26"><stop offset="0" style="stop-color:var(--so-${t}-lit)"/><stop offset=".5" style="stop-color:var(--so-${t})"/><stop offset="1" style="stop-color:var(--so-${t}-shade)"/></radialGradient>`);
+    out.push(`<radialGradient id="${id(`s-${t}`)}"><stop offset="0" style="stop-color:var(--so-${t})"/><stop offset=".55" style="stop-color:var(--so-${t});stop-opacity:.92"/><stop offset="1" style="stop-color:var(--so-${t});stop-opacity:0"/></radialGradient>`);
+  }
+  out.push(`<radialGradient id="${id("ao")}"><stop offset="0" style="stop-color:var(--so-fur-shade);stop-opacity:.75"/><stop offset="1" style="stop-color:var(--so-fur-shade);stop-opacity:0"/></radialGradient>`);
+  out.push(`<radialGradient id="${id("ground")}"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".6" stop-color="#000" stop-opacity=".14"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`);
+  out.push(`<radialGradient id="${id("eye")}" cx=".42" cy=".36" r=".7"><stop offset="0" style="stop-color:color-mix(in srgb,var(--so-eye) 55%,#7a5236)"/><stop offset=".45" style="stop-color:var(--so-eye)"/><stop offset="1" style="stop-color:var(--so-eye)"/></radialGradient>`);
+  out.push(`<filter id="so-duty" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius=".75" result="d"/><feFlood style="flood-color:var(--crew-duty)" result="c"/><feComposite in="c" in2="d" operator="in" result="rim"/><feMerge><feMergeNode in="rim"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`);
+  return `<defs>${out.join("")}</defs>`;
+}
+
+// ---------- painting helpers (local coordinates)
+// Light from above, so a mirrored animal is lit the same way.
+const LIGHT = () => [0, -1];
+function furShape(sp, pts, tone, o, mirror) {
+  const { d, poly } = curve(pts);
+  const coat = ART[sp].coat;
+  const light = LIGHT(mirror);
+  const flow = o.flow ?? coat.flow;
+  let s = `<path d="${d}" fill="url(#so-${sp}-v-${tone})"/>`;
+  const nStr = o.strands ?? 0;
+  if (nStr) {
+    const st = strands(poly, { count: nStr, len: o.strandLen ?? coat.strand, flow, seed: o.seed ?? 3, light });
+    if (st.shade) s += `<path class="so-strand" d="${st.shade}" style="stroke:var(--so-${tone}-shade);stroke-width:${o.sw ?? coat.sw};opacity:.5"/>`;
+    if (st.lit) s += `<path class="so-strand" d="${st.lit}" style="stroke:var(--so-${tone}-lit);stroke-width:${o.sw ?? coat.sw};opacity:.55"/>`;
+  }
+  if (o.tufts !== false) {
+    const tf = tufts(poly, { len: o.tuft ?? coat.tuft, gap: o.gap ?? coat.gap, flow, lean: o.lean ?? 0.5, seed: (o.seed ?? 3) + 11, light, only: o.only });
+    const w = o.tw ?? coat.tw;
+    if (tf.shade) s += `<path class="so-tuft" d="${tf.shade}" style="stroke:var(--so-${tone}-shade);stroke-width:${w};opacity:.55"/>`;
+    if (tf.mid) s += `<path class="so-tuft" d="${tf.mid}" style="stroke:var(--so-${tone});stroke-width:${w}"/>`;
+    if (tf.lit) s += `<path class="so-tuft" d="${tf.lit}" style="stroke:var(--so-${tone}-lit);stroke-width:${w};opacity:.85"/>`;
+  }
+  return s;
+}
+const softShape = (sp, pts, tone, op = 1) => `<path d="${curve(pts).d}" fill="url(#so-${sp}-s-${tone})"${op < 1 ? ` opacity="${op}"` : ""}/>`;
+const plainShape = (sp, pts, tone) => `<path d="${curve(pts).d}" fill="url(#so-${sp}-v-${tone})"/>`;
+const aoBlob = (sp, [cx, cy, rx, ry], op = 1) => `<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(rx)}" ry="${n1(ry)}" fill="url(#so-${sp}-ao)"${op < 1 ? ` opacity="${op}"` : ""}/>`;
+
+function eyeSvg(sp, e, state, far = false) {
+  const [cx, cy] = e.at;
+  const grow = state === "wide" ? 1.18 : 1;
+  const rx = e.rx * grow, ry = e.ry * grow, rot = e.rot ?? 0;
+  const tf = `transform="rotate(${rot} ${n1(cx)} ${n1(cy)})"`;
+  let s = "";
+  if (e.ring) s += `<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(rx + e.ring)}" ry="${n1(ry + e.ring)}" fill="url(#so-${sp}-s-mark)" ${tf}/>`;
+  s += `<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(rx + 0.45)}" ry="${n1(ry + 0.45)}" style="fill:var(--so-fur-shade)" ${tf}/>`;
+  if (state === "shut") {
+    s += `<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(rx)}" ry="${n1(ry)}" style="fill:var(--so-fur)" ${tf}/>`;
+    s += `<path class="so-line" d="M${n1(cx - rx * 0.95)},${n1(cy + ry * 0.05)}Q${n1(cx)},${n1(cy + ry * 0.55)} ${n1(cx + rx * 0.95)},${n1(cy + ry * 0.05)}" style="stroke:var(--so-eye);stroke-width:${n1(Math.max(0.5, rx * 0.22))}" ${tf}/>`;
+    return s;
+  }
+  s += `<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(rx)}" ry="${n1(ry)}" fill="url(#so-${sp}-eye)" ${tf}/>`;
+  if (!far || rx > 1.2) {
+    s += `<ellipse cx="${n1(cx - rx * 0.34)}" cy="${n1(cy - ry * 0.4)}" rx="${n1(rx * 0.3)}" ry="${n1(ry * 0.26)}" fill="#fff" opacity=".92"/>`;
+    s += `<circle cx="${n1(cx + rx * 0.35)}" cy="${n1(cy + ry * 0.38)}" r="${n1(rx * 0.12)}" fill="#fff" opacity=".5"/>`;
+  }
+  if (state === "happy") {
+    // Squint: the lids close over the top and lift from below, inside the eye's outline.
+    const RX = rx + 0.5, RY = ry + 0.5;
+    const cut = (dy) => RX * Math.sqrt(Math.max(0, 1 - (dy / RY) ** 2));
+    const yt = -ry * 0.08, yb = ry * 0.55, xt = cut(yt), xb = cut(yb);
+    s += `<path d="M${n1(cx - xt)},${n1(cy + yt)}A${n1(RX)} ${n1(RY)} 0 0 1 ${n1(cx + xt)},${n1(cy + yt)}Q${n1(cx)},${n1(cy + yt + ry * 0.4)} ${n1(cx - xt)},${n1(cy + yt)}Z" style="fill:var(--so-fur)" ${tf}/>`;
+    s += `<path d="M${n1(cx - xb)},${n1(cy + yb)}A${n1(RX)} ${n1(RY)} 0 0 0 ${n1(cx + xb)},${n1(cy + yb)}Q${n1(cx)},${n1(cy + yb - ry * 0.3)} ${n1(cx - xb)},${n1(cy + yb)}Z" style="fill:var(--so-fur)" ${tf}/>`;
+    s += `<path class="so-line" d="M${n1(cx - xt)},${n1(cy + yt)}Q${n1(cx)},${n1(cy + yt + ry * 0.4)} ${n1(cx + xt)},${n1(cy + yt)}" style="stroke:var(--so-fur-shade);stroke-width:${n1(Math.max(0.4, rx * 0.16))}" ${tf}/>`;
+  }
+  return s;
+}
+
+function whiskersSvg(w) {
+  if (!w) return "";
+  const r = rng(w.seed ?? 5);
+  let d = "";
+  for (let i = 0; i < w.n; i++) {
+    const a = (w.from + ((w.to - w.from) * i) / Math.max(1, w.n - 1) + (r() - 0.5) * 6) * RAD;
+    const l = w.len * (0.75 + 0.4 * r());
+    const o = add(w.at, [0, (i - w.n / 2) * (w.spread ?? 0.6)]);
+    const tip = add(o, [Math.cos(a), Math.sin(a)], l);
+    const c = add(add(o, [Math.cos(a), Math.sin(a)], l * 0.5), [0, l * 0.07]);
+    d += `M${pt(o)}Q${pt(c)} ${pt(tip)}`;
+  }
+  return `<path class="so-line" d="${d}" style="stroke:var(--so-whisker);stroke-width:${w.width ?? 0.35};opacity:${w.opacity ?? 0.75}"/>`;
+}
+
+function brushSvg(b) {
+  if (!b) return "";
+  const r = rng(b.seed ?? 13);
+  let d = "";
+  for (let i = 0; i < b.n; i++) {
+    const a = (-90 + (i / Math.max(1, b.n - 1) - 0.5) * (b.spread ?? 60) + (b.tilt ?? 0) + (r() - 0.5) * 10) * RAD;
+    const l = b.len * (0.6 + 0.5 * r());
+    const o = add(b.at, [(r() - 0.5) * 1.2, 1.5]);
+    const tip = add(o, [Math.cos(a), Math.sin(a)], l);
+    d += `M${pt(o)}Q${pt(add(add(o, [Math.cos(a), Math.sin(a)], l * 0.5), [l * 0.12, 0]))} ${pt(tip)}`;
+  }
+  return `<path class="so-tuft" d="${d}" style="stroke:var(--so-dark);stroke-width:${b.w ?? 0.6}"/>`;
+}
+
+function tailSvg(sp, T, mirror) {
+  if (T.line) {
+    const d = curve(limb(T.line.cl, T.line.w)).d;
+    return `<path d="${d}" fill="url(#so-${sp}-v-${T.tone ?? "skin"})"/>${T.line.rings ? ringsSvg(T.line) : ""}`;
+  }
+  let s = furShape(sp, T.pts, T.tone ?? "fur", { strands: T.strands ?? 20, flow: T.flow, seed: 31, tuft: T.tuft, gap: T.gap, lean: T.lean, tw: T.tw, strandLen: T.strandLen, tufts: T.tufts }, mirror);
+  if (T.scales) {
+    const { poly } = curve(T.pts);
+    const [x0, y0, x1, y1] = bounds(poly);
+    let d = "";
+    const g = T.scales;
+    for (let x = x0; x < x1; x += g) for (let y = y0; y < y1; y += g * 0.7) {
+      const c = [x + ((Math.round((y - y0) / (g * 0.7)) % 2) * g) / 2, y];
+      if (inside(poly, c[0] - g * 0.4, c[1]) && inside(poly, c[0] + g * 0.4, c[1] + g * 0.3)) d += `M${pt(add(c, [-g * 0.4, 0]))}Q${pt(add(c, [0, g * 0.45]))} ${pt(add(c, [g * 0.4, 0]))}`;
+    }
+    s += `<path class="so-line" d="${d}" style="stroke:var(--so-${T.tone ?? "fur"}-shade);stroke-width:.45;opacity:.7"/>`;
+  }
+  return s;
+}
+function ringsSvg(L) {
+  const { poly } = curve(L.cl, false, 12);
+  let d = "";
+  for (let i = 4; i < poly.length - 2; i += 3) {
+    const t = unit(sub(poly[i + 1], poly[i - 1])), nrm = [-t[1], t[0]];
+    const w = 1.2;
+    d += `M${pt(add(poly[i], nrm, w))}L${pt(add(poly[i], nrm, -w))}`;
+  }
+  return `<path class="so-line" d="${d}" style="stroke:var(--so-skin-shade);stroke-width:.25;opacity:.5"/>`;
+}
+
+function headSvg(sp, H, { eyes, front, mirror }) {
+  let s = "";
+  const ears = H.ears ?? {};
+  if (ears.far) s += furShape(sp, ears.far.pts, ears.far.tone ?? "fur", { strands: 0, tuft: 1.2, gap: 1.6, seed: 21 }, mirror) + (front && ears.far.inner ? softShape(sp, ears.far.inner, "skin", 0.9) : "") + brushSvg(ears.far.brush);
+  for (const x of H.under ?? []) s += x(sp, mirror);
+  s += furShape(sp, H.pts, H.tone ?? "fur", { strands: H.strands ?? 30, flow: H.flow, seed: 9, tuft: H.tuft, only: H.tuftOnly }, mirror);
+  for (const m of H.marks ?? []) if (front || !m.front) s += m.soft === false ? plainShape(sp, m.pts, m.tone) : softShape(sp, m.pts, m.tone, m.op ?? 1);
+  if (front && H.eyeFar) s += eyeSvg(sp, H.eyeFar, eyes, true);
+  if (H.eye && (front || H.eyeBack !== false)) s += eyeSvg(sp, H.eye, eyes);
+  if (H.snout) s += `<path d="${curve(H.snout).d}" fill="url(#so-${sp}-v-skin)"/><path class="so-line" d="${curve(H.snout, false).d}" style="stroke:var(--so-skin-shade);stroke-width:.25;opacity:.35"/>`;
+  if (H.nose) s += `<path d="${curve(H.nose).d}" style="fill:var(--so-nose)"/><path d="${curve(H.nose).d}" fill="url(#so-${sp}-v-skin)" opacity=".35"/>`;
+  if (H.mouth) s += `<path class="so-line" d="${H.mouth}" style="stroke:var(--so-fur-shade);stroke-width:.55;opacity:.8"/>`;
+  if (ears.near) {
+    s += furShape(sp, ears.near.pts, ears.near.tone ?? "fur", { strands: 0, tuft: ears.near.tuft ?? 1.1, gap: 1.6, seed: 23, flow: ears.near.flow }, mirror);
+    if (ears.near.inner) s += softShape(sp, ears.near.inner, "skin", front ? 0.95 : 0.4);
+    s += brushSvg(ears.near.brush);
+  }
+  if (H.teeth) s += `<path d="${H.teeth}" style="fill:var(--so-teeth)"/><path d="${H.teeth}" fill="url(#so-${sp}-v-skin)" opacity=".18"/>${H.teethLine ? `<path class="so-line" d="${H.teethLine}" style="stroke:var(--so-fur-shade);stroke-width:.4"/>` : ""}`;
+  if (front) s += whiskersSvg(H.whiskers);
+  return s;
+}
+
+function pawSvg(sp, P) {
+  // A paw along +x from the wrist.
+  const l = P.len, w = P.w;
+  const pts = [[-0.5, -w * 0.42], [l * 0.45, -w * 0.55], [l * 0.9, -w * 0.38], [l * 1.04, 0], [l * 0.9, w * 0.38], [l * 0.45, w * 0.55], [-0.5, w * 0.42]];
+  let s = `<path d="${curve(pts).d}" fill="url(#so-${sp}-v-${P.tone ?? "skin"})"/>`;
+  const toes = P.toes ?? 4;
+  let d = "";
+  for (let i = 1; i < toes; i++) {
+    const y = -w * 0.5 + (w * i) / toes;
+    d += `M${n1(l * 0.68)},${n1(y * 0.9)}L${n1(l * 1.0)},${n1(y * 0.75)}`;
+  }
+  s += `<path class="so-line" d="${d}" style="stroke:var(--so-${P.tone ?? "skin"}-shade);stroke-width:${n1(w * 0.07)};opacity:.7"/>`;
+  if (P.claws) {
+    let c = "";
+    for (let i = 0; i < P.claws; i++) {
+      const y = -w * 0.38 + (w * 0.76 * i) / Math.max(1, P.claws - 1);
+      const cl = P.clawLen ?? l * 0.4;
+      c += `M${n1(l * 0.95)},${n1(y)}Q${n1(l * 0.95 + cl * 0.7)},${n1(y - cl * 0.05)} ${n1(l * 0.95 + cl)},${n1(y + cl * 0.35)}`;
+    }
+    s += `<path class="so-line" d="${c}" style="stroke:var(--so-claw);stroke-width:${n1(P.clawW ?? w * 0.13)}"/>`;
+  }
+  return s;
+}
+
+function footSvg(sp, F) {
+  let s = `<path d="${curve(F.pts).d}" fill="url(#so-${sp}-v-${F.tone ?? "skin"})"/>`;
+  if (F.claws) s += `<path class="so-line" d="${F.claws}" style="stroke:var(--so-claw);stroke-width:${F.clawW ?? 0.5}"/>`;
+  if (F.toes) s += `<path class="so-line" d="${F.toes}" style="stroke:var(--so-${F.tone ?? "skin"}-shade);stroke-width:.35;opacity:.7"/>`;
+  return s;
+}
+
+const collarSvg = (C) => (C ? `<path class="so-line" d="${C.d}" style="stroke:var(--so-role-dark);stroke-width:${n1(C.w + 0.8)}"/><path class="so-line" d="${C.d}" style="stroke:var(--so-role);stroke-width:${n1(C.w)}"/>${C.tag ? `<circle cx="${n1(C.tag[0])}" cy="${n1(C.tag[1])}" r="${n1(C.tag[2])}" style="fill:var(--so-role-dark)"/><circle cx="${n1(C.tag[0] - C.tag[2] * 0.15)}" cy="${n1(C.tag[1] - C.tag[2] * 0.15)}" r="${n1(C.tag[2] * 0.72)}" style="fill:var(--so-role)"/><circle cx="${n1(C.tag[0] - C.tag[2] * 0.35)}" cy="${n1(C.tag[1] - C.tag[2] * 0.35)}" r="${n1(C.tag[2] * 0.22)}" fill="#fff" opacity=".7"/>` : ""}` : "");
+
+// ---------- static pieces, cached by species, stance, view and mirror
+const CACHE = new Map();
+function pieces(sp, stance, front, mirror, eyes) {
+  const key = `${sp}|${stance}|${front}|${mirror}|${eyes}`;
+  if (CACHE.has(key)) return CACHE.get(key);
+  const a = ART[sp], R = stance === "four" ? a.four : a.up;
+  const out = { defs: defs(sp) };
+  const B = R.body;
+  out.body = furShape(sp, B.pts, B.tone ?? "fur", { strands: B.strands ?? 60, flow: B.flow, seed: 4, only: B.tuftOnly, lean: B.lean }, mirror);
+  for (const m of B.marks ?? []) if (front || !m.front) out.body += m.soft === false ? plainShape(sp, m.pts, m.tone) : softShape(sp, m.pts, m.tone, m.op ?? 1);
+  if (!front) for (const m of B.backMarks ?? []) out.body += softShape(sp, m.pts, m.tone, m.op ?? 1);
+  for (const o of B.ao ?? []) out.body += aoBlob(sp, o, 0.8);
+  out.collar = collarSvg(R.collar);
+  out.head = headSvg(sp, R.head, { eyes, front, mirror });
+  out.tail = R.tail ? tailSvg(sp, R.tail, mirror) : "";
+  out.ground = `<ellipse cx="${n1(R.shadow[0])}" cy="1" rx="${n1(R.shadow[1])}" ry="${n1(R.shadow[2])}" fill="url(#so-${sp}-ground)"/>`;
+  if (R.arms) out.paw = pawSvg(sp, R.arms.paw);
+  if (R.feet) { out.footN = footSvg(sp, R.feet.near); out.footF = footSvg(sp, R.feet.far ?? R.feet.near); }
+  if (R.legs) out.legFoot = R.legs.map((L) => footSvg(sp, L.foot));
+  CACHE.set(key, out);
+  return out;
+}
+
+const tr = (x, y) => `translate(${n1(x)} ${n1(y)})`;
+
+// ---------- the critter
+export function critter(spec, pose = {}, P) {
+  const sp = spec.species;
+  const a = ART[sp];
+  if (!a) throw new Error(`no species ${sp}`);
+  const stance = pose.stance === "four" && a.four ? "four" : "up";
+  const hang = pose.stance === "hang";
+  const R = stance === "four" ? a.four : a.up;
+  const size = spec.size ?? 20;
+  const at = pose.at ?? [0, 0, 0];
+  const hop = pose.hop ?? 0;
+  const g0 = iso(at, P);
+  const base = iso([at[0], at[1], at[2] + hop], P);
+  const zpx = Math.abs(iso([at[0], at[1], at[2] + 1], P)[1] - g0[1]);
+  const k = (size * zpx) / 100;
+  const h = (pose.heading ?? 0) * RAD;
+  const fw = [Math.cos(h), Math.sin(h), 0];
+  const fs = sub(iso([at[0] + fw[0], at[1] + fw[1], at[2]], P), g0);
+  const fl = len(fs) || 1;
+  const mirror = fs[0] > 0;
+  const front = fs[1] > -0.05 * fl;
+  const turn = Math.min(1, 0.74 + (0.26 * Math.abs(fs[0])) / fl / 0.55);
+  const sq = pose.squash ?? 0;
+  const sx = (mirror ? -1 : 1) * k * turn * (1 + 0.1 * sq), sy = k * (1 - 0.26 * sq);
   const eyes = pose.eyes ?? "open";
-  const er = sp.eyes.r * H * (eyes === "wide" ? 1.35 : 1);
-  for (const s of [-1, 1]) {
-    const e = onHead(s * sp.eyes.az, sp.eyes.el, 1);
-    if (dot3(e.dir, V) < 0.02) continue;
-    if (eyes === "shut" || eyes === "happy" || (pose.blink ?? 0) > 0.5) {
-      const bend = eyes === "happy" ? -1 : 1;
-      put({ key: `eye${s}`, kind: "line", c: "eye", tone: "hi", d: arcOn(add3(e.p, mul3(e.dir, er * 0.15)), e.dir, er * 1.05, P, { bend }), depth: headDepth + 0.003 });
-    } else {
-      const c = add3(headC, mul3(e.dir, hr - er * 0.35));
-      if (eyes === "wide") {
-        const wc = add3(headC, mul3(e.dir, hr - er * 0.55));
-        put({ key: `eyeW${s}`, kind: "solid", c: "white", paths: sphereOf(wc, er * 1.15, P, { steps: 32 }), depth: headDepth + 0.002 });
-        const pc = add3(headC, mul3(e.dir, hr + er * 0.2));
-        put({ key: `eye${s}`, kind: "solid", c: "eye", paths: sphereOf(pc, er * 0.55, P, { steps: 24 }), depth: headDepth + 0.003 });
-      } else {
-        put({ key: `eye${s}`, kind: "solid", c: "eye", paths: sphereOf(c, er, P, { steps: 32 }), depth: headDepth + 0.003 });
-        const g = unit3(add3(mul3(V, 1), mul3(Lgt, 0.6)));
-        const gl = add3(c, mul3(g, er * 0.98));
-        put({ key: `gleam${s}`, kind: "gleam", c: "white", d: ellipseOn(gl, V, er * 0.34, P, { steps: 10 }), depth: headDepth + 0.004 });
-      }
-    }
-    if (sp.blush) {
-      const b = onHead(s * (sp.eyes.az + 14), sp.eyes.el - 24, 1);
-      feature(`blush${s}`, "pink", b.p, b.dir, hr * 0.13, 0.0009, { squash: 0.6, edge: "none" });
-    }
-  }
-
-  const A = sp.arms;
-  const paws = pose.paws ?? {};
+  const S = pieces(sp, stance, front, mirror, eyes);
+  const lean = ((pose.lean ?? 0) + (R.lean ?? 0)) * RAD;
+  const toLocal = (w) => { const s = iso(w, P); return [(s[0] - base[0]) / sx, (s[1] - base[1]) / sy]; };
+  const L = (p) => rotp(p, -lean, R.pivot);
+  const look = pose.look ?? [0, 0];
+  const pitch = Math.max(-30, Math.min(34, look[1] * 0.75)) + (R.head.pitch ?? 0);
+  const dyn = {};
+  dyn.root = `${tr(base[0], base[1])} scale(${Math.round(sx * 1000) / 1000} ${Math.round(sy * 1000) / 1000})`;
+  dyn.ground = `${tr(g0[0], g0[1])} scale(${Math.round(sx * 1000) / 1000} ${Math.round(k * 1000) / 1000})`;
+  dyn.lean = `rotate(${n1(-lean / RAD)} ${pt(R.pivot)})`;
+  dyn.head = `rotate(${n1(pitch)} ${pt(R.head.pivot)})`;
   const reach = {};
-  for (const s of [-1, 1]) {
-    const key = s < 0 ? "r" : "l";
-    const shoulder = W([0.03, s * B.r * 0.78, B.z + B.h * 0.66]);
-    const rest = W([0.17, s * (B.r * 0.62), B.z + B.h * 0.38]);
-    const want = paws[key] ?? rest;
-    const len = A.len * H;
-    const toward = sub3(want, shoulder);
-    const dist = len3(toward);
-    const max = len * 1.35;
-    const paw = dist > max ? add3(shoulder, mul3(unit3(toward), max)) : want;
-    reach[key] = Math.max(0, dist - max);
-    const ar = A.r * H, pr = A.paw * H;
-    const mid = mul3(add3(shoulder, paw), 0.5);
-    const span = len3(sub3(paw, shoulder));
-    if (span > 1e-3) ell(`arm${s}`, cOf(A.c === "pink" ? "fur" : A.c ?? "fur"), ...along(mid, sub3(paw, shoulder), span * 0.5 + ar * 0.4, ar));
-    ball(`paw${s}`, A.c === "pink" ? "pink" : cOf(A.c ?? "fur"), paw, pr, 0.0001);
-  }
-
-  const Lg = sp.legs;
   const stride = pose.stride ?? { phase: 0, amount: 0 };
-  for (const s of [-1, 1]) {
-    const hipAt = add3(base, add3(add3(mul3(f0, 0), mul3(side, s * B.r * H * 0.52)), mul3(up0, hipZ * H * 0.8)));
-    const ph = TAU * stride.phase + (s > 0 ? Math.PI : 0);
-    const swing = Math.sin(ph) * stride.amount * H;
-    const lift = Math.max(0, Math.cos(ph)) * stride.amount * H * 0.45;
-    const fr = Lg.foot * H;
-    const footAt = add3(base, add3(add3(mul3(f0, swing + (Lg.long ? Lg.long * H * 0.4 : 0.02 * H)), mul3(side, s * B.r * H * 0.55)), mul3(up0, fr * 0.8 + lift)));
-    const legMid = mul3(add3(hipAt, footAt), 0.5);
-    ell(`leg${s}`, cOf(Lg.c === "pink" ? "fur" : Lg.c ?? "dark"), ...along(legMid, sub3(footAt, hipAt), len3(sub3(footAt, hipAt)) * 0.5 + Lg.r * H * 0.3, Lg.r * H));
-    if (Lg.long) {
-      const toe = add3(footAt, mul3(f0, Lg.long * H));
-      ell(`foot${s}`, cOf(Lg.c ?? "dark"), ...along(mul3(add3(footAt, toe), 0.5), f0, Lg.long * H * 0.6, fr * 0.75, fr * 0.6));
+  const sway = (pose.tailSway ?? 0) * 12;
+  if (R.tail) dyn.tail = `rotate(${n1(-lean / RAD + sway)} ${pt(R.tail.pivot ?? R.pivot)})`;
+
+  if (stance === "up") {
+    // Which side of the animal is nearer the viewer.
+    const side = [-Math.sin(h), Math.cos(h), 0];
+    const leftNear = depthOf([at[0] + side[0], at[1] + side[1], at[2]], P) >= depthOf(at, P);
+    const nearKey = leftNear ? "l" : "r", farKey = leftNear ? "r" : "l";
+    const A = R.arms;
+    // The shoulders sit across the body: move them along the animal's real side axis as the camera sees it,
+    // so a paw target to its left or right lands on the matching side of the drawing.
+    const sv = sub(iso([at[0] + side[0], at[1] + side[1], at[2]], P), g0);
+    const span = ((A.span ?? 10) * size) / 100;
+    const across = [(sv[0] * span) / sx, (sv[1] * span) / sy];
+    const nearOff = leftNear ? across : [-across[0], -across[1]];
+    for (const [which, key] of [["N", nearKey], ["F", farKey]]) {
+      const drawn = hang && A.hang ? A.hang[which === "N" ? "near" : "far"] : which === "N" ? A.near : A.far;
+      const sgn = which === "N" ? 1 : -1;
+      const shoulder = [drawn[0] + nearOff[0] * sgn * 0.6, drawn[1] + nearOff[1] * sgn * 0.6];
+      const S0 = L(shoulder);
+      const rest = hang ? add(shoulder, [0, -(A.l1 + A.l2) * 0.9]) : which === "N" ? A.rest.near : A.rest.far;
+      const tgt = pose.paws?.[key] ? toLocal(pose.paws[key]) : L(rest);
+      const r = reach2(S0, tgt, A.l1, A.l2, A.bend ?? [0.45, 1]);
+      if (pose.paws?.[key]) reach[key] = (r.short * size) / 100;
+      const W = r.W;
+      const u = unit(sub(W, r.E));
+      const wrist = add(W, u, -A.paw.len * 0.55);
+      dyn[`arm${which}`] = curve(limb([S0, r.E, wrist], A.w)).d;
+      dyn[`paw${which}`] = `${tr(wrist[0], wrist[1])} rotate(${n1(Math.atan2(u[1], u[0]) / RAD)})`;
+    }
+    const st = (stride.amount ?? 0) * 60;
+    const ph = (stride.phase ?? 0) * Math.PI * 2;
+    const F = R.feet;
+    if (hang) {
+      // Feet dangle, toes down, swinging a little with the stride.
+      const swing = 8 * Math.sin(ph) * (stride.amount ?? 0) * 8;
+      dyn.footN = `${tr(F.near.at[0] + 2, F.near.at[1] + 2)} rotate(${n1(-72 + swing)})`;
+      dyn.footF = `${tr(F.far.at[0] + 4, F.far.at[1] + 1)} rotate(${n1(-64 - swing)})`;
+      dyn.ground = "scale(0)";
     } else {
-      ball(`foot${s}`, Lg.c === "pink" ? "pink" : cOf(Lg.c ?? "dark"), footAt, fr, 0);
+      dyn.footN = tr(F.near.at[0] + st * Math.sin(ph), F.near.at[1] - Math.max(0, Math.cos(ph)) * st * 0.3);
+      dyn.footF = tr(F.far.at[0] - st * Math.sin(ph), F.far.at[1] - Math.max(0, -Math.cos(ph)) * st * 0.3);
     }
+  } else {
+    const amt = (stride.amount ?? 0) * 60;
+    const ph = (stride.phase ?? 0) * Math.PI * 2;
+    R.legs.forEach((G, i) => {
+      const q = ph + G.offset * Math.PI * 2;
+      const foot = [G.foot.x + amt * Math.cos(q), -Math.max(0, Math.sin(q)) * amt * 0.42];
+      const hip = L(G.hip);
+      const r = reach2(hip, foot, G.l1, G.l2, G.bend);
+      dyn[`leg${i}`] = curve(limb([hip, r.E, r.W], G.w)).d;
+      dyn[`foot${i}`] = tr(r.W[0], r.W[1]);
+    });
   }
-
-  const T = sp.tail;
-  const sway = pose.tailSway ?? 0;
-  const tailBase = W([-B.r * 0.85, 0, B.z + 0.1]);
-  if (T.kind === "stub") ball("tail", cOf("fur"), W([-B.r * 0.98, 0, B.z + 0.1]), T.r * H, 0);
-  else if (T.kind === "bushy") {
-    const n = 11, beads = [];
-    for (let i = 0; i < n; i++) {
-      const t = i / (n - 1);
-      const x = -B.r * 0.95 - 0.2 * Math.sin(t * Math.PI * 0.85) + 0.05 * Math.sin(t * 5);
-      const z = B.z + 0.06 + 0.86 * t;
-      const y = sway * 0.12 * Math.sin(t * Math.PI);
-      const r = (0.05 + T.r * Math.sin(Math.min(1, t * 1.1) * Math.PI) * 0.95 + 0.03 * t) * H;
-      beads.push({ at: W([x, y, z]), r });
-    }
-    blob("tail", cOf("fur"), beads);
-  } else if (T.kind === "paddle") {
-    const at = add3(base, add3(mul3(f0, -(B.r + T.r * 0.9) * H), mul3(up0, 0.035 * H)));
-    ell("tail", cOf("dark"), at, [mul3(f0, T.r * H), mul3(side, T.r * H * 0.58), mul3(unit3(add3(up0, mul3(f0, -0.15))), 0.028 * H)]);
-  } else if (T.kind === "thin" || T.kind === "thick") {
-    const n = T.kind === "thin" ? 14 : 8, beads = [];
-    for (let i = 0; i < n; i++) {
-      const t = i / (n - 1);
-      const p = T.kind === "thin"
-        ? add3(base, add3(add3(mul3(f0, -(B.r * 0.9 + 0.32 * t) * H), mul3(side, (0.08 * Math.sin(t * 5) + sway * 0.1 * t) * H)), mul3(up0, (0.03 + 0.08 * Math.sin(t * Math.PI)) * H)))
-        : add3(base, add3(mul3(f0, -(B.r * 0.8 + 0.34 * t) * H), mul3(up0, (0.18 * (1 - t) + 0.035) * H)));
-      const r = (T.kind === "thin" ? T.r * (1 - 0.4 * t) : T.r * (1 - 0.62 * t)) * H;
-      beads.push({ at: p, r });
-    }
-    blob("tail", T.c ? T.c : cOf("fur"), beads);
-  }
-
-  const wear = spec.wear;
-  if (wear && spec.role) {
-    const rc = `role-${spec.role}`;
-    if (wear === "hat") {
-      const z0 = hr * 0.56;
-      const rho = Math.sqrt(hr * hr - z0 * z0);
-      const domeC = add3(headC, mul3(hu, z0));
-      const top = hr * 1.14 - z0;
-      ell("brim", rc, add3(domeC, mul3(hf, hr * 0.08)), [mul3(hf, rho * 1.24), mul3(hs, rho * 1.24), mul3(hu, hr * 0.035)], headDepth + 0.006 - front(domeC, rho * 1.24));
-      ell("hat", rc, domeC, [mul3(hf, rho * 1.08), mul3(hs, rho * 1.08), mul3(hu, top)], headDepth + 0.007 - front(domeC, rho * 1.08), { clip: { n: hu, d: 0 } });
-    } else if (wear === "band") {
-      const d = bandOnSphere(headC, hu, hr, hr * 0.3, hr * 0.5, P, V);
-      if (d) put({ key: "band", kind: "patch", c: rc, d, depth: headDepth + 0.0008, shade: "mid" });
-    } else if (wear === "scarf") {
-      const neck = W([Hd.x * 0.5, 0, Hd.z - Hd.r * 0.9]);
-      const n = 16, beads = [];
-      for (let i = 0; i < n; i++) {
-        const a = (i / n) * TAU;
-        beads.push({ at: add3(neck, add3(mul3(f, Math.cos(a) * B.r * H * 0.72), mul3(side, Math.sin(a) * B.r * H * 0.72))), r: B.r * H * 0.25 });
-      }
-      for (let i = 0; i < 3; i++) {
-        const t = i / 2;
-        beads.push({ at: add3(neck, add3(mul3(f, B.r * H * (0.7 + 0.08 * t)), add3(mul3(side, B.r * H * (0.35 + 0.05 * t)), mul3(up, -B.r * H * (0.15 + 0.6 * t))))), r: B.r * H * (0.2 - 0.03 * t) });
-      }
-      blob("scarf", rc, beads, neck);
-    } else if (wear === "cap") {
-      const z0 = hr * 0.36;
-      const rho = Math.sqrt(hr * hr - z0 * z0) * 1.06;
-      const baseC = add3(headC, mul3(hu, z0));
-      const axis = unit3(add3(mul3(hu, 1), mul3(hf, -0.75)));
-      const ch = hr * 1.15;
-      const F = frameAlong(baseC, axis);
-      ell("cap", rc, baseC, [mul3(F.a, ch), mul3(F.u, rho), mul3(F.v, rho)], headDepth + 0.006 - front(baseC, ch), { clip: { n: axis, d: 0 } });
-      ball("pompom", "white", add3(baseC, mul3(axis, ch * 1.02)), hr * 0.22, 0.007);
-    } else if (wear === "goggles") {
-      const d = bandOnSphere(headC, hu, hr, hr * 0.44, hr * 0.58, P, V);
-      if (d) put({ key: "strap", kind: "patch", c: rc, d, depth: headDepth + 0.0008, shade: "mid" });
-      for (const s of [-1, 1]) {
-        const g = onHead(s * 22, 32, 1.02);
-        if (dot3(g.dir, V) < 0) continue;
-        ell(`lens${s}`, rc, ...flat(g.p, g.dir, hr * 0.2, 0.3), headDepth + 0.006 - front(g.p, hr * 0.2));
-        put({ key: `glass${s}`, kind: "patch", c: "white", d: ellipseOn(add3(g.p, mul3(g.dir, hr * 0.065)), g.dir, hr * 0.13, P), depth: headDepth + 0.0065 });
-      }
-    }
-  }
-
-  parts.sort((a, b) => a.depth - b.depth);
-  return { name: spec.name ?? name, species: name, role: spec.role, parts, reach };
+  const key = `${sp}|${stance}|${front}|${mirror}|${eyes}`;
+  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base };
 }
 
-const SHADES = [0, 1, 2, 3];
+const node = (k, tag, attr, inner = "") => (tag === "path" ? `<path data-k="${k}" ${attr}/>` : `<g data-k="${k}" ${attr}>${inner}</g>`);
 
-const partSvg = (part) => {
-  const head = `<g data-c="${part.c}" data-k="${part.key}"`;
-  if (part.kind === "solid") {
-    const p = part.paths;
-    return `${head} class="iso-solid"${p.seamless ? " data-seamless" : ""}><path class="iso-fill" d="${p.fill}"/>${SHADES.map((i) => `<path class="iso-shade" data-shade="${i}" d="${p.shades[i] ?? ""}"/>`).join("")}<path class="iso-top" d="${p.top ?? ""}"/><path class="iso-line iso-edge" data-tone="hi" d="${p.outline}"/></g>`;
+function inner(c) {
+  const { S, dyn } = c;
+  const a = ART[c.species];
+  const R = c.stance === "four" ? a.four : a.up;
+  const g = (k, html) => node(k, "g", `transform="${dyn[k]}"`, html);
+  const limbPath = (k, tone) => `<path data-k="${k}" d="${dyn[k]}" fill="url(#so-${c.species}-v-${tone})"/>`;
+  const parts = [];
+  const tailBehind = !R.tail || (c.front ? R.tail.front !== "over" : R.tail.back !== "over");
+  if (c.stance === "up") {
+    const armTone = R.arms.tone ?? "fur";
+    if (R.tail && tailBehind) parts.push(g("tail", S.tail));
+    parts.push(limbPath("armF", armTone), g("pawF", S.paw));
+    parts.push(g("footF", S.footF));
+    parts.push(node("lean", "g", `transform="${dyn.lean}"`, S.body + S.collar + g("head", S.head)));
+    parts.push(g("footN", S.footN));
+    if (R.tail && !tailBehind) parts.push(g("tail", S.tail));
+    parts.push(limbPath("armN", armTone), g("pawN", S.paw));
+  } else {
+    const legTone = (G) => G.tone ?? "fur";
+    R.legs.forEach((G, i) => { if (G.far) parts.push(limbPath(`leg${i}`, legTone(G)), g(`foot${i}`, S.legFoot[i])); });
+    if (R.tail && tailBehind) parts.push(g("tail", S.tail));
+    parts.push(node("lean", "g", `transform="${dyn.lean}"`, S.body + S.collar + g("head", S.head)));
+    R.legs.forEach((G, i) => { if (!G.far) parts.push(limbPath(`leg${i}`, legTone(G)), g(`foot${i}`, S.legFoot[i])); });
+    if (R.tail && !tailBehind) parts.push(g("tail", S.tail));
   }
-  if (part.kind === "blob") {
-    const edges = part.balls.map((b) => b.outline).join("");
-    const body = part.balls.map((b) => `<path class="iso-fill" d="${b.fill}"/>${SHADES.map((i) => `<path class="iso-shade" data-shade="${i}" d="${b.shades[i] ?? ""}"/>`).join("")}`).join("");
-    return `${head} class="iso-solid crew-blob" data-seamless><path class="iso-line iso-edge" data-tone="hi" d="${edges}" style="stroke-width:calc(var(--anatomy-weight) * 2.2)"/>${body}</g>`;
-  }
-  if (part.kind === "patch") return `${head}><path class="crew-patch"${part.shade ? ` data-shade="${part.shade}"` : ""} d="${part.d}"/>${part.edge === "none" ? "" : `<path class="iso-line" data-tone="${part.edge ?? "mid"}" d="${part.d}"/>`}</g>`;
-  if (part.kind === "gleam") return `${head}><path class="crew-gleam" d="${part.d}"/></g>`;
-  return `${head}><path class="iso-line" data-tone="${part.tone ?? "hi"}" data-free="" d="${part.d}" style="stroke-width:1.1px"/></g>`;
-};
-
-const pathsOf = (part) => {
-  if (part.kind === "solid") return [part.paths.fill, ...SHADES.map((i) => part.paths.shades[i] ?? ""), part.paths.top ?? "", part.paths.outline];
-  if (part.kind === "blob") return [part.balls.map((b) => b.outline).join(""), ...part.balls.flatMap((b) => [b.fill, ...SHADES.map((i) => b.shades[i] ?? "")])];
-  if (part.kind === "patch") return part.edge === "none" ? [part.d] : [part.d, part.d];
-  return [part.d];
-};
+  return `${S.defs}<g data-k="ground" transform="${dyn.root}">${S.ground}</g><g class="so-fig"><g data-k="root" transform="${dyn.root}">${parts.join("")}</g></g>`;
+}
 
 export function critterSvg(c, { duty = false, part } = {}) {
-  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${c.parts.map(partSvg).join("")}</g>`;
+  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${inner(c)}</g>`;
 }
 
 export function paintCritter(el, c) {
-  const shape = c.parts.map((part) => `${part.key}:${part.kind}:${part.c}:${part.edge ?? ""}`).join("|");
-  if (el.__crew !== shape || el.children.length !== c.parts.length) {
-    el.innerHTML = c.parts.map(partSvg).join("");
-    el.__crew = shape;
+  if (el.__crew !== c.key) {
+    el.innerHTML = inner(c);
+    el.__crew = c.key;
+    el.__nodes = Object.fromEntries([...el.querySelectorAll("[data-k]")].map((n) => [n.getAttribute("data-k"), n]));
     return;
   }
-  c.parts.forEach((part, i) => {
-    const paths = el.children[i].children;
-    pathsOf(part).forEach((d, j) => {
-      if (paths[j] && paths[j].getAttribute("d") !== d) paths[j].setAttribute("d", d);
-    });
-  });
+  for (const [k, v] of Object.entries(c.dyn)) {
+    const n = el.__nodes[k];
+    if (!n) continue;
+    const attr = n.tagName === "path" ? "d" : "transform";
+    if (n.getAttribute(attr) !== v) n.setAttribute(attr, v);
+  }
+}
+
+// The box a critter covers on screen, for framing.
+export function critterBox(c) {
+  const a = ART[c.species], R = c.stance === "four" ? a.four : a.up;
+  const [x0, y0, x1, y1] = R.box;
+  const m = c.dyn.root.match(/translate\(([-\d.]+) ([-\d.]+)\) scale\(([-\d.]+) ([-\d.]+)\)/).slice(1).map(Number);
+  const xs = [m[0] + x0 * m[2], m[0] + x1 * m[2]], ys = [m[1] + y0 * m[3], m[1] + y1 * m[3]];
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
 }

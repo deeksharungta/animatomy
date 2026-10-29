@@ -41,8 +41,8 @@ const CENTRE = -24 + BLOCK_W / 2;
 const STOPS = BLOCKS.map((_, index) => DIAL[0] - CENTRE - STEP * index);
 const REACH = [STOPS[STOPS.length - 1] - 6, STOPS[0] + 6];
 
-const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving", wear: "scarf" };
-const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: "cap" };
+const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving" };
+const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing" };
 const KNOB = { dx: CARRIAGE.x + CARRIAGE.w - 8, y: CARRIAGE.y + CARRIAGE.d + 4, z: CARRIAGE_Z + 2.5 };
 
 const P = k.fitProjection(
@@ -170,7 +170,7 @@ const needleAt = (turn) => {
 
 function pipPose(cx, speed) {
   const kx = cx + KNOB.dx, ky = KNOB.y, kz = KNOB.z;
-  const at = [kx - 8.2, ky + 2.6, 0];
+  const at = [kx - 7.4, ky + 2.4, 0];
   const heading = (Math.atan2(ky - at[1], kx - at[0]) * 180) / Math.PI;
   const effort = Math.max(-1, Math.min(1, speed / 40));
   return {
@@ -189,14 +189,14 @@ function moPose(turn, rate, dozing) {
   const angle = turn * Math.PI * 2;
   const dx = Math.sin(angle), dy = -Math.cos(angle);
   const [x, y] = DIAL;
-  const reach = 5.4;
+  const reach = 4;
   return {
     at: [x, y, DIAL_TOP + 0.2],
     heading: (Math.atan2(dy, dx) * 180) / Math.PI,
     lean: 26,
     squash: 0.25,
     look: [0, -14],
-    paws: { l: [x + dx * reach - dy * 1.3, y + dy * reach + dx * 1.3, DIAL_TOP + 0.9], r: [x + dx * reach + dy * 1.3, y + dy * reach - dx * 1.3, DIAL_TOP + 0.9] },
+    paws: { l: [x + dx * reach - dy * 1.3, y + dy * reach + dx * 1.3, DIAL_TOP + 1.6], r: [x + dx * reach + dy * 1.3, y + dy * reach - dx * 1.3, DIAL_TOP + 1.6] },
     eyes: dozing ? "shut" : Math.abs(rate) > 8 ? "wide" : "open",
   };
 }

@@ -1,9 +1,9 @@
 <h1 align="center">Staff Only</h1>
 
-<p align="center"><b>A Claude skill that explains how a machine works by showing the crew of cartoon animals who secretly run it, one step at a time.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew inside, a full colourful scene, and a step-by-step player.</p>
+<p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, one step at a time.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a step-by-step player.</p>
 
 <p align="center">
-  <img src=".github/assets/dial-indicator-crew.webp" width="640" alt="An isometric dial indicator on a surface plate. A squirrel in a green scarf pushes the carriage of gauge blocks by its handle, and a sloth in a blue cap stands on the dial's hub, turning with the needle.">
+  <img src=".github/assets/dial-indicator-crew.webp" width="640" alt="An isometric dial indicator on a surface plate. A squirrel with a green collar pushes the carriage of gauge blocks by its handle, and a sloth with a blue collar stands on the dial's hub, turning with the needle.">
 </p>
 
 <p align="center"><sub><code>examples/dial-indicator-crew</code>, light theme. Pip pushes the carriage; Mo walks the needle round. Whoever is working is lit.</sub></p>
@@ -22,10 +22,10 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
 | Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
-| Colour | Monochrome, one lit accent | Pale material colours for the machine and scene; bold role colours for the crew |
+| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur and a collar in their role colour) |
 | Format | One interactive figure | A full scene played step by step: Next, Back, autoplay, the camera zooms onto whoever is working, a caption per step |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
-| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (crew builder, ellipsoid primitive, role, fur and material tokens), `kit/steps.mjs` (the step player) and `scripts/cast-sheet.mjs` |
+| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the step player) and `scripts/cast-sheet.mjs` |
 | Examples | 8 | 11: adds `examples/pencil-sharpener`, `examples/vending-machine` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
@@ -33,9 +33,9 @@ Everything else, from the craft rules to the audit, the line check, WebGL, the 3
 
 ## The crew
 
-<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: seven species (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo) each drawn at four headings and in four poses, every one wearing an item in its role colour."></p>
+<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: seven painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo), each at four headings and in six poses including on all fours and hanging, each with a thin collar in its role colour."></p>
 
-Seven species ship: hamster, mouse, squirrel, beaver, sloth, mole and kangaroo. Each is built from the kit's own solids, in the figure's camera and light, and wears one item (hat, scarf, band, cap or goggles) in its role colour:
+Seven species ship: hamster, mouse, squirrel, beaver, sloth, mole and kangaroo. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. Each wears a thin collar in its role colour:
 
 | Role | Colour | Does |
 |---|---|---|
