@@ -59,11 +59,11 @@ const C = {
 const T0 = 20;
 const HEAT = { strip: 230, tauStrip: 165, coolStrip: 75, element: 620, tauElement: 5, bread: 290, tauBread: 55, water: 72 };
 
-const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["glasses",  "stopwatch"] };
-const DIG = { species: "mole", name: "Dig", size: 18, role: "holding", wear: ["minerhat"] };
-const ROCKY = { species: "raccoon", name: "Rocky", size: 24, role: "sensing", wear: ["glasses",  "pencil"] };
-const ROO = { species: "kangaroo", name: "Roo", size: 17, role: "spring", wear: ["sweatband",  "whistle"] };
-const VOLTA = { species: "eel", name: "Volta", size: 50, role: "power", wear: ["hardhat"] };
+const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["glasses"] };
+const DIG = { species: "mole", name: "Dig", size: 18, role: "holding" };
+const ROCKY = { species: "raccoon", name: "Rocky", size: 24, role: "sensing" };
+const ROO = { species: "kangaroo", name: "Roo", size: 17, role: "spring", wear: ["sweatband"] };
+const VOLTA = { species: "eel", name: "Volta", size: 50, role: "power" };
 
 const DESK = { x: -150, y: -96, w: 286, d: 214, r: 6 };
 const ROOM_TOP = 165;

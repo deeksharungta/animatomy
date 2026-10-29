@@ -42,7 +42,7 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 
 ## 3. Roles and colours
 
-`ROLES` in `kit/critters.mjs`. Each critter wears a thin collar in its role colour, with a small tag at the throat. Props that are cloth or plastic (hats, bands, bows, mitts) take the same colour (section 12).
+`ROLES` in `kit/critters.mjs`. Each critter wears a thin collar in its role colour, with a small tag at the throat. A sweatband takes the same colour (section 12).
 
 | Role | Colour | Hex | Mechanisms |
 |---|---|---|---|
@@ -76,9 +76,11 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 | raccoon | turning knobs, dials and latches with nimble hands | grey coat, black mask over the eyes, pale muzzle and brows, black hand-like paws, a ringed tail |
 | otter | fluid: pumps, valves, anything wet | sleek brown coat, broad flat head with small ears, pale throat, a thick tapering tail |
 | crab | holding, clamping, pinching | red shell with a pale underside, eyes on stalks, two big pincers; walks sideways, legs drawn into the body |
+| woodpecker | striking: hammers, needles, strikers, anything that hits over and over | great spotted woodpecker: black back and wings with white shoulder patches and barred flight feathers, white face and underparts, black crown and moustache, red nape and red under the tail, a chisel beak; clings upright, propped on its stiff tail |
+| pigeon | carrying: messages, signals, small parts from place to place | rock pigeon: blue-grey body, iridescent green neck, two black wing bars, a dark tail band, orange eyes, a dark beak with a white cere, coral-pink legs; pecks with its neck and flies with its wings spread |
 | eel | power: current, wires, circuits, batteries (an electric eel makes electricity) | electric eel: long smooth olive body, orange throat and belly, a flat head with small eyes, a long fin under its whole length and no other limbs; lies along a path and crackles while charged |
 
-Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` with every species at four headings (facing you, left, right, away) and in seven poses (reaching, walking, on all fours, hanging, asleep, startled, kitted out with props). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
+Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` with every species at four headings (facing you, left, right, away) and in six poses (reaching, walking, on all fours, hanging, asleep, startled; birds peck and fly instead, and the eel curls). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
 
 Recurring cast: give each critter a name and keep the same species and role across a set of figures, so readers learn them.
 
@@ -87,7 +89,7 @@ Recurring cast: give each critter a name and keep the same species and role acro
 ```js
 import { critter, critterSvg, crewCss } from "../../kit/critters.mjs";
 
-const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving", wear: ["cap"] };
+const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["glasses"] };
 const pose = {
   at: [x, y, z],              // the point between its feet, on the surface it stands on
   heading: 30,                // degrees in the floor plane, 0 = +x
@@ -110,6 +112,7 @@ svg.push(critterSvg(c, { part: "pip" })); // build time
 - **Painted, not built from solids.** Each animal is drawn once, facing left and about 100 units tall, as a set of authored shapes: body, head, ears, markings, eyes, nose, whiskers, arms, paws, feet and tail. Fills are soft gradients lit from above; light markings (belly, muzzle, cheeks) fade into the fur; short fur strokes soften every edge and hair strands follow the coat; there are no outlines. `critter()` places that drawing in the figure's camera: at the projection of `at`, scaled so `size` world units of height match the camera, mirrored to face its heading, and drawn from behind when its heading points away from the viewer (no belly, no far eye, the tail in front). The ground shadow stays on the floor when it hops.
 - **A rig, not a puppet.** The upper body leans around the hips, the head tips around the neck, the arms are two bones from the shoulder to the paw target (projected into the drawing), the feet step with the stride, and the tail sways from its root. `stance: "four"` swaps to the side-on drawing on all fours, whose four legs run from `stride`. `stance: "hang"` uses the upright drawing with the shoulders set back, the arms up to the paws and the feet dangling, and drops the ground shadow.
 - **No limbs: a body along a path.** The eel has no paws, so it doesn't stand at a point: `pose.path` is a list of world points from its snout back, and its body lies along that path for `size` world units (carrying on past the last point if the path is shorter). Lay the path along the part it is: a wire, a pipe, a channel. Lift the path off the floor by its half-thickness (about 5% of its length) so it lies on the surface, not in it. The head is drawn like any other head (eyes, props, collar) and turned to point back along the first stretch of path. `charge` (0 to 1) makes it crackle, `flicker` redraws the sparks each time it steps on a whole number (give it time × 14 for a lively crackle), and `target` draws an arc from the snout to a world point, such as the terminal it touches. With no path, it lies straight along `heading` through `at`, with a gentle wave that `stride` moves.
+- **Birds work with their beaks.** The woodpecker and the pigeon have wings, not paws: `pose.beak` is a world point the beak tip lands on. The rig leans the body (a little), tips the head and stretches the neck to reach it, preferring the neck, and reports any shortfall in `reach.beak`. A woodpecker reaches about its own height off its perch and a little ahead; a pigeon pecks the ground about half its height in front of its feet. `pose.wings` opens the wings: below 0.5 the folded wing lifts off the back, from 0.5 to 1 the spread wing beats from down to up, so `wings: 0.75 + 0.25 * sin(t)` flaps. Pair flight with `hop` to lift it off its perch.
 - **Turning.** Facing left or right is a mirror, and a critter that turns through the camera's axis narrows a little as it passes, which reads as a turn. Headings within a few degrees of straight at the viewer still show a three-quarter face; that is the drawing, not a bug.
 - **Colour comes from tokens.** `crewCss()` gives every species its fur, belly, dark, skin and marking tones (each with a lit and a shade value), eye, nose, claw, whisker and teeth colours, and every role its collar colour. Never type a colour into a critter's markup.
 
@@ -193,38 +196,27 @@ Work from photographs of the real animal in profile: trace its proportions on th
 
 ## 12. Props
 
-A prop says what the job is before the reader reads a word: a stopwatch on the timer, goggles on the one by the heat, a hard hat on the one under the falling coin. `PROPS` in `kit/critters.mjs` lists them, and `spec.wear` puts them on:
+Most of the crew wear nothing but their collar. A prop goes on only where it reads cleanly at the figure's size and says something about the job; if it looks stuck on, or shrinks to a speck, leave it off. `PROPS` in `kit/critters.mjs` holds the three that pass, and `spec.wear` puts them on:
 
-| Prop | Sits | Looks like |
+| Prop | Sits | For |
 |---|---|---|
-| `hardhat` | head | a hard hat in the role colour |
-| `minerhat` | head | a hard hat with a lamp on the front |
-| `cap` | head | a peaked cap in the role colour |
-| `sweatband` | head | a towelling band round the forehead, in the role colour |
-| `glasses` | face | round wire glasses |
-| `goggles` | face | safety goggles on a strap |
-| `pencil` | ear | a pencil tucked behind the ear |
-| `bowtie` | neck | a bow tie at the collar, in the role colour |
-| `stopwatch` | neck | a stopwatch on a chain |
-| `whistle` | neck | a whistle on a lanyard |
-| `mitts` | paws | oven mitts on both paws, in the role colour |
-| `notebook` | far paw | a notebook with a cover in the role colour |
-| `clipboard` | far paw | a clipboard with a written sheet |
+| `glasses` | over the near eye | whoever reads or times things (Mo on the strip, the switch and the dial) |
+| `sweatband` | round the forehead, in the role colour | runners and jumpers big enough to show it (Bun and Mochi in the sharpener's wheel, Roo on the lever) |
+| `envelope` | in the beak | a bird that carries messages |
 
-- **Heads and necks only for the eel.** It has no paws, so mitts, notebooks and clipboards don't apply. Volta wears a hard hat, as electricians do.
-- **One or two each, chosen for the job.** A head prop and a face or neck prop at most. The sensing crew get glasses and a stopwatch, the heat crew goggles and mitts, the runners sweatbands, the one under a load a hard hat.
-- **Anchored to the drawing.** Props are placed from each species' own head, eye, neck and paw points, so they sit right on every species at every heading, mirror with it, follow the lean and the head's tip, and show only what the camera would see (glasses and goggles from the front, just the strap from behind). Never place a prop by hand.
-- **Colour.** Cloth and plastic take the role colour; metal, glass, wood and paper keep their own. That keeps the rule: one role colour per critter.
+- **Hats are out.** Hard hats, caps and a miner's hat were tried on every species and read as stickers on top of the drawing. So were goggles, a bow tie, oven mitts, a stopwatch, a whistle, a pencil, a notebook and a clipboard: at figure size they were specks or noise.
+- **Small critters go bare.** Below about 15 world units a sweatband is a hairline; the vending machine's hamsters (size 10) wear nothing.
+- **Anchored to the drawing.** Props are placed from each species' own head and eye points, so they sit right at every heading, mirror with the animal, follow the lean and the head's tip, and show only what the camera would see (the glasses' arm alone from behind). Never place a prop by hand.
 - **Kid-friendly.** Nothing a child shouldn't copy: no cigarettes or cigars, no drinks, no weapons.
-- **Held props need a free paw.** A notebook or clipboard rides in the far paw, so give it only to a critter whose far paw isn't on a handle.
+- **Check it close.** A prop that doesn't hold up in the 4× close-ups in both themes comes off.
 
 ## 13. Anti-patterns
 
 - **Decorative crew.** A critter waving at the reader, or standing beside a part that moves by itself. Every critter has a job.
 - **A crew that lies.** A critter that turns a part the wrong way, at a different speed from the model, or before the part moves. The motion is the part's motion.
 - **Pasted pictures.** An image dropped over the machine at a guessed spot. Every critter is placed by `critter()` from world points: where it stands, which way it heads, what its paws hold.
-- **Cartoon tells.** Outlines, blush, huge shiny eyes, a head as big as the body, every species built on the same body. The crew looks like the real animals; props are the only costume.
-- **Costume pile.** A hat, glasses, a bow tie and a clipboard on one critter. One or two props, each saying something about the job.
+- **Cartoon tells.** Outlines, blush, huge shiny eyes, hats, a head as big as the body, every species built on the same body. The crew looks like the real animals.
+- **Costumes.** Props on everyone, or props that read as stickers. Most of the crew wear only their collar.
 - **Colour on the machine.** A tinted housing, a coloured prop, a part in a role colour. The machine is drawn as Anatomy draws it; colour is the crew's.
 - **Rainbow crew.** Several role colours on one critter. One collar, one role.
 - **Speech bubbles and name tags.** Words stay in the legend.

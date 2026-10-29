@@ -51,10 +51,10 @@ const C = {
   CLOSE: (14 * Math.PI) / 180,
 };
 
-const MO = { species: "sloth", name: "Mo", size: 21, role: "sensing", wear: ["glasses",  "stopwatch"] };
+const MO = { species: "sloth", name: "Mo", size: 21, role: "sensing", wear: ["glasses"] };
 const BUN = { species: "hamster", name: "Bun", size: 15, role: "power", wear: ["sweatband"] };
 const MOCHI = { species: "hamster", name: "Mochi", size: 15, role: "power", wear: ["sweatband"] };
-const CHOMP = { species: "beaver", name: "Chomp", size: 20, role: "cutting", wear: ["goggles"] };
+const CHOMP = { species: "beaver", name: "Chomp", size: 20, role: "cutting" };
 
 const outTop = C.BOTTOM_IN + C.TRAVEL + C.BODY_LEN + C.FERRULE + C.ERASER;
 const DESK = { x: -121, y: -116, w: 236, d: 224, r: 6 };

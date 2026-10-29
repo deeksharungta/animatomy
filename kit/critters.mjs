@@ -933,6 +933,120 @@ const ART = {
       },
     },
   },
+
+  // Birds have no paws: the beak does the work. pose.beak is a world point the beak tip reaches by leaning
+  // the body and tipping the head, and pose.wings (0..1) opens the wings.
+  woodpecker: {
+    colors: { fur: "#222126", belly: "#EFEBE3", dark: "#151418", skin: "#7A736E", mark: "#C8282D", eye: "#140c0c", claw: "#2a2726" },
+    coat: { flow: [0.4, 1], tuft: 0.55, gap: 1.3, tw: 0.3, strand: 4, sw: 0.3 },
+    up: {
+      pivot: [-2, -6], box: [-44, -92, 26, 6], shadow: [2, 22, 5], lean: 10,
+      neck: { base: [-6, -58], w: [12, 10], max: 7, tone: "dark" },
+      body: {
+        pts: [[-6, -8], [-14, -18], [-18, -32], [-18, -46], [-14, -58], [-6, -64], [4, -64], [12, -58], [16, -46], [16, -30], [12, -16], [4, -8]],
+        strands: 40, flow: [0.2, 1],
+        marks: [
+          { pts: [[-13, -18], [-17, -32], [-17, -46], [-13, -56], [-7, -60], [-10, -48], [-12, -32], [-9, -18]], tone: "belly", front: true, op: 0.95 },
+          { pts: [[-6, -9], [-12, -16], [-8, -21], [0, -15], [2, -9]], tone: "mark", front: true },
+        ],
+      },
+      wing: {
+        pivot: [2, -56], up: 150,
+        pts: [[-8, -58], [6, -62], [16, -52], [18, -36], [16, -20], [12, -8], [6, -10], [2, -24], [-2, -40], [-6, -50]], tone: "dark",
+        marks: [
+          { pts: [[-2, -54], [6, -56], [10, -48], [4, -42], [-1, -47]], tone: "belly", soft: false },
+          { pts: [[3, -34], [12, -33], [12, -31.4], [3, -32.2]], tone: "belly", op: 0.9 },
+          { pts: [[4, -27], [13, -26], [13, -24.4], [4, -25.2]], tone: "belly", op: 0.9 },
+          { pts: [[5, -20], [13, -19], [12.6, -17.4], [5, -18.2]], tone: "belly", op: 0.9 },
+        ],
+        lines: "M6,-44Q11,-30 11,-10M10,-46Q15,-32 14,-14",
+        spread: {
+          pts: [[0, -54], [-3, -70], [2, -86], [12, -99], [25, -106], [33, -101], [26, -93], [33, -88], [25, -81], [30, -75], [21, -69], [23, -63], [12, -57]],
+          marks: [[6, -88], [12, -94], [18, -97], [10, -80], [16, -84], [22, -86], [14, -71], [20, -74]].map(([x, y]) => ({ pts: [[x - 1.4, y], [x, y - 1.2], [x + 1.4, y], [x, y + 1.2]], tone: "belly", soft: false })),
+          lines: "M4,-60Q10,-80 24,-100M8,-58Q18,-76 30,-90M12,-58Q22,-70 28,-76",
+        },
+      },
+      collar: { d: "M-15,-60Q-6,-55 6,-61", w: 1.2, tag: [-6, -57.5, 1.5] },
+      head: {
+        pivot: [-4, -62], tone: "belly", pitch: 9,
+        pts: [[-16, -68], [-17, -76], [-12, -84], [-3, -87], [6, -84], [9, -76], [7, -68], [0, -63], [-10, -63]],
+        strands: 0, tuft: 0.7,
+        marks: [
+          { pts: [[-15.4, -76], [-11, -83.6], [-3, -86.4], [5, -83.6], [7.4, -78], [-4, -79.4], [-11, -77.6]], tone: "dark", soft: false },
+          { pts: [[4, -82], [8.4, -77.5], [8, -72.6], [3.6, -76]], tone: "mark", soft: false },
+          { pts: [[-16, -70.6], [-8, -71.4], [2, -69], [7, -64.6], [4.6, -62.6], [-2, -65.6], [-10, -68], [-16, -68.6]], tone: "dark", soft: false },
+        ],
+        eye: { at: [-8, -75.4], rx: 2, ry: 2.1 },
+        beak: [[-15.6, -77.2], [-24, -75.4], [-31.4, -73.2], [-30.6, -72.2], [-23, -71.4], [-15.6, -70.6]],
+        beakLine: "M-16,-73.8L-29.4,-72.9",
+        beakTip: [-31.4, -72.8],
+      },
+      feet: {
+        near: { at: [-10, 0], pts: [[1.2, -11], [-1.2, -11], [-1.5, -2.4], [-6.6, -2.8], [-8.4, -1], [-6.2, 0.4], [-1.4, 0.6], [3, 1.8], [5.2, 1.2], [1.8, -1.2]], tone: "skin", claws: "M-8.2,-1q-1,.4 -1.3,1.5M5,1.3q.9,.4 1,1.4", clawW: 0.55 },
+        far: { at: [-3, -1], pts: [[1, -10], [-1, -10], [-1.3, -2.2], [-5.6, -2.5], [-7, -1], [-5.2, 0.3], [-1.2, 0.5], [2.6, 1.6], [4.4, 1], [1.6, -1.1]], tone: "skin" },
+      },
+      tail: {
+        pivot: [-2, -6], back: "over",
+        pts: [[3, -15], [13, -11], [21, 1], [19, 4.5], [11, -1.5], [1, -7]], tone: "dark", strands: 10, tuft: 0.8, flow: [0.6, 1],
+      },
+    },
+  },
+
+  pigeon: {
+    colors: { fur: "#8F98A7", belly: "#BCC3CE", dark: "#40475A", skin: "#D3625C", mark: "#4E9B7C", eye: "#E06A1E", claw: "#3a2f2e" },
+    coat: { flow: [1, 0.3], tuft: 0.6, gap: 1.3, tw: 0.3, strand: 4, sw: 0.3 },
+    up: {
+      pivot: [2, -12], box: [-40, -80, 74, 4], shadow: [12, 34, 6],
+      neck: { base: [-16, -48], w: [16, 12], max: 36, tone: "fur" },
+      body: {
+        pts: [[-12, -13], [-21, -20], [-27, -31], [-27, -42], [-23, -51], [-15, -57], [-6, -57], [3, -51], [16, -45], [30, -38], [40, -31], [36, -24], [22, -17], [6, -12]],
+        strands: 45, flow: [1, 0.25],
+        marks: [
+          { pts: [[-25, -41], [-22, -51], [-15, -56], [-7, -55.6], [-9, -48], [-15, -42], [-21, -37.4]], tone: "mark", op: 0.9 },
+          { pts: [[-20, -21], [-10, -15], [6, -13], [20, -17], [8, -19.6], [-8, -20.6]], tone: "belly", op: 0.7 },
+        ],
+      },
+      wing: {
+        pivot: [-8, -44], up: 75,
+        pts: [[-14, -44], [-4, -48], [12, -45], [28, -38], [44, -30], [50, -27], [40, -25.6], [24, -27], [6, -29], [-8, -33], [-15, -38]], tone: "belly",
+        marks: [
+          { pts: [[10, -34.6], [23, -33.2], [24, -30.6], [11, -31.6]], tone: "dark", soft: false },
+          { pts: [[16, -30], [31, -30.4], [32, -28], [17, -27.6]], tone: "dark", soft: false },
+          { pts: [[36, -31], [50, -27], [40, -25.6], [34, -27]], tone: "dark", op: 0.8 },
+        ],
+        lines: "M2,-40Q20,-37 40,-29M6,-36Q22,-33 36,-28",
+        spread: {
+          pts: [[-12, -42], [-16, -58], [-12, -74], [-2, -88], [12, -97], [26, -100], [31, -95], [24, -88], [31, -85], [23, -77], [28, -72], [18, -66], [21, -60], [10, -52], [2, -46]],
+          marks: [
+            { pts: [[-4, -66], [6, -74], [8, -71], [-2, -63]], tone: "dark", soft: false },
+            { pts: [[0, -60], [10, -68], [12, -65], [2, -57]], tone: "dark", soft: false },
+            { pts: [[18, -96], [26, -100], [31, -95], [24, -88], [31, -85], [23, -77], [28, -72], [20, -70], [16, -82]], tone: "dark", op: 0.75 },
+          ],
+          lines: "M-6,-56Q4,-76 22,-96M0,-52Q14,-70 28,-86M6,-50Q18,-62 26,-72",
+        },
+      },
+      collar: { d: "M-26,-46Q-17,-41 -6,-50", w: 1.2, tag: [-16, -43.5, 1.5] },
+      head: {
+        pivot: [-14, -54],
+        pts: [[-27, -61], [-28, -67], [-24, -73], [-17, -75], [-11, -72], [-9, -66], [-11, -59], [-17, -56], [-23, -57]],
+        strands: 0, tuft: 0.7,
+        marks: [{ pts: [[-27.4, -66.4], [-29.8, -66.8], [-30.6, -65.2], [-28, -64.4]], tone: "belly", soft: false }],
+        eye: { at: [-20.5, -66.5], rx: 2, ry: 2, pupil: 0.48 },
+        beak: [[-27, -66], [-31, -65.2], [-35.4, -63], [-34.4, -61.8], [-30.6, -62.2], [-27, -62.6]],
+        beakLine: "M-27.4,-64.2L-33.6,-62.6",
+        beakTip: [-35.2, -62.6],
+      },
+      feet: {
+        near: { at: [-6, 0], pts: [[1.4, -10], [-1.2, -10], [-1.6, -2], [-8, -1.4], [-10, 0.4], [-7, 1], [-2, 0.8], [3.6, 0.8], [4.2, -0.6], [1.8, -2]], tone: "skin", claws: "M-9.6,.2l-1.3,.6M-6.8,.9l-1,.6", clawW: 0.45 },
+        far: { at: [4, -1.2], pts: [[1.2, -9], [-1, -9], [-1.4, -1.8], [-7, -1.2], [-8.8, 0.3], [-6.2, 0.9], [-1.8, 0.7], [3.2, 0.7], [3.8, -0.5], [1.6, -1.8]], tone: "skin" },
+      },
+      tail: {
+        pivot: [2, -12],
+        pts: [[33, -35], [52, -33], [68, -29], [70, -24.6], [52, -21.6], [33, -24]], strands: 12, tuft: 0.8, flow: [1, 0.1],
+        marks: [{ pts: [[60, -31.2], [68.6, -29], [70, -24.8], [60, -23]], tone: "dark", soft: false }],
+      },
+    },
+  },
 };
 
 export const ROLES = {
@@ -946,7 +1060,7 @@ export const ROLES = {
   spring: { hex: "#E93D82", word: "spring", does: "springs, launchers, returns" },
 };
 
-export const SPECIES = Object.fromEntries(Object.entries(ART).map(([name, a]) => [name, { colors: a.colors, arms: a.up?.arms ?? null, four: !!a.four, path: !!a.path }]));
+export const SPECIES = Object.fromEntries(Object.entries(ART).map(([name, a]) => [name, { colors: a.colors, arms: a.up?.arms ?? null, four: !!a.four, path: !!a.path, beak: !!a.up?.head?.beakTip, wings: !!a.up?.wing }]));
 
 // ---------- colour
 const hexToHsl = (hex) => {
@@ -1048,6 +1162,7 @@ function eyeSvg(sp, e, state, far = false) {
     return s;
   }
   s += `<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(rx)}" ry="${n1(ry)}" fill="url(#so-${sp}-eye)" ${tf}/>`;
+  if (e.pupil) s += `<ellipse cx="${n1(cx - rx * 0.08)}" cy="${n1(cy)}" rx="${n1(rx * e.pupil)}" ry="${n1(ry * e.pupil)}" fill="#120c08"/>`;
   if (!far || rx > 1.2) {
     s += `<ellipse cx="${n1(cx - rx * 0.34)}" cy="${n1(cy - ry * 0.4)}" rx="${n1(rx * 0.3)}" ry="${n1(ry * 0.26)}" fill="#fff" opacity=".92"/>`;
     s += `<circle cx="${n1(cx + rx * 0.35)}" cy="${n1(cy + ry * 0.38)}" r="${n1(rx * 0.12)}" fill="#fff" opacity=".5"/>`;
@@ -1124,99 +1239,34 @@ function ringsSvg(L) {
   return `<path class="so-line" d="${d}" style="stroke:var(--so-skin-shade);stroke-width:.25;opacity:.5"/>`;
 }
 
-// ---------- props: a few things the crew wears or carries, anchored to each drawing's head, neck and paws.
-// Hats, bands, bows and mitts take the critter's role colour; metal, glass, wood and paper keep their own.
+// ---------- props: only the few that read cleanly at a figure's size. Hats, goggles, bow ties, mitts,
+// watches and held notebooks were tried and dropped: they read as stickers or as specks.
 export const PROPS = {
-  hardhat: { at: "head", does: "a hard hat in the role colour" },
-  minerhat: { at: "head", does: "a hard hat with a lamp on the front" },
-  cap: { at: "head", does: "a peaked cap in the role colour" },
-  sweatband: { at: "head", does: "a towelling band round the forehead" },
-  glasses: { at: "face", does: "round wire glasses" },
-  goggles: { at: "face", does: "safety goggles on a strap" },
-  pencil: { at: "ear", does: "a pencil tucked behind the ear" },
-  bowtie: { at: "neck", does: "a bow tie at the collar" },
-  stopwatch: { at: "neck", does: "a stopwatch on a chain" },
-  whistle: { at: "neck", does: "a whistle on a lanyard" },
-  mitts: { at: "paws", does: "oven mitts on both paws" },
-  notebook: { at: "hold", does: "a notebook in the free paw" },
-  clipboard: { at: "hold", does: "a clipboard in the free paw" },
+  glasses: { at: "face", does: "round wire glasses, for whoever reads or times things" },
+  sweatband: { at: "head", does: "a towelling band in the role colour, for the runners and jumpers" },
+  envelope: { at: "beak", does: "a letter in the beak, for a bird that carries messages" },
 };
-const ROLE_FILL = (sp, role) => `url(#so-${sp}-role-${role ?? "none"})`;
-const METAL = `fill="url(#so-metal)"`;
 const ink = (w) => `class="so-line" style="stroke:#2b2622;stroke-width:${n1(w)}"`;
-function propsDefs(sp, role) {
-  return `<linearGradient id="so-${sp}-role-${role ?? "none"}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--so-role,#888) 62%,#fff)"/><stop offset=".5" style="stop-color:var(--so-role,#888)"/><stop offset="1" style="stop-color:var(--so-role-dark,#555)"/></linearGradient><linearGradient id="so-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f2"/><stop offset=".55" stop-color="#c9c9c6"/><stop offset="1" stop-color="#8d8d8a"/></linearGradient>`;
-}
-// Where things go on a head: its crown, its width, the near eye and the base of the near ear.
-function headAnchors(H) {
-  const xs = H.pts.map((p) => p[0]), ys = H.pts.map((p) => p[1]);
-  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const top = H.pts.reduce((a, p) => (p[1] < a[1] ? p : a));
-  const ear = H.ears?.near ? H.ears.near.pts.reduce((a, p) => (p[1] > a[1] ? p : a)) : [x0 + (x1 - x0) * 0.72, y0 + (y1 - y0) * 0.2];
-  return { x0, x1, y0, y1, w: x1 - x0, h: y1 - y0, top, ear };
-}
-function headProps(sp, H, wear, role, front, layer) {
+function headProps(sp, H, wear, front) {
   if (!wear.length) return "";
-  const A = headAnchors(H);
-  const s = A.w / 42;
-  const fill = ROLE_FILL(sp, role);
+  const xs = H.pts.map((p) => p[0]), ys = H.pts.map((p) => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), w = x1 - x0, h = Math.max(...ys) - y0;
+  const s = w / 42;
   let out = "";
-  const place = (x, y, rot, body) => `<g transform="translate(${n1(x)} ${n1(y)}) rotate(${n1(rot)}) scale(${n1(s * 100) / 100})">${body}</g>`;
-  const hatAt = [A.top[0] + A.w * 0.1, A.top[1] + A.h * 0.12];
-  for (const name of wear) {
-    if (layer === "under" && name === "pencil") {
-      out += place(A.ear[0] - 3 * s, A.ear[1] + 1 * s, 28, `<path d="M-9,-1.1L6,-1.1L6,1.1L-9,1.1Z" fill="#E7B23A"/><path d="M-9,-1.1L6,-1.1" ${ink(0.25)} style="stroke:#b8862a;stroke-width:.35"/><path d="M6,-1.1L7.4,-1.1L7.4,1.1L6,1.1Z" ${METAL}/><path d="M7.4,-1.1L9.4,-1.1Q10,0 9.4,1.1L7.4,1.1Z" fill="#E8A1A0"/><path d="M-9,-1.1L-12.4,0L-9,1.1Z" fill="#E9CDA4"/><path d="M-11.3,-0.35L-12.5,0L-11.3,0.35Z" fill="#3a3a3a"/>`);
-    }
-    if (layer !== "over") continue;
-    if (name === "hardhat" || name === "minerhat") {
-      let b = `<path d="M-13,0C-13,-9 -7,-14.5 0,-14.5C7,-14.5 13,-9 13,0Z" fill="${fill}"/><path d="M-0.8,-14.2C-1.6,-9 -1.6,-4 -1.2,-0.4" class="so-line" style="stroke:var(--so-role-dark,#555);stroke-width:1.3;opacity:.6"/><ellipse cx="-0.5" cy="0.2" rx="16.5" ry="2.4" fill="${fill}"/><ellipse cx="-4" cy="-10" rx="4.5" ry="2" fill="#fff" opacity=".28"/>`;
-      if (name === "minerhat") b += `<path d="M-15.5,-9.5L-11,-9.5L-11,-3.5L-15.5,-3.5Z" ${METAL}/><ellipse cx="-15.8" cy="-6.5" rx="1.3" ry="3" fill="#FFF3B0"/><ellipse cx="-17.5" cy="-6.5" rx="4" ry="4.6" fill="#FFF3B0" opacity=".25"/>`;
-      out += place(hatAt[0], hatAt[1], -10, b);
-    } else if (name === "cap") {
-      out += place(hatAt[0], hatAt[1] + 1.5 * s, -8, `<path d="M-11,0C-11,-8 -5,-11.5 1,-11.5C8,-11.5 12,-7 12,0Z" fill="${fill}"/><path d="M-10,-0.4C-16,-1.6 -21.5,0.2 -22.5,2C-17,2.8 -12,2.2 -8.6,1.4Z" style="fill:var(--so-role-dark,#555)"/><path d="M1,-11.5C-2,-7 -3,-3 -3,0" class="so-line" style="stroke:var(--so-role-dark,#555);stroke-width:.5"/><circle cx="1" cy="-11.4" r="1.1" style="fill:var(--so-role-dark,#555)"/><ellipse cx="-3" cy="-7.6" rx="3.6" ry="1.6" fill="#fff" opacity=".25"/>`);
-    } else if (name === "sweatband") {
-      const y = A.y0 + A.h * 0.15;
-      out += `<path d="M${n1(A.x0 + A.w * 0.12)},${n1(y + 1.5 * s)}Q${n1(A.x0 + A.w * 0.5)},${n1(y - 3.5 * s)} ${n1(A.x1 - A.w * 0.04)},${n1(y + 2 * s)}" class="so-line" style="stroke:${fill};stroke:var(--so-role,#888);stroke-width:${n1(3.6 * s)}"/><path d="M${n1(A.x0 + A.w * 0.14)},${n1(y + 1.4 * s)}Q${n1(A.x0 + A.w * 0.5)},${n1(y - 3.6 * s)} ${n1(A.x1 - A.w * 0.06)},${n1(y + 1.9 * s)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.7 * s)};opacity:.75"/>`;
-    } else if ((name === "glasses" || name === "goggles") && H.eye) {
-      const [cx, cy] = H.eye.at;
-      const r = Math.max(H.eye.rx * 1.75 + 0.8, 3 * s);
-      if (name === "glasses") {
-        const back = `<path d="M${n1(cx + r)},${n1(cy - 0.4)}L${n1(Math.min(A.x1 - 2 * s, cx + r + A.w * 0.4))},${n1(cy - 1.2)}" ${ink(0.7 * s)}/>`;
-        out += front ? `${back}<circle cx="${n1(cx)}" cy="${n1(cy)}" r="${n1(r)}" fill="#fff" opacity=".14"/><circle cx="${n1(cx)}" cy="${n1(cy)}" r="${n1(r)}" fill="none" ${ink(0.75 * s)}/><path d="M${n1(cx - r * 0.6)},${n1(cy - r * 0.55)}Q${n1(cx - r * 0.1)},${n1(cy - r * 0.9)} ${n1(cx + r * 0.4)},${n1(cy - r * 0.7)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.5 * s)};opacity:.7"/><path d="M${n1(cx - r)},${n1(cy + 0.2)}L${n1(cx - r - 2.6 * s)},${n1(cy + 0.8 * s)}" ${ink(0.7 * s)}/>` : back;
-      } else {
-        const R = r * 1.2;
-        const strap = `<path d="M${n1(cx + R * 0.8)},${n1(cy - 0.6)}Q${n1((cx + A.x1) / 2)},${n1(cy - 2.6 * s)} ${n1(A.x1 - 0.5 * s)},${n1(cy - 0.6 * s)}" class="so-line" style="stroke:var(--so-role-dark,#444);stroke-width:${n1(2.4 * s)}"/>`;
-        out += front ? `${strap}<ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(R)}" ry="${n1(R * 0.9)}" fill="#F7B955" opacity=".42"/><ellipse cx="${n1(cx)}" cy="${n1(cy)}" rx="${n1(R)}" ry="${n1(R * 0.9)}" fill="none" class="so-line" style="stroke:#3a3530;stroke-width:${n1(1.6 * s)}"/><path d="M${n1(cx - R * 0.55)},${n1(cy - R * 0.4)}Q${n1(cx - R * 0.1)},${n1(cy - R * 0.8)} ${n1(cx + R * 0.4)},${n1(cy - R * 0.55)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.7 * s)};opacity:.75"/>` : strap;
-      }
-    }
+  if (wear.includes("sweatband")) {
+    const y = y0 + h * 0.15;
+    const band = (dy, dx0, dx1) => `M${n1(x0 + w * dx0)},${n1(y + 1.5 * s + dy)}Q${n1(x0 + w * 0.5)},${n1(y - 3.5 * s + dy)} ${n1(x1 - w * dx1)},${n1(y + 2 * s + dy)}`;
+    out += `<path d="${band(0, 0.12, 0.04)}" class="so-line" style="stroke:var(--so-role,#888);stroke-width:${n1(3.6 * s)}"/><path d="${band(-0.1, 0.14, 0.06)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.7 * s)};opacity:.75"/>`;
   }
-  return out;
-}
-function neckProps(sp, R, wear, role, front) {
-  if (!wear.length || !R.collar?.tag || !front) return "";
-  const [tx, ty, tr0] = R.collar.tag;
-  const s = tr0 / 1.7;
-  const fill = ROLE_FILL(sp, role);
-  let out = "";
-  for (const name of wear) {
-    if (name === "bowtie") out += `<g transform="translate(${n1(tx)} ${n1(ty)}) scale(${n1(s)})"><path d="M0,0L-4.4,-2.8L-4.4,2.8Z" fill="${fill}"/><path d="M0,0L4.4,-2.8L4.4,2.8Z" fill="${fill}"/><circle r="1.1" style="fill:var(--so-role-dark,#555)"/></g>`;
-    if (name === "stopwatch") out += `<path d="M${n1(tx)},${n1(ty)}Q${n1(tx - 2.6 * s)},${n1(ty + 3.4 * s)} ${n1(tx - 3.4 * s)},${n1(ty + 6.4 * s)}" class="so-line" style="stroke:#b9b9b5;stroke-width:${n1(0.45 * s)};stroke-dasharray:${n1(0.5 * s)} ${n1(0.35 * s)}"/><g transform="translate(${n1(tx - 3.6 * s)} ${n1(ty + 10 * s)}) scale(${n1(s * 1.2)})"><rect x="-0.8" y="-4.9" width="1.6" height="1.6" rx=".3" ${METAL}/><circle r="3.4" ${METAL}/><circle r="2.6" fill="#fbfaf6"/><path d="M0,0L0,-2M0,0L1.3,0.7" ${ink(0.3)}/><circle r=".3" fill="#2b2622"/></g>`;
-    if (name === "whistle") out += `<path d="M${n1(tx - 3 * s)},${n1(ty - 0.5 * s)}L${n1(tx)},${n1(ty + 6 * s)}L${n1(tx + 3 * s)},${n1(ty - 0.8 * s)}" class="so-line" style="stroke:var(--so-role,#888);stroke-width:${n1(0.8 * s)}"/><g transform="translate(${n1(tx)} ${n1(ty + 7 * s)}) rotate(-20) scale(${n1(s)})"><rect x="-3.2" y="-1.3" width="6.4" height="2.6" rx="1.3" ${METAL}/><circle cx="1.6" cy="0" r="1.8" ${METAL}/><rect x="-3.2" y="-0.4" width="1.2" height=".8" fill="#5a5a57"/></g>`;
+  if (wear.includes("glasses") && H.eye) {
+    const [cx, cy] = H.eye.at;
+    const r = Math.max(H.eye.rx * 1.75 + 0.8, 3 * s);
+    const arm = `<path d="M${n1(cx + r)},${n1(cy - 0.4)}L${n1(Math.min(x1 - 2 * s, cx + r + w * 0.4))},${n1(cy - 1.2)}" ${ink(0.7 * s)}/>`;
+    out += front ? `${arm}<circle cx="${n1(cx)}" cy="${n1(cy)}" r="${n1(r)}" fill="#fff" opacity=".14"/><circle cx="${n1(cx)}" cy="${n1(cy)}" r="${n1(r)}" fill="none" ${ink(0.75 * s)}/><path d="M${n1(cx - r * 0.6)},${n1(cy - r * 0.55)}Q${n1(cx - r * 0.1)},${n1(cy - r * 0.9)} ${n1(cx + r * 0.4)},${n1(cy - r * 0.7)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.5 * s)};opacity:.7"/><path d="M${n1(cx - r)},${n1(cy + 0.2)}L${n1(cx - r - 2.6 * s)},${n1(cy + 0.8 * s)}" ${ink(0.7 * s)}/>` : arm;
   }
-  return out;
-}
-function pawProps(sp, P, wear, role, which) {
-  const fill = ROLE_FILL(sp, role);
-  const l = P.len, w = P.w;
-  if (wear.includes("mitts")) {
-    const pts = [[-1.2, -w * 0.75], [l * 0.8, -w * 0.95], [l * 1.55, -w * 0.72], [l * 1.85, 0], [l * 1.55, w * 0.72], [l * 0.8, w * 0.95], [-1.2, w * 0.75]];
-    const thumb = [[l * 0.55, -w * 0.8], [l * 0.9, -w * 1.45], [l * 1.25, -w * 1.35], [l * 1.1, -w * 0.8]];
-    return `<path d="${curve(thumb).d}" fill="${fill}"/><path d="${curve(pts).d}" fill="${fill}"/><path d="M${n1(l * 0.4)},${n1(-w * 0.7)}L${n1(l * 1.4)},${n1(w * 0.5)}M${n1(l * 0.9)},${n1(-w * 0.85)}L${n1(l * 1.7)},${n1(-w * 0.1)}" class="so-line" style="stroke:#fff;stroke-width:${n1(w * 0.07)};opacity:.45"/><path d="M-1.2,${n1(-w * 0.8)}L1.4,${n1(-w * 0.85)}L1.4,${n1(w * 0.85)}L-1.2,${n1(w * 0.8)}Z" fill="#fbfaf6" opacity=".85"/>`;
-  }
-  let out = pawSvg(sp, P);
-  if (which === "F") {
-    if (wear.includes("notebook")) out = `<g transform="translate(${n1(l * 0.7)} 0) rotate(90)"><rect x="-4.6" y="-6" width="9.2" height="12" rx=".8" fill="${fill}"/><rect x="3.6" y="-5.6" width="1.2" height="11.2" fill="#fbfaf6"/><rect x="-1" y="-6" width="0.9" height="12" fill="#2b2622" opacity=".55"/></g>${out}`;
-    if (wear.includes("clipboard")) out = `<g transform="translate(${n1(l * 0.7)} 0) rotate(90)"><rect x="-5.2" y="-7" width="10.4" height="14" rx=".8" fill="#B88A5A"/><rect x="-4.2" y="-5.4" width="8.4" height="11.4" fill="#fbfaf6"/><path d="M-3,-2.6H3M-3,-0.6H3M-3,1.4H2" ${ink(0.3)} style="stroke:#9a9a96;stroke-width:.35"/><rect x="-2.4" y="-7.6" width="4.8" height="2.4" rx=".6" ${METAL}/></g>${out}`;
+  if (wear.includes("envelope") && H.beakTip) {
+    const [bx, by] = H.beakTip;
+    out += `<g transform="translate(${n1(bx + 2.2)} ${n1(by + 2.6)}) rotate(14)"><rect x="-5" y="-3.4" width="10" height="6.8" rx=".5" fill="#F7F3EA"/><path d="M-5,-3.4L0,0.6L5,-3.4" class="so-line" style="stroke:#a8a296;stroke-width:.4"/></g>`;
   }
   return out;
 }
@@ -1229,12 +1279,12 @@ function headSvg(sp, H, { eyes, front, mirror, wear = [], role }) {
   s += furShape(sp, H.pts, H.tone ?? "fur", { strands: H.strands ?? 30, flow: H.flow, seed: 9, tuft: H.tuft, only: H.tuftOnly }, mirror);
   for (const m of H.marks ?? []) if (front || !m.front) s += m.soft === false ? plainShape(sp, m.pts, m.tone) : softShape(sp, m.pts, m.tone, m.op ?? 1);
   for (const l of H.lines ?? []) if (front || !l.front) s += `<path class="so-line" d="${l.d}" style="stroke:var(--so-${l.tone ?? "dark"});stroke-width:${l.w ?? 0.8};opacity:${l.op ?? 1}"/>`;
+  if (H.beak) s += plainShape(sp, H.beak, H.beakTone ?? "dark") + (H.beakLine ? `<path class="so-line" d="${H.beakLine}" style="stroke:var(--so-dark-shade);stroke-width:.45;opacity:.8"/>` : "");
   if (front && H.eyeFar) s += eyeSvg(sp, H.eyeFar, eyes, true);
   if (H.eye && (front || H.eyeBack !== false)) s += eyeSvg(sp, H.eye, eyes);
   if (H.snout) s += `<path d="${curve(H.snout).d}" fill="url(#so-${sp}-v-skin)"/><path class="so-line" d="${curve(H.snout, false).d}" style="stroke:var(--so-skin-shade);stroke-width:.25;opacity:.35"/>`;
   if (H.nose) s += `<path d="${curve(H.nose).d}" style="fill:var(--so-nose)"/><path d="${curve(H.nose).d}" fill="url(#so-${sp}-v-skin)" opacity=".35"/>`;
   if (H.mouth) s += `<path class="so-line" d="${H.mouth}" style="stroke:var(--so-fur-shade);stroke-width:.55;opacity:.8"/>`;
-  s += headProps(sp, H, wear, role, front, "under");
   if (ears.near) {
     s += furShape(sp, ears.near.pts, ears.near.tone ?? "fur", { strands: 0, tuft: ears.near.tuft ?? 1.1, gap: 1.6, seed: 23, flow: ears.near.flow }, mirror);
     if (ears.near.inner) s += softShape(sp, ears.near.inner, ears.near.innerTone ?? "skin", front ? 0.95 : 0.4);
@@ -1242,7 +1292,7 @@ function headSvg(sp, H, { eyes, front, mirror, wear = [], role }) {
   }
   if (H.teeth) s += `<path d="${H.teeth}" style="fill:var(--so-teeth)"/><path d="${H.teeth}" fill="url(#so-${sp}-v-skin)" opacity=".18"/>${H.teethLine ? `<path class="so-line" d="${H.teethLine}" style="stroke:var(--so-fur-shade);stroke-width:.4"/>` : ""}`;
   if (front) s += whiskersSvg(H.whiskers);
-  s += headProps(sp, H, wear, role, front, "over");
+  s += headProps(sp, H, wear, front);
   return s;
 }
 
@@ -1289,11 +1339,11 @@ const collarSvg = (C) => (C ? `<path class="so-line" d="${C.d}" style="stroke:va
 
 // ---------- static pieces, cached by species, stance, view and mirror
 const CACHE = new Map();
-function pieces(sp, stance, front, mirror, eyes, role, wear) {
-  const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${role}|${wear.join(",")}`;
+function pieces(sp, stance, front, mirror, eyes, role, wear, spread = false) {
+  const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${role}|${wear.join(",")}|${spread}`;
   if (CACHE.has(key)) return CACHE.get(key);
   const a = ART[sp], R = stance === "four" ? a.four : a.up;
-  const out = { defs: defs(sp).replace("</defs>", `${propsDefs(sp, role)}</defs>`) };
+  const out = { defs: defs(sp) };
   const B = R.body;
   const legs = (list) => (list ?? []).map((L) => plainShape(sp, limb(L.cl, L.w), L.tone ?? "fur")).join("");
   out.body = legs(B.under) + furShape(sp, B.pts, B.tone ?? "fur", { strands: B.strands ?? 60, flow: B.flow, seed: 4, only: B.tuftOnly, lean: B.lean }, mirror);
@@ -1301,11 +1351,17 @@ function pieces(sp, stance, front, mirror, eyes, role, wear) {
   if (!front) for (const m of B.backMarks ?? []) out.body += softShape(sp, m.pts, m.tone, m.op ?? 1);
   for (const o of B.ao ?? []) out.body += aoBlob(sp, o, 0.8);
   out.body += legs(B.over);
-  out.collar = collarSvg(R.collar) + neckProps(sp, R, wear, role, front);
+  out.collar = collarSvg(R.collar);
   out.head = headSvg(sp, R.head, { eyes, front, mirror, wear, role });
   out.tail = R.tail ? tailSvg(sp, R.tail, mirror) : "";
+  if (R.wing) {
+    // Folded on the body, or spread up and back in flight.
+    const Wg = spread && R.wing.spread ? { ...R.wing, ...R.wing.spread } : R.wing;
+    out.wingN = furShape(sp, Wg.pts, Wg.tone ?? "fur", { strands: 0, tuft: 0.8, gap: 1.2, seed: 41, flow: [1, 0.4] }, mirror) + (Wg.marks ?? []).map((m) => (m.soft === false ? plainShape(sp, m.pts, m.tone) : softShape(sp, m.pts, m.tone, m.op ?? 1))).join("") + (Wg.lines ? `<path class="so-line" d="${Wg.lines}" style="stroke:var(--so-${Wg.tone ?? "fur"}-shade);stroke-width:.4;opacity:.6"/>` : "");
+    out.wingF = plainShape(sp, Wg.pts, Wg.tone === "belly" ? "fur" : "dark");
+  }
   out.ground = `<ellipse cx="${n1(R.shadow[0])}" cy="1" rx="${n1(R.shadow[1])}" ry="${n1(R.shadow[2])}" fill="url(#so-${sp}-ground)"/>`;
-  if (R.arms) { out.pawN = pawProps(sp, R.arms.paw, wear, role, "N"); out.pawF = pawProps(sp, R.arms.paw, wear, role, "F"); }
+  if (R.arms) out.pawN = out.pawF = pawSvg(sp, R.arms.paw);
   if (R.feet) { out.footN = footSvg(sp, R.feet.near); out.footF = footSvg(sp, R.feet.far ?? R.feet.near); }
   if (R.legs) out.legFoot = R.legs.map((L) => footSvg(sp, L.foot));
   CACHE.set(key, out);
@@ -1343,8 +1399,8 @@ function eelPieces(sp, mirror, eyes, role, wear) {
   const key = `${sp}|path|${mirror}|${eyes}|${role}|${wear.join(",")}`;
   if (CACHE.has(key)) return CACHE.get(key);
   const H = ART[sp].path.head;
-  const out = { defs: defs(sp).replace("</defs>", `${propsDefs(sp, role)}</defs>`) };
-  out.head = headSvg(sp, H, { eyes, front: true, mirror, wear, role }) + collarSvg(H.collar) + neckProps(sp, { collar: H.collar }, wear, role, true) + softShape(sp, H.pectoral, "dark", 0.85);
+  const out = { defs: defs(sp) };
+  out.head = headSvg(sp, H, { eyes, front: true, mirror, wear, role }) + collarSvg(H.collar) + softShape(sp, H.pectoral, "dark", 0.85);
   CACHE.set(key, out);
   return out;
 }
@@ -1459,18 +1515,54 @@ export function critter(spec, pose = {}, P) {
   const sx = (mirror ? -1 : 1) * k * turn * (1 + 0.1 * sq), sy = k * (1 - 0.26 * sq);
   const eyes = pose.eyes ?? "open";
   const wear = [].concat(spec.wear ?? []).filter((w) => PROPS[w]);
-  const S = pieces(sp, stance, front, mirror, eyes, spec.role, wear);
-  const lean = ((pose.lean ?? 0) + (R.lean ?? 0)) * RAD;
+  const wingsOpen = Math.max(0, Math.min(1, pose.wings ?? 0));
+  const spread = !!R.wing?.spread && wingsOpen >= 0.5;
+  const S = pieces(sp, stance, front, mirror, eyes, spec.role, wear, spread);
+  let lean = ((pose.lean ?? 0) + (R.lean ?? 0)) * RAD;
   const toLocal = (w) => { const s = iso(w, P); return [(s[0] - base[0]) / sx, (s[1] - base[1]) / sy]; };
   const L = (p) => rotp(p, -lean, R.pivot);
   const look = pose.look ?? [0, 0];
-  const pitch = Math.max(-30, Math.min(34, look[1] * 0.75)) + (R.head.pitch ?? 0);
+  let pitch = Math.max(-30, Math.min(34, look[1] * 0.75)) + (R.head.pitch ?? 0);
+  const reach = {};
+  let neckOff = [0, 0];
+  if (pose.beak && R.head.beakTip) {
+    // Lean the body a little, tip the head and stretch the neck until the beak tip lands on the target.
+    // For each lean and tip the neck takes up what is left, up to its length; the search prefers a short
+    // neck and a small lean, so a bird pecks with its neck and only leans into a long reach.
+    const T = toLocal(pose.beak), maxNeck = R.neck?.max ?? 0;
+    const fit = (ln, pc) => {
+      const Tb = rotp(T, ln * RAD, R.pivot);
+      const tip = rotp(R.head.beakTip, pc * RAD, R.head.pivot);
+      let o = sub(Tb, tip);
+      if (len(o) > maxNeck) o = [(o[0] * maxNeck) / len(o), (o[1] * maxNeck) / len(o)];
+      const miss = len(sub(Tb, add(tip, o)));
+      return [miss, miss * 6 + len(o) * 0.1 + Math.abs(ln) * 0.25 + Math.abs(pc) * 0.02, o];
+    };
+    let best = null;
+    const scan = (a0, a1, da, b0, b1, db) => { for (let a = a0; a <= a1; a += da) for (let b = b0; b <= b1; b += db) { const f = fit(a, b); if (!best || f[1] < best.cost) best = { a, b, miss: f[0], cost: f[1], o: f[2] }; } };
+    scan(-15, 55, 2.5, -30, 34, 4);
+    scan(best.a - 2.5, best.a + 2.5, 0.5, Math.max(-30, best.b - 4), Math.min(34, best.b + 4), 0.5);
+    lean = best.a * RAD;
+    pitch = best.b;
+    neckOff = best.o;
+    reach.beak = (best.miss * size) / 100;
+  }
   const dyn = {};
   dyn.root = `${tr(base[0], base[1])} scale(${Math.round(sx * 1000) / 1000} ${Math.round(sy * 1000) / 1000})`;
   dyn.ground = `${tr(g0[0], g0[1])} scale(${Math.round(sx * 1000) / 1000} ${Math.round(k * 1000) / 1000})`;
   dyn.lean = `rotate(${n1(-lean / RAD)} ${pt(R.pivot)})`;
-  dyn.head = `rotate(${n1(pitch)} ${pt(R.head.pivot)})`;
-  const reach = {};
+  dyn.head = `${neckOff[0] || neckOff[1] ? `${tr(neckOff[0], neckOff[1])} ` : ""}rotate(${n1(pitch)} ${pt(R.head.pivot)})`;
+  if (R.neck) {
+    // The neck: from its base on the body to wherever the head has gone, hidden under both when it hasn't moved.
+    const top = add(R.head.pivot, neckOff);
+    dyn.neck = curve(limb([R.neck.base, add(R.neck.base, sub(top, R.neck.base), 0.5), top], [R.neck.w[0], (R.neck.w[0] + R.neck.w[1]) / 2, R.neck.w[1]])).d;
+  }
+  if (R.wing) {
+    // Folded: the wing lifts a little off the back. Spread: it beats, from wings 0.5 (down) to 1 (up).
+    const w = spread ? (wingsOpen - 0.75) * 50 : wingsOpen * 30;
+    dyn.wingN = `rotate(${n1(-w)} ${pt(R.wing.pivot)})`;
+    dyn.wingF = `rotate(${n1(-w - (spread ? 14 : 0))} ${pt(R.wing.pivot)})`;
+  }
   const stride = pose.stride ?? { phase: 0, amount: 0 };
   const sway = (pose.tailSway ?? 0) * 12;
   if (R.tail) dyn.tail = `rotate(${n1(-lean / RAD + sway)} ${pt(R.tail.pivot ?? R.pivot)})`;
@@ -1480,14 +1572,14 @@ export function critter(spec, pose = {}, P) {
     const side = [-Math.sin(h), Math.cos(h), 0];
     const leftNear = depthOf([at[0] + side[0], at[1] + side[1], at[2]], P) >= depthOf(at, P);
     const nearKey = leftNear ? "l" : "r", farKey = leftNear ? "r" : "l";
-    const A = R.arms;
+    const A = R.arms ?? { near: [0, 0], far: [0, 0], skip: true };
     // The shoulders sit across the body: move them along the animal's real side axis as the camera sees it,
     // so a paw target to its left or right lands on the matching side of the drawing.
     const sv = sub(iso([at[0] + side[0], at[1] + side[1], at[2]], P), g0);
     const span = ((A.span ?? 10) * size) / 100;
     const across = [(sv[0] * span) / sx, (sv[1] * span) / sy];
     const nearOff = leftNear ? across : [-across[0], -across[1]];
-    for (const [which, key] of [["N", nearKey], ["F", farKey]]) {
+    for (const [which, key] of A.skip ? [] : [["N", nearKey], ["F", farKey]]) {
       const drawn = hang && A.hang ? A.hang[which === "N" ? "near" : "far"] : which === "N" ? A.near : A.far;
       const sgn = which === "N" ? 1 : -1;
       const shoulder = [drawn[0] + nearOff[0] * sgn * 0.6, drawn[1] + nearOff[1] * sgn * 0.6];
@@ -1529,7 +1621,7 @@ export function critter(spec, pose = {}, P) {
       dyn[`foot${i}`] = tr(r.W[0], r.W[1]);
     });
   }
-  const key = `${sp}|${stance}|${front}|${mirror}|${eyes}`;
+  const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${spread}`;
   return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base };
 }
 
@@ -1552,14 +1644,16 @@ function inner(c) {
   const parts = [];
   const tailBehind = !R.tail || (c.front ? R.tail.front !== "over" : R.tail.back !== "over");
   if (c.stance === "up") {
-    const armTone = R.arms.tone ?? "fur";
+    const armTone = R.arms?.tone ?? "fur";
     if (R.tail && tailBehind) parts.push(g("tail", S.tail));
-    parts.push(limbPath("armF", armTone), g("pawF", S.pawF));
+    if (R.arms) parts.push(limbPath("armF", armTone), g("pawF", S.pawF));
     if (S.footF) parts.push(g("footF", S.footF));
-    parts.push(node("lean", "g", `transform="${dyn.lean}"`, S.body + S.collar + g("head", S.head)));
+    const neck = R.neck ? `<path data-k="neck" d="${dyn.neck}" fill="url(#so-${c.species}-v-${R.neck.tone ?? "fur"})"/>` : "";
+    const torso = (R.wing ? g("wingF", S.wingF) : "") + neck + S.body + (R.wing ? g("wingN", S.wingN) : "") + S.collar;
+    parts.push(node("lean", "g", `transform="${dyn.lean}"`, torso + g("head", S.head)));
     if (S.footN) parts.push(g("footN", S.footN));
     if (R.tail && !tailBehind) parts.push(g("tail", S.tail));
-    parts.push(limbPath("armN", armTone), g("pawN", S.pawN));
+    if (R.arms) parts.push(limbPath("armN", armTone), g("pawN", S.pawN));
   } else {
     const legTone = (G) => G.tone ?? "fur";
     R.legs.forEach((G, i) => { if (G.far) parts.push(limbPath(`leg${i}`, legTone(G)), g(`foot${i}`, S.legFoot[i])); });

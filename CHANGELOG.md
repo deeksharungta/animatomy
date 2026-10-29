@@ -1,5 +1,16 @@
 # Changelog
 
+## Staff Only 0.7.0 (2026-10-29)
+
+### Added
+
+- Two birds: a great spotted woodpecker (striking: hammers, needles, strikers) and a rock pigeon (carrying: messages, signals, small parts). Birds work with their beaks: `pose.beak` is a world point the beak tip lands on, reached by leaning the body a little, tipping the head and stretching the neck, with any shortfall in `reach.beak`. `pose.wings` lifts the folded wing or, from 0.5, spreads and beats it.
+- The cast sheet draws the birds pecking and flying in place of reaching, going on all fours and hanging.
+
+### Changed
+
+- Props are trimmed to the three that read cleanly at figure size: `glasses`, `sweatband` and, for birds, `envelope`. Hats, goggles, the pencil, bow tie, stopwatch, whistle, mitts, notebook and clipboard are gone; they read as stickers or specks. In the examples only Mo (glasses), Roo and the sharpener's hamsters (sweatbands) wear anything. The cast sheet's "kitted out" column is gone.
+
 ## Staff Only 0.6.0 (2026-10-29)
 
 ### Added

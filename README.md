@@ -3,7 +3,7 @@
 <p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, as one continuous story.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a run that plays the whole mechanism on a loop.</p>
 
 <p align="center">
-  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole in a red miner's hat holds the latch hook, an electric eel in a hard hat lies along the live wire, crackling, a kangaroo in a sweatband rides the lever, and a raccoon in glasses lifts the browning knob's lever.">
+  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole holds the latch hook, an electric eel lies along the live wire, crackling, a kangaroo in a sweatband rides the lever, and a raccoon lifts the browning knob's lever.">
 </p>
 
 <p align="center"><sub><code>examples/toaster</code>, light theme, mid-toast. Mo feels the heat while Dig, Volta, Roo and Rocky hold their posts. Whoever is working is lit.</sub></p>
@@ -22,10 +22,10 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
 | Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
-| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur, a collar in their role colour, their props) and on the light and heat the machine gives off, drawn with WebGL |
+| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur and a collar in their role colour) and on the light and heat the machine gives off, drawn with WebGL |
 | Format | One interactive figure | A full scene played as one continuous story on a loop: the camera eases onto whoever is working, a caption per beat, no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
-| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur, role colours and props), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
+| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
 | Examples | 8 | 12: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
@@ -33,9 +33,9 @@ Everything else, from the craft rules to the audit, the line check, WebGL, the 3
 
 ## The crew
 
-<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: twelve painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel), each at four headings and in seven poses including on all fours, hanging and kitted out with props, each with a thin collar in its role colour."></p>
+<p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: fourteen painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel, woodpecker, pigeon), each at four headings and in six poses including on all fours, hanging and flying, each with a thin collar in its role colour."></p>
 
-Twelve species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab and electric eel. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. Each wears a thin collar in its role colour:
+Fourteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel, woodpecker and pigeon. Each is a painted illustration of the real animal (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. The birds work with their beaks: the woodpecker strikes, the pigeon pecks and carries, and both fly. Each wears a thin collar in its role colour:
 
 | Role | Colour | Does |
 |---|---|---|
@@ -50,7 +50,7 @@ Twelve species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fe
 
 Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. One crew member per mechanism, so a detailed machine gets a bigger crew (up to seven).
 
-Props say what each job is: hard hats, a miner's hat, a cap, a sweatband, glasses, goggles, a pencil behind the ear, a bow tie, a stopwatch, a whistle, oven mitts, a notebook or a clipboard. Cloth and plastic take the role colour. `references/crew.md` has the full rules, the props and how to add a species.
+Props are rare and only where they read cleanly: glasses on Mo, who times things, sweatbands on the runners, a letter in a pigeon's beak. `references/crew.md` has the full rules and how to add a species.
 
 ## Install
 

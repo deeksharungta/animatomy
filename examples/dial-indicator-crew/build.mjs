@@ -41,8 +41,8 @@ const CENTRE = -24 + BLOCK_W / 2;
 const STOPS = BLOCKS.map((_, index) => DIAL[0] - CENTRE - STEP * index);
 const REACH = [STOPS[STOPS.length - 1] - 6, STOPS[0] + 6];
 
-const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving", wear: ["cap"] };
-const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["glasses",  "stopwatch"] };
+const PIP = { species: "squirrel", name: "Pip", size: 25, role: "moving" };
+const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["glasses"] };
 const KNOB = { dx: CARRIAGE.x + CARRIAGE.w - 8, y: CARRIAGE.y + CARRIAGE.d + 4, z: CARRIAGE_Z + 2.5 };
 
 const P = k.fitProjection(

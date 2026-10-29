@@ -49,10 +49,10 @@ const C = {
   PANEL: { x: -55, y: 47, w: 28, d: 5, z0: 146, z1: 190 },
 };
 
-const DIG = { species: "mole", name: "Dig", size: 18, role: "sensing", wear: ["minerhat"] };
-const PIP = { species: "squirrel", name: "Pip", size: 20, role: "moving", wear: ["cap"] };
-const BUN = { species: "hamster", name: "Bun", size: 10, role: "power", wear: ["sweatband"] };
-const MOCHI = { species: "hamster", name: "Mochi", size: 10, role: "power", wear: ["sweatband"] };
+const DIG = { species: "mole", name: "Dig", size: 18, role: "sensing" };
+const PIP = { species: "squirrel", name: "Pip", size: 20, role: "moving" };
+const BUN = { species: "hamster", name: "Bun", size: 10, role: "power" };
+const MOCHI = { species: "hamster", name: "Mochi", size: 10, role: "power" };
 
 const ROOM = { x0: -100, x1: 112, y0: -84, y1: 66, top: 210 };
 const P = k.fitProjection(
