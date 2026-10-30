@@ -6,6 +6,7 @@
 
 - The pencil sharpener's pencil is drawn in its own colours instead of glowing: yellow paint, bare wood and graphite on the cone as it is cut, and a pink eraser, each with `subjectCss`. The shavings it sheds are bare wood with a band of yellow paint along one edge, and the pile in the drawer is wood. The metal ferrule stays in the kit's tones. The sharpener no longer uses `subjectDefs()`.
 - The vending machine's coin is brass instead of glowing, and so are the coins stacked in the cash box. It no longer uses `subjectDefs()`.
+- The dial indicator crew's gauge blocks are polished steel, a cool grey set apart from the machine's tones, instead of glowing. It no longer uses `subjectDefs()` or `subjectSvg()`.
 
 ## Staff Only 0.10.0 (2026-10-29)
 
