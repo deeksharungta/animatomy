@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { critter, critterSvg, crewCss, ellipsoidOf, subjectDefs } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, ellipsoidOf, subjectCss } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
 
@@ -116,7 +116,7 @@ function dynamic(K, P, C, S) {
     const d = `M${c[0]} ${c[1] - r}L${c[0] + q} ${c[1] - q}L${c[0] + r} ${c[1]}L${c[0] + q} ${c[1] + q}L${c[0]} ${c[1] + r}L${c[0] - q} ${c[1] + q}L${c[0] - r} ${c[1]}L${c[0] - q} ${c[1] - q}Z`;
     star = `<path class="iso-fill" d="${d}"/><path class="iso-line" data-tone="mid" d="${d}"/>`;
   }
-  out.pencil = `${K.solidSvg(lead, { tone: "hi", crease: "none" })}${K.solidSvg(wood, { tone: "hi", crease: "none" })}${K.solidSvg(body, { tone: "hi", lit: S.duty === "", crease: "lo" })}${K.solidSvg(ferrule, { tone: "mid" })}${K.lineSvg(bands, { tone: "lo" })}${K.solidSvg(eraser, { tone: "mid" })}`;
+  out.pencil = `<g class="ps-lead">${K.solidSvg(lead, { tone: "hi", crease: "none" })}</g><g class="ps-wood">${K.solidSvg(wood, { tone: "hi", crease: "none" })}</g><g class="ps-paint">${K.solidSvg(body, { tone: "hi", lit: S.duty === "", crease: "lo" })}</g>${K.solidSvg(ferrule, { tone: "mid" })}${K.lineSvg(bands, { tone: "lo" })}<g class="ps-eraser">${K.solidSvg(eraser, { tone: "mid" })}</g>`;
   out.star = star;
 
   const g = S.gamma;
@@ -164,16 +164,19 @@ function dynamic(K, P, C, S) {
       const r = 1.9 * (0.7 + 0.3 * Math.cos(2 * t + c.spin));
       pts.push(at([c.x + r * Math.cos(t + c.spin) * c.u, c.y + r * Math.sin(t + c.spin), c.z + r * Math.cos(t) * c.w]));
     }
-    return K.pathOf(pts, true);
+    return { d: K.pathOf(pts, true), rim: K.pathOf(pts.slice(0, 4), false) };
   };
-  const up = S.chips.filter((c) => c.z > C.DECK_Z + C.DECK_H).map(chip).join("");
-  const low = S.chips.filter((c) => c.z < C.DECK_Z).map(chip).join("");
-  const chipSvg = (d) => (d ? `<g class="iso-solid"><path class="iso-fill" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>` : "");
-  out.chipsUp = chipSvg(up);
-  out.chipsLow = chipSvg(low);
+  // A shaving is bare wood with a band of the pencil's yellow paint along one edge.
+  const chipSvg = (list) => {
+    if (!list.length) return "";
+    const cs = list.map(chip), d = cs.map((c) => c.d).join("");
+    return `<g class="iso-solid ps-wood"><path class="iso-fill" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/><path class="ps-rim" d="${cs.map((c) => c.rim).join("")}"/></g>`;
+  };
+  out.chipsUp = chipSvg(S.chips.filter((c) => c.z > C.DECK_Z + C.DECK_H));
+  out.chipsLow = chipSvg(S.chips.filter((c) => c.z < C.DECK_Z));
   const ph = 1.5 + 7.5 * Math.min(1, S.pile);
   out.pileH = ph;
-  out.pile = `${K.solidSvg(K.ellipsoidOf([ax, ay, C.FLOOR + 2], [[19, 0, 0], [0, 19, 0], [0, 0, ph]], P, { steps: 40, clip: { n: [0, 0, 1], d: 0 } }), { tone: "mid" })}`;
+  out.pile = `<g class="ps-wood">${K.solidSvg(K.ellipsoidOf([ax, ay, C.FLOOR + 2], [[19, 0, 0], [0, 19, 0], [0, 0, ph]], P, { steps: 40, clip: { n: [0, 0, 1], d: 0 } }), { tone: "mid" })}</g>`;
   return out;
 }
 
@@ -413,9 +416,9 @@ const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
   label:
-    "An electric pencil sharpener on a desk, with its front walls and the front of its lid cut away, run by cartoon animals. A pencil cup, a notebook and an eraser sit beside it, and a cork board hangs on the wall. A pencil, softly glowing, comes down through the throat collar. Mo the sloth, in glasses, hangs from the switch lever; the pencil pushes the lever's short arm aside, which lifts Mo and the long arm up onto a microswitch. Two hamsters in yellow sweatbands run in a wire wheel whose pinion turns the cutter carrier's crown teeth. Chomp the beaver stands on the carrier and gnaws round the pencil as it turns, cutting the cone. Shavings drop through the deck into a drawer.",
+    "An electric pencil sharpener on a desk, with its front walls and the front of its lid cut away, run by cartoon animals. A pencil cup, a notebook and an eraser sit beside it, and a cork board hangs on the wall. A yellow pencil with a pink eraser comes down through the throat collar. Mo the sloth, in glasses, hangs from the switch lever; the pencil pushes the lever's short arm aside, which lifts Mo and the long arm up onto a microswitch. Two hamsters in yellow sweatbands run in a wire wheel whose pinion turns the cutter carrier's crown teeth. Chomp the beaver stands on the carrier and gnaws round the pencil as it turns, cutting the cone. Shavings drop through the deck into a drawer.",
   body: [
-    `<defs>${subjectDefs()}<clipPath id="pencil-up"><rect x="-200" y="-400" width="1000" height="${(yCollar + 400).toFixed(1)}"/></clipPath><clipPath id="pencil-low"><rect x="-200" y="${yCollar.toFixed(1)}" width="1000" height="2000"/></clipPath></defs>`,
+    `<defs><clipPath id="pencil-up"><rect x="-200" y="-400" width="1000" height="${(yCollar + 400).toFixed(1)}"/></clipPath><clipPath id="pencil-low"><rect x="-200" y="${yCollar.toFixed(1)}" width="1000" height="2000"/></clipPath></defs>`,
     room(),
     desk(),
     propsBack(),
@@ -434,7 +437,7 @@ const svg = k.figureSvg({
     `<g data-part="button">${dyn0.button}</g>`,
     crew(MO, pose0.mo, "mo"),
     `<g data-part="c-back">${chompFront ? "" : crew(CHOMP, chompPose, "chomp", true)}</g>`,
-    `<g data-part="pencil-low" class="so-subject" clip-path="url(#pencil-low)">${dyn0.pencil}</g>`,
+    `<g data-part="pencil-low" clip-path="url(#pencil-low)">${dyn0.pencil}</g>`,
     `<g data-part="c-front">${chompFront ? crew(CHOMP, chompPose, "chomp", true) : ""}</g>`,
     `<g data-part="chips-up">${dyn0.chipsUp}</g>`,
     wheelBack(),
@@ -442,7 +445,7 @@ const svg = k.figureSvg({
     crew(BUN, pose0.bun, "bun"),
     wheelFront(),
     lid(),
-    `<g data-part="pencil-up" class="so-subject" clip-path="url(#pencil-up)">${dyn0.pencil}</g>`,
+    `<g data-part="pencil-up" clip-path="url(#pencil-up)">${dyn0.pencil}</g>`,
     collarRim,
     `<g data-part="star">${dyn0.star}</g>`,
     propsFront(),
@@ -627,7 +630,9 @@ const keys = [
   { mark: "raised", label: "Chomp, beaver, cutting: gnaws the point as the carrier turns" },
 ];
 
-const css = `${crewCss()}${STEPS_CSS}
+const css = `${crewCss()}${STEPS_CSS}${subjectCss(".ps-paint", "#F2B705", "#FFC81F")}${subjectCss(".ps-wood", "#ECD6B6", "#E8D3B6")}${subjectCss(".ps-lead", "#55565C", "#6A6B72")}${subjectCss(".ps-eraser", "#F2A0AE", "#F7AEBB")}
+.iso{--ps-rim:#FFC81F}.iso[data-theme="light"]{--ps-rim:#F2B705}
+.ps-rim{fill:none;stroke:var(--ps-rim);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .so-void{fill:var(--anatomy-halo);opacity:.55;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
 .iso-stage{touch-action:pan-y;cursor:pointer;overflow:hidden}
 .iso-stage:focus-visible{outline:1px solid var(--anatomy-muted);outline-offset:6px}`;
