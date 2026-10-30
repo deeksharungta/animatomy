@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { critter, critterSvg, crewCss, ellipsoidOf, subjectDefs } from "../../kit/critters.mjs";
+import { critter, critterSvg, crewCss, ellipsoidOf, subjectCss } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
 
@@ -521,20 +521,19 @@ const state0 = { phi: 0, wheel: 0.4, omega: 0, snack: "row", drop: { c: [42, 34,
 const dyn0 = dynamic({ ...k, ...L, ellipsoidOf }, P, C, state0);
 const pose0 = poses(C, state0);
 const crew = (spec, pose, part, duty = false) => critterSvg(critter(spec, pose, P), { part, duty });
-const layer = (name) => `<g data-part="coin-${name}" class="so-subject"></g>`;
+const layer = (name) => `<g data-part="coin-${name}" class="vm-coin"></g>`;
 
 const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
   label:
-    "A snack vending machine in a hallway, with its front glass, right side and top cut away, run by cartoon animals. In the control column on the left, a softly glowing coin drops behind the keypad panel and rolls down a rail into the paws of Dig the mole, who feels it and lets it through a gate. It rolls down a second rail and drops to Pip the squirrel, who stacks it in the cash box. Three trays hold three spiral coils of snacks each. The middle-right coil, B3, is driven by a belt from a wire wheel where two hamsters run; one turn of the coil pushes the front snack off the tray into the bin at the bottom.",
+    "A snack vending machine in a hallway, with its front glass, right side and top cut away, run by cartoon animals. In the control column on the left, a brass coin drops behind the keypad panel and rolls down a rail into the paws of Dig the mole, who feels it and lets it through a gate. It rolls down a second rail and drops to Pip the squirrel, who stacks it in the cash box. Three trays hold three spiral coils of snacks each. The middle-right coil, B3, is driven by a belt from a wire wheel where two hamsters run; one turn of the coil pushes the front snack off the tray into the bin at the bottom.",
   body: [
-    `<defs>${subjectDefs()}</defs>`,
     room(),
     props(),
     cabinetBack(),
     cashBoxBack(),
-    `<g data-part="stack">${dyn0.stack}</g>`,
+    `<g data-part="stack" class="vm-coin">${dyn0.stack}</g>`,
     layer("box"),
     cashBoxFront(),
     layer("pipback"),
@@ -802,7 +801,7 @@ const keys = [
   { mark: "raised", label: "Bun and Mochi, hamsters, power: run the wheel that turns coil B3" },
 ];
 
-const css = `${crewCss()}${STEPS_CSS}
+const css = `${crewCss()}${STEPS_CSS}${subjectCss(".vm-coin", "#D9A934", "#E6B84A")}
 .so-void{fill:var(--anatomy-halo);opacity:.55;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
 .so-coil{stroke-width:.95px}
 .so-belt{stroke-width:1.6px}
