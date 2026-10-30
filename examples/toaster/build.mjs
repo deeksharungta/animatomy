@@ -1064,6 +1064,7 @@ STEPS.mountSteps({
   update: (dt) => { step(dt); draw(); },
   done: (i) => DONE[i](),
   advance: step,
+  draw,
   save: () => ({ S: snap(), stepIndex, wasOn, sparkAge }),
   load: (x) => { Object.assign(S, JSON.parse(JSON.stringify(x.S))); stepIndex = x.stepIndex; wasOn = x.wasOn; sparkAge = 9; lastPose = {}; draw(); },
   onView: (v) => { view = v; paintGL(); },

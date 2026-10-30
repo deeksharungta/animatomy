@@ -42,6 +42,7 @@ The full picture is what makes a run more than a diagram. Build it with the kit 
 - **Two or three props** that belong to the subject and sit on the surface: a pencil cup beside a sharpener, a mug beside a toaster. Props are static and never steal a beat. A prop can double as a perch for a critter (the toaster's stack of books under Rocky).
 - **No colour.** The surface, walls and props are drawn like the machine, in the kit's own tones and tone hierarchy (base `lo`, structure `mid`, subject `hi`). The animals are the only colour in the picture, apart from the light and heat the machine gives off (`crew.md`, section 3).
 - The scene is part of the overview only. Fit the projection to the whole scene (`fitProjection` with the desk and wall corners), and let the beats zoom in.
+- **A machine that needs the whole card** (something that sweeps round, like the tellurion's year arm) can drop the wall and fit the projection to the machine alone, with the surface running off the edges of the figure. Its grain lines still end on the surface's edges, outside the view.
 
 ## 4. The camera
 
@@ -70,6 +71,7 @@ Give `mountSteps` the model step without drawing (`advance`) and a way to copy a
 - **Slow quick actions down.** A beat whose action is much shorter than its caption plays at a slower speed, so the motion fills the caption instead of finishing and sitting still (never below `slowest`, 0.35 by default). A beat's `pace` overrides this.
 - **Flow or wait.** For each beat the timing run checks whether letting the machine run on through the caption would finish the next beat's action before it starts. If not, the machine flows on; if so, it waits at the end of the action.
 - Without `advance`, `save` and `load` every beat plays at full speed and the machine waits after each action.
+- **Reduced motion.** Pass `draw` (the drawing without a model step) as well, and each beat is run to its end on the model alone and drawn once. Without it the run calls `update` for every step of the beat, which redraws hundreds of times in one go and freezes the page at each beat change.
 
 ## 7. API
 
@@ -80,10 +82,14 @@ import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs
 const views = STEPS.map((s) => (s.points ? fitView(s.points.map(at), [W, H], { pad: 22, least: 0.32 }) : [0, 0, W, H]));
 const body = `<style>${crewCss()}${STEPS_CSS}</style>` + k.plateHtml({ …, hint: "Plays on its own, on a loop", body: `<div class="iso-stage" tabindex="0" role="group" aria-label="…">${svg}</div>${stepsHtml(STEPS)}` });
 // page script: kitScript() + crewScript() + stepsScript() + live
-STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, update, done, advance, save, load, onView });
+STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, update, done, advance, draw, save, load, onView });
 ```
 
 `mountSteps` owns the animation loop: it calls `update` at each beat's pace, eases the camera, fills the progress bar, moves on when a beat is done and read, loops after the last beat, and stops drawing while the figure is offscreen. Space pauses and resumes; Home starts again from beat 1. Under reduced motion each beat jumps straight to its finished state and view, and the run moves on every few seconds.
+
+It returns `{ go(i), toggle(), aim(viewBox), index, playing }`.
+
+**Letting the reader take over.** A figure can also be driven by hand: the seasons tellurion lets you drag the globe to any date or step it with ← →. When the reader takes over, pause the run (`toggle()` if `playing`), set the model straight from the input, and `aim(viewBox)` the camera at what they now need to see (the whole figure, usually). The aim holds until the run resumes or moves to another beat. When Space resumes it, call `go(index)` to replay the current beat from where the reader left the model; `go` resets the beat's clock, so a beat that had already finished plays again instead of sitting still (the run's own Space handler fires first, so a second keydown listener sees `playing` already true). Say so in the plate's hint, and in the stage's `aria-label` for the keys. The plate's corners are hidden from screen readers, so give what the reader changes (the date) a visually hidden `aria-live="polite"` line, written when a key is pressed or a drag ends, not every frame. On a phone the figure must still scroll the page: keep `touch-action: pan-y` on the stage and start a drag only when the pointer lands on the part being dragged.
 
 ## 8. Verifying
 

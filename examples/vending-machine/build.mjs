@@ -789,6 +789,7 @@ STEPS.mountSteps({
   update: (dt) => { step(dt); draw(); },
   done: (i) => DONE[i](),
   advance: step,
+  draw,
   save: snap,
   load: (x) => { Object.assign(S, JSON.parse(JSON.stringify(x))); lastPose = {}; lastMsg = ""; },
 });

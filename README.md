@@ -26,7 +26,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 | Format | One interactive figure | A full scene played as one continuous story on a loop: the camera eases onto whoever is working, a caption per beat, no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
-| Examples | 8 | 12: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine` and `examples/dial-indicator-crew` |
+| Examples | 8 | 13: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
 Everything else, from the craft rules to the audit, the line check, WebGL, the 3D mode and printable sheets, is Anatomy's, unchanged. `ANATOMY-README.md` is Anatomy's own README, kept for reference.
@@ -95,4 +95,4 @@ open cast-sheet-light.html
 
 ## Credits and license
 
-Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).
+Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).

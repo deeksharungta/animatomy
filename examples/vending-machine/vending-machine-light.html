@@ -3738,8 +3738,10 @@ function fitView(points, [W, H], { pad = 24, least = 0.38 } = {}) {
 // timing run found that this would carry it into the next beat's action; then it waits, so the
 // story never runs ahead of its caption.
 // `hold` keeps a beat on screen a little longer, for the opening overview and the closing shot.
-// Space pauses and resumes; Home starts again.
-function mountSteps({ root, svg, stage, steps, views, enter, update, done, size, colors = [], ease = 0.45, advance, save, load, slowest = 0.35, onView }) {
+// Give `draw` too and reduced motion runs each beat to its end on the model alone and draws it once.
+// Space pauses and resumes; Home starts again. aim(viewBox) points the camera somewhere else until the
+// next beat or until the run resumes (a figure that lets you drag it can show the whole machine while paused).
+function mountSteps({ root, svg, stage, steps, views, enter, update, done, size, colors = [], ease = 0.45, advance, save, load, draw, slowest = 0.35, onView }) {
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const box = root.querySelector("[data-steps]") ?? root;
   const ui = {
@@ -3751,6 +3753,7 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
   const full = [0, 0, size[0], size[1]];
   let index = 0, playing = true, finished = false, held = 0, age = 0, frame = 0, last = 0, visible = false, swap = 0;
   let cam = views[0] ? [...views[0]] : [...full];
+  let aimed = null;
   // `svg` may be one element or several layered ones (a back and a front drawing round a canvas);
   // onView(viewBox) lets a WebGL layer follow the camera.
   const svgs = [].concat(svg);
@@ -3759,12 +3762,17 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
     const s = steps[index];
     ui.title.textContent = s.title;
     ui.text.textContent = s.text;
-    ui.who.innerHTML = s.who ? `<i></i>${s.who.replace(/</g, "&lt;")}` : "";
+    ui.who.innerHTML = s.who ? `<i></i>${esc(s.who)}` : "";
     root.style.setProperty("--crew-step", colors[index] || "var(--anatomy-hi)");
     ui.bars.forEach((bar, i) => { bar.toggleAttribute("data-now", i === index); bar.toggleAttribute("data-done", i < index); });
     box.toggleAttribute("data-paused", !playing);
   };
-  const settle = (at = index, cap = 1800) => { let n = 0; while (!done(at) && n++ < cap) update(1 / 30); };
+  const settle = (at = index, cap = 1800) => {
+    let n = 0;
+    const step = advance && draw ? advance : update;
+    while (!done(at) && n++ < cap) step(1 / 30);
+    if (step !== update) draw();
+  };
   const words = (s) => `${s.title} ${s.text}`.trim().split(/\s+/).length;
   const readFor = (s) => Math.max(2.4, words(s) * 0.23);
   const pace = steps.map((s) => s.pace ?? 1);
@@ -3795,6 +3803,7 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
     if (to >= steps.length) to = 0;
     enter(to, how);
     index = to;
+    aimed = null;
     finished = false;
     held = 0;
     age = 0;
@@ -3822,7 +3831,7 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
       const fill = Math.min(1, age / (readFor(steps[index]) + (steps[index].hold ?? 0)));
       root.style.setProperty("--so-beat", fill.toFixed(3));
     }
-    const target = views[index] ?? full;
+    const target = aimed ?? views[index] ?? full;
     const k = still.matches ? 1 : 1 - Math.exp(-dt / ease);
     let moving = false;
     cam = cam.map((v, i) => { const n = v + (target[i] - v) * k; if (Math.abs(target[i] - n) > 0.05) moving = true; return Math.abs(target[i] - n) > 0.05 ? n : target[i]; });
@@ -3830,7 +3839,8 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
     frame = visible && (playing || moving || swap > 0) ? requestAnimationFrame(tick) : 0;
   };
   const run = () => { if (!frame && visible) { last = 0; frame = requestAnimationFrame(tick); } };
-  const toggle = () => { playing = !playing; label(); run(); };
+  const toggle = () => { playing = !playing; if (playing) aimed = null; label(); run(); };
+  const aim = (view) => { aimed = view ? [...view] : null; if (still.matches && aimed) { cam = [...aimed]; write(); } run(); };
   stage.addEventListener("keydown", (event) => {
     if (event.key === " ") { event.preventDefault(); toggle(); }
     else if (event.key === "Home") { event.preventDefault(); playing = true; go(0); }
@@ -3840,7 +3850,7 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
   enter(0, "start");
   if (still.matches) settle();
   label();
-  return { go, toggle, get index() { return index; }, get playing() { return playing; } };
+  return { go, toggle, aim, get index() { return index; }, get playing() { return playing; } };
 }
 
 return { mountSteps, fitView };
@@ -4223,6 +4233,7 @@ STEPS.mountSteps({
   update: (dt) => { step(dt); draw(); },
   done: (i) => DONE[i](),
   advance: step,
+  draw,
   save: snap,
   load: (x) => { Object.assign(S, JSON.parse(JSON.stringify(x))); lastPose = {}; lastMsg = ""; },
 });

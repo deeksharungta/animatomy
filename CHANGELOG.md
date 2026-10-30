@@ -1,5 +1,17 @@
 # Changelog
 
+## Staff Only 0.10.0 (2026-10-29)
+
+### Added
+
+- `examples/seasons`: why the Earth has seasons, on a tellurion. A lamp is the Sun; a year arm carries a coloured globe round it on five equal gears, so the 23.4° axis keeps pointing the same way. Volta lights the lamp, Pip walks the arm round by a knob (one lap a year), and Mo turns the globe by a crank on its south end (one turn a day). The arm keeps the real calendar, and the Sun's height, London's day length and its noon Sun come out of the machine's geometry. Drag the globe or press ← → to set any date; Space plays on. A WebGL glow lights the lamp in both themes.
+- `aim(viewBox)` on the object `mountSteps` returns: points the camera somewhere else until the run resumes or changes beat, for figures the reader can take over.
+- `mountSteps` takes `draw`: with it, reduced motion runs each beat to its end on the model and draws once, instead of redrawing at every step (beat changes froze the page for up to a second). The toaster, sharpener and vending machine pass it.
+
+### Fixed
+
+- `mountSteps` escapes the crew member's name with the same `esc` as the rest of the caption.
+
 ## Staff Only 0.9.0 (2026-10-29)
 
 ### Changed
