@@ -116,7 +116,6 @@ body{margin:0;background:var(--anatomy-page);color:var(--anatomy-text);font:14px
 .iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}
 .crew{--so-ground:#000}
 .iso{--so-zap:#FFE14D;--so-zap-core:#FFFBE8}.iso[data-theme="light"]{--so-zap:#E8A600;--so-zap-core:#FFF4C2}
-.iso{--so-subject:#FFE9A6;--so-subject-a:.55}.iso[data-theme="light"]{--so-subject:#F5BE2E;--so-subject-a:.5}.so-subject{filter:url(#so-subject)}
 .crew[data-species="hamster"]{--so-fur:hsl(28 55% 53.1%);--so-fur-lit:hsl(24 49% 68.1%);--so-fur-shade:hsl(34 60% 32.9%);--so-belly:hsl(34 56% 90.2%);--so-belly-lit:hsl(30 50% 93.3%);--so-belly-shade:hsl(40 62% 55.9%);--so-dark:hsl(24 56% 34.7%);--so-dark-lit:hsl(20 50% 55.6%);--so-dark-shade:hsl(30 62% 21.5%);--so-skin:hsl(7 57% 76.5%);--so-skin-lit:hsl(3 51% 84.0%);--so-skin-shade:hsl(13 62% 47.4%);--so-mark:hsl(34 56% 90.2%);--so-mark-lit:hsl(30 50% 93.3%);--so-mark-shade:hsl(40 62% 55.9%);--so-eye:#120b07;--so-nose:#D88F8B;--so-claw:#F5EEE6;--so-whisker:#FFFBF4;--so-teeth:#f4efe6}
 .crew[data-species="mouse"]{--so-fur:hsl(27 39% 43.5%);--so-fur-lit:hsl(23 35% 61.6%);--so-fur-shade:hsl(33 43% 27.0%);--so-belly:hsl(39 33% 91.8%);--so-belly-lit:hsl(35 30% 94.4%);--so-belly-shade:hsl(45 37% 56.9%);--so-dark:hsl(26 44% 25.1%);--so-dark-lit:hsl(22 39% 49.1%);--so-dark-shade:hsl(32 48% 15.6%);--so-skin:hsl(7 57% 79.2%);--so-skin-lit:hsl(3 51% 85.9%);--so-skin-shade:hsl(13 62% 49.1%);--so-mark:hsl(39 33% 91.8%);--so-mark-lit:hsl(35 30% 94.4%);--so-mark-shade:hsl(45 37% 56.9%);--so-eye:#0e0907;--so-nose:#E09A96;--so-claw:#efe6da;--so-whisker:#F7F2EA;--so-teeth:#f4efe6}
 .crew[data-species="squirrel"]{--so-fur:hsl(19 62% 43.1%);--so-fur-lit:hsl(15 56% 61.3%);--so-fur-shade:hsl(25 68% 26.7%);--so-belly:hsl(36 53% 90.8%);--so-belly-lit:hsl(32 48% 93.7%);--so-belly-shade:hsl(42 59% 56.3%);--so-dark:hsl(18 66% 22.2%);--so-dark-lit:hsl(14 60% 47.1%);--so-dark-shade:hsl(24 73% 13.7%);--so-skin:hsl(18 18% 24.5%);--so-skin-lit:hsl(14 17% 48.7%);--so-skin-shade:hsl(24 20% 15.2%);--so-mark:hsl(33 51% 83.1%);--so-mark-lit:hsl(29 46% 88.5%);--so-mark-shade:hsl(39 56% 51.5%);--so-eye:#0b0705;--so-nose:#2B1E18;--so-claw:#2A1F1A;--so-whisker:#2B201A;--so-teeth:#f4efe6}
@@ -3249,12 +3248,6 @@ function subjectCss(sel, light, dark = light) {
   return `${sel}{${ramp(light, false)}}.iso[data-theme="dark"] ${sel},.iso:not([data-theme]) ${sel}{${ramp(dark, true)}}`;
 }
 
-// Older figures: a soft halo round the subject instead of its colour. The thing the machine works on wears it, so the
-// reader can follow it through the machine. Put subjectDefs() once in the figure's defs and draw the subject
-// inside subjectSvg(); a group that the page refills each frame takes class "so-subject" itself.
-const subjectDefs = () => `<filter id="so-subject" x="-60%" y="-60%" width="220%" height="220%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.2" result="d"/><feGaussianBlur in="d" stdDeviation="3.2" result="b"/><feFlood style="flood-color:var(--so-subject);flood-opacity:var(--so-subject-a)" result="c"/><feComposite in="c" in2="b" operator="in" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
-const subjectSvg = (html) => `<g class="so-subject">${html}</g>`;
-
 // Older figures passed a material palette to crewCss. Machines take no colour now, so it is ignored.
 const paletteOf = () => ({});
 
@@ -3265,7 +3258,6 @@ function crewCss() {
     `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
     `.crew{--so-ground:#000}`,
     `.iso{--so-zap:#FFE14D;--so-zap-core:#FFFBE8}.iso[data-theme="light"]{--so-zap:#E8A600;--so-zap-core:#FFF4C2}`,
-    `.iso{--so-subject:#FFE9A6;--so-subject-a:.55}.iso[data-theme="light"]{--so-subject:#F5BE2E;--so-subject-a:.5}.so-subject{filter:url(#so-subject)}`,
   ];
   for (const [name, a] of Object.entries(ART)) {
     rules.push(`.crew[data-species="${name}"]{${TONES.filter((t) => a.colors[t]).map((t) => toneVars(t, a.colors[t])).join(";")};--so-eye:${a.colors.eye ?? "#120c08"};--so-nose:${a.colors.nose ?? a.colors.skin};--so-claw:${a.colors.claw ?? "#efe6da"};--so-whisker:${a.colors.whisker ?? "#f6f1e8"};--so-teeth:${a.colors.teeth ?? "#f4efe6"}}`);

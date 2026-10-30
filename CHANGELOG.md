@@ -8,6 +8,10 @@
 - The vending machine's coin is brass instead of glowing, and so are the coins stacked in the cash box. It no longer uses `subjectDefs()`.
 - The dial indicator crew's gauge blocks are polished steel, a cool grey set apart from the machine's tones, instead of glowing. It no longer uses `subjectDefs()` or `subjectSvg()`.
 
+### Removed
+
+- `subjectDefs()`, `subjectSvg()` and the glow CSS (`.so-subject`, `--so-subject`) in `kit/critters.mjs`. Every subject is now drawn in its own colour with `subjectCss()`.
+
 ## Staff Only 0.10.0 (2026-10-29)
 
 ### Added
