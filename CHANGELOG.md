@@ -4,6 +4,7 @@
 
 ### Added
 
+- `examples/espresso-machine`: a single-boiler espresso machine, staffed by three crew members no example used before. Ember the fennec fox (heat) holds the heater switch on top of the boiler until the thermostat knocks it back at 93 °C, Ollie the otter (fluid) works the vibratory pump's piston, and Crumb the mouse (sensing) sits on the over-pressure valve until 9 bar lifts her off it. The coffee runs into the cup in its own colours, 36 g in 28 s, and WebGL draws the band heater's glow, the steam off the cup and the vent's puff into the drip tray. It is written in files of 150 lines or fewer.
 - Run pages open bare: the figure plays on its own with no caption panel on screen (the panel stays in the page for screen readers, pinned inside the figure's box so it never adds a scrollbar) and in the light theme only, whichever theme it was built in. `?full` on the URL shows the caption panel and the built theme. It lives in `mountSteps`, so the toaster, sharpener, vending machine and seasons pages all take it.
 
 ### Changed
