@@ -38,13 +38,13 @@ export function dynamic(K, P, C, S) {
   out.rod = K.solidSvg(K.prismOf(K.frameOf([E.x, Pn.y, Pn.z], [sx, 0, -cz], [cz, 0, sx], [0, 1, 0]), [[-0.35, -0.2], [0.35, -0.2], [0.35, 0.2], [-0.35, 0.2]], 0, Pn.len - Pn.bob * 0.6, P), { tone: "hi" });
   out.crutch = K.solidSvg(K.prismOf(K.frameOf([E.x, Pn.y + 1, az], [sx, 0, -cz], [cz, 0, sx], [0, 1, 0]), [[-0.3, -0.3], [0.3, -0.3], [0.3, 0.3], [-0.3, 0.3]], 0, 14, P), { tone: "mid" });
   out.bob = K.translateAlong(P, [Pn.len * sx, 0, Pn.len * (1 - cz)]);
-  // The weight on its cord from the barrel, and the crank Hickory winds it with.
+  // The weight on its cord from the barrel, and the crank Rocky winds it with.
   const G = C.GREAT, cx = G.x + C.BARREL.r, cy = (C.BARREL.y0 + C.BARREL.y1) / 2;
   out.weight = K.translateAlong(P, [0, 0, S.wt - C.WEIGHT.high]);
   out.cord = K.lineSvg(K.segment([cx, cy, C.SEAT_Z], [cx, cy, S.wt + C.WEIGHT.h + 2.2], P), { tone: "mid" });
   out.cordUp = K.lineSvg(K.segment([cx, cy, G.z], [cx, cy, C.SEAT_Z], P), { tone: "mid" });
   const ca = S.crank, handle = [G.x + C.CRANK.r * Math.cos(ca), C.CRANK.y + 0.6, G.z + C.CRANK.r * Math.sin(ca)];
-  out.crank = K.solidSvg(flat([G.x, C.CRANK.y, G.z], rot([[-0.9, -0.9], [C.CRANK.r, -0.7], [C.CRANK.r, 0.7], [-0.9, 0.9]], ca), 0, 0.6), { tone: "hi", lit: S.duty === "hickory" }) +
+  out.crank = K.solidSvg(flat([G.x, C.CRANK.y, G.z], rot([[-0.9, -0.9], [C.CRANK.r, -0.7], [C.CRANK.r, 0.7], [-0.9, 0.9]], ca), 0, 0.6), { tone: "hi", lit: S.duty === "rocky" }) +
     K.solidSvg(K.prismOf(K.frameOf(handle, [0, 1, 0], [1, 0, 0], [0, 0, 1]), Array.from({ length: 10 }, (_, i) => [0.7 * Math.cos(i * 0.628), 0.7 * Math.sin(i * 0.628)]), 0, 2.2, P), { tone: "hi" });
   out.handle = [handle[0], handle[1] + 1.6, handle[2]];
   // The hands, in blued steel: the minute hand long and thin, the hour hand short and broad.
@@ -65,20 +65,23 @@ export function dynamic(K, P, C, S) {
 
 export function poses(C, S, D) {
   const G = C.GREAT, h = D.handle;
-  const hickory = {
-    at: [G.x - 6, C.DIAL.y + 2.4, C.SEAT_Z],
-    heading: 20,
+  // Rocky winds with both hands on the crank's handle; Mo hangs on the pendulum rod and swings with it.
+  const rocky = {
+    at: [G.x - 6, C.DIAL.y + 1.4, C.SEAT_Z],
+    heading: 30,
     lean: 4,
     look: [0, 10],
     paws: S.winding || S.wt < C.WEIGHT.high - 0.5 ? { l: [h[0] - 0.4, h[1], h[2]], r: [h[0] + 0.3, h[1], h[2] + 0.4] } : {},
     eyes: S.wt >= C.WEIGHT.high - 0.5 && !S.winding ? "happy" : "open",
   };
-  const pinch = {
-    at: [C.ESC.x, C.PLATE_Y + 2.6, 185],
-    heading: 180,
-    look: [0, -14],
-    paws: { l: D.tips[0], r: D.tips[1] },
-    eyes: S.amp > 0.5 ? "open" : "shut",
+  const Pn = C.PEND, dir = [Math.sin(S.th), 0, -Math.cos(S.th)], on = (d) => [C.ESC.x + d * dir[0], Pn.y + 0.6, Pn.z + d * dir[2]], grip = on(72);
+  const mo = {
+    at: [grip[0], Pn.y + 1.5, grip[2] - 16 * 0.8],
+    heading: 45,
+    stance: "hang",
+    look: [-10, 8],
+    paws: { l: on(73), r: on(71) },
+    eyes: S.amp < 0.05 ? "shut" : S.ring > 0.4 ? "wide" : "open",
   };
   const knock = {
     at: [-23.5, -17.5, 194],
@@ -87,5 +90,5 @@ export function poses(C, S, D) {
     wings: S.ring > 0.4 ? 0.3 : 0,
     eyes: S.ring > 0.3 ? "wide" : "open",
   };
-  return { hickory, pinch, knock };
+  return { rocky, mo, knock };
 }
