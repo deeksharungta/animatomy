@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Pixel variant: every critter is drawn as a pixel sprite. Each one gets its own SVG filter that samples its painting on a grid of square blocks, about 22 to its height, fixed in the figure, and cuts its colours to seven levels per channel; `paintCritter` moves the filter's window with the animal. The rig, reach checks and duty rim are unchanged, and every crewed example and README image is rebuilt.
+
 ### Added
 
 - `examples/longcase-clock`: an eight-day longcase clock, hickory dickory dock. Hickory the mouse (power) winds the weight up with the crank, Pinch the crab (holding) works the escapement from behind the escape wheel with her claws on the pallets, and at one o'clock Knock the woodpecker (spring), who is the hammer, strikes the bell once. The hands are in blued steel. The crab and the woodpecker get their first jobs. It is written in files of 150 lines or fewer.

@@ -1617,13 +1617,43 @@ function inner(c) {
   return `${S.defs}<g data-k="ground" transform="${dyn.root}">${S.ground}</g><g class="so-fig"><g data-k="root" transform="${dyn.root}">${parts.join("")}</g></g>`;
 }
 
+// The pixel look: each animal is sampled on a grid of square blocks, about 22 to its height, fixed in the
+// figure so it moves across the grid like a sprite; each sample fills its block and its colours are cut to a few levels.
+const PX = 22;
+const pxId = (c) => `so-px-${c.species}-${c.name}`.replace(/[^\w-]/g, "");
+function pxGrid(c) {
+  const [x0, y0, x1, y1] = critterBox(c);
+  const sc = c.dyn.root ? Math.abs(+c.dyn.root.match(/scale\(([-\d.]+)/)[1]) : 0;
+  const t = sc ? (100 * sc) / PX : Math.max(x1 - x0, y1 - y0) / (PX * 1.4), d = t / 2, pad = t * 3;
+  const gx = Math.floor((x0 - pad) / t) * t, gy = Math.floor((y0 - pad) / t) * t;
+  const f = (v) => +v.toFixed(3);
+  return { t: f(t), d: f(d), x: f(gx), y: f(gy), w: f(Math.ceil((x1 + pad - gx) / t) * t), h: f(Math.ceil((y1 + pad - gy) / t) * t), dx: f(gx + (t - d) / 2), dy: f(gy + (t - d) / 2), r: f((t - d) / 2) };
+}
+const LEVELS = "0 .2 .4 .55 .7 .85 1";
+function pxFilter(c) {
+  const g = pxGrid(c);
+  return `<filter id="${pxId(c)}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" color-interpolation-filters="sRGB"><feFlood x="${g.dx}" y="${g.dy}" width="${g.d}" height="${g.d}" result="dot"/><feComposite in="dot" x="${g.x}" y="${g.y}" width="${g.t}" height="${g.t}" result="cell"/><feTile in="cell" result="dots"/><feComposite in="SourceGraphic" in2="dots" operator="in"/><feMorphology operator="dilate" radius="${g.r}"/><feComponentTransfer><feFuncR type="discrete" tableValues="${LEVELS}"/><feFuncG type="discrete" tableValues="${LEVELS}"/><feFuncB type="discrete" tableValues="${LEVELS}"/><feFuncA type="discrete" tableValues="0 1 1 1"/></feComponentTransfer></filter>`;
+}
+// Move the grid's window with the animal each frame; the blocks themselves stay put in the figure.
+function pxUpdate(el, c) {
+  const f = el.querySelector("filter"), g = pxGrid(c);
+  if (!f || f.__k === `${g.x},${g.y},${g.w},${g.h},${g.t}`) return;
+  f.__k = `${g.x},${g.y},${g.w},${g.h},${g.t}`;
+  for (const [k, v] of Object.entries({ x: g.x, y: g.y, width: g.w, height: g.h })) f.setAttribute(k, v);
+  const [flood, cell, , , dilate] = f.children;
+  for (const [k, v] of Object.entries({ x: g.dx, y: g.dy, width: g.d, height: g.d })) flood.setAttribute(k, v);
+  for (const [k, v] of Object.entries({ x: g.x, y: g.y, width: g.t, height: g.t })) cell.setAttribute(k, v);
+  dilate.setAttribute("radius", g.r);
+}
+
 export function critterSvg(c, { duty = false, part } = {}) {
-  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${inner(c)}</g>`;
+  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""} style="filter:url(#${pxId(c)})">${pxFilter(c)}${inner(c)}</g>`;
 }
 
 export function paintCritter(el, c) {
   if (el.__crew !== c.key) {
-    el.innerHTML = inner(c);
+    el.innerHTML = pxFilter(c) + inner(c);
+    el.style.filter = `url(#${pxId(c)})`;
     el.__crew = c.key;
     el.__nodes = Object.fromEntries([...el.querySelectorAll("[data-k]")].map((n) => [n.getAttribute("data-k"), n]));
     return;
@@ -1634,6 +1664,7 @@ export function paintCritter(el, c) {
     const attr = n.tagName === "path" ? "d" : "transform";
     if (n.getAttribute(attr) !== v) n.setAttribute(attr, v);
   }
+  pxUpdate(el, c);
 }
 
 // The box a critter covers on screen, for framing.
