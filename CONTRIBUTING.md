@@ -1,4 +1,13 @@
 > Animatomy is a fork of [Anatomy](https://github.com/wheresryan22/anatomy). The rules below are Anatomy's and still apply to the kit and its examples. Crew changes live in `kit/critters.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `examples/seasons` and `examples/dial-indicator-crew`; keep them out of Anatomy's files so the fork can follow upstream.
+>
+> **History and upstream.** This repository's history starts with Anatomy's own commits (up to 1482e84, 18 Oct 2026), and Animatomy's commits sit on top, so `git blame` credits every line to whoever wrote it. The `upstream` remote is Ryan's repo. To take his updates:
+>
+> ```sh
+> git remote add upstream https://github.com/wheresryan22/anatomy.git   # once
+> git fetch upstream && git merge upstream/main
+> ```
+>
+> Merge, never rebase, so the published history never has to be rewritten again. On a conflict in Animatomy's own files (the crew and run files above, `SKILL.md`, `README.md`, `CHANGELOG.md`), keep Animatomy's side and bring in only what Anatomy's change needs.
 
 # Contributing to Anatomy
 
