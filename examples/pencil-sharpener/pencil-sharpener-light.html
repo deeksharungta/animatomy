@@ -146,7 +146,7 @@ body{margin:0;background:var(--anatomy-page);color:var(--anatomy-text);font:14px
 .so-steps-track i{flex:1;height:3px;border-radius:2px;background:var(--anatomy-faint);overflow:hidden;position:relative}
 .so-steps-track i[data-done]{background:var(--anatomy-lo)}
 .so-steps-track i[data-now]::after{content:"";position:absolute;inset:0;background:var(--crew-step,var(--anatomy-hi));transform-origin:left;transform:scaleX(var(--so-beat,0))}
-.so-steps[data-bare]{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.so-steps[data-bare]{position:absolute;top:0;left:0;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .so-steps[data-paused] .so-steps-who::after{content:"paused";margin-left:6px;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
 .so-steps p{transition:opacity .25s ease}
 .so-steps[data-swap] p{opacity:.35}
@@ -3685,7 +3685,7 @@ const STEPS_CSS = `
 .so-steps-track i{flex:1;height:3px;border-radius:2px;background:var(--anatomy-faint);overflow:hidden;position:relative}
 .so-steps-track i[data-done]{background:var(--anatomy-lo)}
 .so-steps-track i[data-now]::after{content:"";position:absolute;inset:0;background:var(--crew-step,var(--anatomy-hi));transform-origin:left;transform:scaleX(var(--so-beat,0))}
-.so-steps[data-bare]{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.so-steps[data-bare]{position:absolute;top:0;left:0;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .so-steps[data-paused] .so-steps-who::after{content:"paused";margin-left:6px;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
 .so-steps p{transition:opacity .25s ease}
 .so-steps[data-swap] p{opacity:.35}

@@ -95,7 +95,7 @@ Animatomy is a standard [Agent Skill](https://agentskills.io): this folder, with
 From a terminal:
 
 ```sh
-git clone https://github.com/deeksharungta/staff-only ~/.claude/skills/animatomy
+git clone https://github.com/deeksharungta/animatomy ~/.claude/skills/animatomy
 ```
 
 Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. Nothing to `npm install`.
