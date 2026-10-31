@@ -84,33 +84,34 @@ Props are rare and only where they read cleanly: glasses on Mo, who times things
 
 ## Install
 
-Animatomy is a standard [Agent Skill](https://agentskills.io): this folder, with `SKILL.md` at its root.
-
-| For | Put this folder at |
-|---|---|
-| You, in Claude Code | `~/.claude/skills/animatomy` |
-| One project, in Claude Code | `.claude/skills/animatomy` |
-| OpenCode, Codex, Antigravity | that agent's skills folder, as in `ANATOMY-README.md` |
-
-From a terminal:
+Add the skill to Claude Code with one command:
 
 ```sh
-git clone https://github.com/deeksharungta/animatomy ~/.claude/skills/animatomy
+npx skills add deeksharungta/animatomy
 ```
 
-Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. Nothing to `npm install`.
+Or [download the skill](https://github.com/deeksharungta/animatomy/archive/refs/heads/main.zip) and unzip it into your skills folder:
 
-## Usage
+```sh
+unzip animatomy-main.zip -d ~/.claude/skills && mv ~/.claude/skills/animatomy-main ~/.claude/skills/animatomy
+```
+
+Then open Claude Code in your project and ask how anything works. Name the machine or the idea, not the drawing:
 
 ```text
 /animatomy how a pop-up toaster knows when the toast is done
-/animatomy a stapler, crewed, light theme, one HTML file
+/animatomy how a vending machine checks your coin, light theme
+/animatomy why the Earth has seasons, interactive
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
+Thirteen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
 
-Try the examples. The built pages are in the repo, so you can open them straight away; rebuild one with `node examples/<name>/build.mjs` (add `--light` for the light build):
+Animatomy is a standard [Agent Skill](https://agentskills.io), so it also runs in OpenCode, Codex and Antigravity: put this folder in that agent's skills folder, as in `ANATOMY-README.md`. Builds need Node.js 20.10 or later and the checks need Chrome or Chromium. Nothing to `npm install`.
+
+## Try the examples
+
+The built pages are in the repo, so you can open them straight away; rebuild one with `node examples/<name>/build.mjs` (add `--light` for the light build):
 
 ```sh
 open examples/toaster/toaster-light.html
