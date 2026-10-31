@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Illustrated variant: the whole crew is drawn like a natural-history plate. Every tone is lighter and more muted, each body part gets a fine warm-grey ink contour, fur strands become pen hatching, edge tufts become a sketched outline, and eyes are smaller with one glint. It is a style over the same rig, so all thirteen species, every pose and the reach checks are unchanged; every crewed example and README image is rebuilt.
+
 ### Added
 
 - `examples/longcase-clock`: an eight-day longcase clock. Rocky the raccoon (power) winds the weight up with the crank, Mo the sloth (sensing and timing) hangs from the pendulum's rod and swings with it while the anchor lets the escape wheel go half a tooth a second, and at one o'clock Knock the woodpecker (spring), who is the hammer, strikes the bell once. The hands are in blued steel; the woodpecker gets its first job. It is written in files of 150 lines or fewer.

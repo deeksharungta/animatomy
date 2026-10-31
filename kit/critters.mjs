@@ -1017,9 +1017,12 @@ const hexToHsl = (hex) => {
   return [h * 60, s * 100, l * 100];
 };
 const hsl = (h, s, l) => `hsl(${h.toFixed(0)} ${Math.max(0, Math.min(100, s)).toFixed(0)}% ${Math.max(0, Math.min(100, l)).toFixed(1)}%)`;
+// The illustrated look: natural-history drawing on paper, so every tone is lighter and more muted than the
+// animal's own colour, and the shade stays soft; the ink line and the fur hatching carry the form.
 const toneVars = (name, hex) => {
-  const [h, s, l] = hexToHsl(hex);
-  return `--so-${name}:${hsl(h, s, l)};--so-${name}-lit:${hsl(h - 4, s * 0.9, l + (100 - l) * 0.32)};--so-${name}-shade:${hsl(h + 6, Math.min(100, s * 1.1), l * 0.62)}`;
+  const [h, s0, l0] = hexToHsl(hex);
+  const s = s0 * 0.62, l = l0 + (100 - l0) * 0.32;
+  return `--so-${name}:${hsl(h, s, l)};--so-${name}-lit:${hsl(h - 4, s * 0.85, l + (100 - l) * 0.45)};--so-${name}-shade:${hsl(h + 6, s * 1.05, l * 0.78)}`;
 };
 const TONES = ["fur", "belly", "dark", "skin", "mark"];
 
@@ -1042,6 +1045,13 @@ export const paletteOf = () => ({});
 export function crewCss() {
   const rules = [
     `.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}`,
+    `.crew{--so-ink:color-mix(in srgb,var(--so-fur-shade,#6b5d50) 45%,#3d3631)}`,
+    `.crew .so-fig path[fill*="-v-"]{stroke:var(--so-ink);stroke-width:.6px;stroke-linejoin:round;vector-effect:non-scaling-stroke;paint-order:stroke}`,
+    `.crew .so-strand{stroke:var(--so-ink)!important;opacity:.6!important;stroke-width:.35px!important;vector-effect:non-scaling-stroke}`,
+    `.crew .so-tuft{stroke:var(--so-ink)!important;opacity:.55!important;stroke-width:.45px!important;vector-effect:non-scaling-stroke}`,
+    `.crew [fill="#fff"][opacity=".5"]{display:none}`,
+    `.crew [fill*="-eye)"],.crew [fill*="-eye)"]~[fill="#fff"]{transform-box:fill-box;transform-origin:center;transform:scale(.72)}`,
+    `.crew [data-k="ground"]{opacity:.6}`,
     `.crew[data-duty]>.so-fig{filter:url(#so-duty)}`,
     `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
     `.crew{--so-ground:#000}`,
