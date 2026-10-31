@@ -1,4 +1,4 @@
-// The Staff Only crew. Each animal is a painted illustration on a 2D rig: authored shapes facing left,
+// The Animatomy crew. Each animal is a painted illustration on a 2D rig: authored shapes facing left,
 // standing on y = 0 and about 100 units tall, filled with soft gradients, fur at the edges and strands
 // inside, no outlines. critter(spec, pose, P) places one in the figure's camera: it faces left or right
 // by its heading, shows its back when it walks away, leans, hops, looks up and down, and reaches its paws

@@ -1,6 +1,6 @@
 # The run
 
-Every Staff Only figure is a full picture that plays its machine as one continuous story. It opens on the whole scene (the machine on its desk or bench, a wall behind it, a few props), then follows the mechanism beat by beat without stopping: each beat plays one piece of the action, the camera eases onto the crew member doing it, and a caption says in a sentence what is happening. When the last beat ends it starts again. There are no buttons and no pauses between beats. `examples/toaster/` is the reference; `examples/pencil-sharpener/` and `examples/vending-machine/` are smaller ones.
+Every Animatomy figure is a full picture that plays its machine as one continuous story. It opens on the whole scene (the machine on its desk or bench, a wall behind it, a few props), then follows the mechanism beat by beat without stopping: each beat plays one piece of the action, the camera eases onto the crew member doing it, and a caption says in a sentence what is happening. When the last beat ends it starts again. There are no buttons and no pauses between beats. `examples/toaster/` is the reference; `examples/pencil-sharpener/` and `examples/vending-machine/` are smaller ones.
 
 ## Contents
 1. Shape of a run

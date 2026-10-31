@@ -1,5 +1,5 @@
 {
-  "skill_name": "staff-only",
+  "skill_name": "animatomy",
   "evals": [
     {
       "id": 101,
@@ -8,7 +8,7 @@
       "files": []
     },
     {
-      "prompt": "Explain a token-bucket rate limiter (20 tokens, refills 5 per second, one token per request) as a Staff Only figure for my blog. Dark theme, single HTML file.",
+      "prompt": "Explain a token-bucket rate limiter (20 tokens, refills 5 per second, one token per request) as an Animatomy figure for my blog. Dark theme, single HTML file.",
       "expected_output": "A standalone dark HTML page: Anatomy's craft for the machine (a real physical object that is a token bucket: hopper, dispenser, gate) plus a crew. The refill mechanism has one operator (for example squirrels as moving, or hamsters as power), the gate that rejects requests has a holding operator, and each critter's motion is the part's motion from the model (5 tokens per second, capacity 20, rejection when empty). The readout shows true numbers. Paws land on real handles, one critter is lit at a time, role colours follow the eight fixed roles, the machine stays monochrome, and nothing passes through anything. The cast sheet and 4x crew close-ups were read in both themes. The figure is a step player built with kit/steps.mjs: it opens on the whole scene (the machine on a surface with a wall and two or three props, all in pale MATERIALS colours), then plays one step per handoff in the mechanism, each with a title, who is on duty, a true caption and a camera view that zooms onto the actor, and ends by returning to rest. Back restores each step as it began, autoplay loops, and every step was captured in both themes and read.",
       "files": [],
       "id": 102

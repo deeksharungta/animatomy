@@ -69,6 +69,6 @@ const tile = (name, i, cell) => {
 };
 const grid = species.map((name, i) => cells.map((cell) => tile(name, i, cell)).join("")).join("");
 const css = `${crewCss()}.cast{display:grid;grid-template-columns:repeat(${cells.length},1fr);gap:4px}.cell{display:flex;flex-direction:column;align-items:center}.cell span{font:11px var(--anatomy-mono);color:var(--anatomy-muted)}`;
-const html = k.pageHtml({ title: "Cast sheet", theme, width: W * cells.length + 80, body: `<style>${css}</style>${k.plateHtml({ fig: "Cast", title: "Staff Only crew", hint: "every species, every heading, every pose", body: `<div class="cast">${grid}</div>` })}` });
+const html = k.pageHtml({ title: "Cast sheet", theme, width: W * cells.length + 80, body: `<style>${css}</style>${k.plateHtml({ fig: "Cast", title: "Animatomy crew", hint: "every species, every heading, every pose", body: `<div class="cast">${grid}</div>` })}` });
 writeFileSync(out, html);
 console.log("wrote", out);

@@ -1,6 +1,6 @@
 # Crew
 
-Every Staff Only figure is an Anatomy figure with a crew inside. This page is everything about the crew: who gets cast, how they look, how they move, and how to check them. Everything in `craft.md` still applies to the machine around them.
+Every Animatomy figure is an Anatomy figure with a crew inside. This page is everything about the crew: who gets cast, how they look, how they move, and how to check them. Everything in `craft.md` still applies to the machine around them.
 
 ## Contents
 1. The premise
@@ -133,7 +133,7 @@ A paw that works is a contact, like a pipe end on its port (`craft.md`, section 
 
 ## 7. The on-duty light
 
-Anatomy lights exactly one part: the one to watch. Staff Only lights exactly one critter: the one whose part is moving now.
+Anatomy lights exactly one part: the one to watch. Animatomy lights exactly one critter: the one whose part is moving now.
 
 - Set `data-duty` on that critter's group (`critterSvg(c, { duty: true })` or `el.toggleAttribute("data-duty", …)`). A thin rim in `--crew-duty` (white in dark, black in light) appears round its silhouette; the fill is untouched.
 - Choose it from the motion itself: the fastest-moving part's operator, above a small threshold, so a stop hands the light back.

@@ -1,4 +1,4 @@
-<h1 align="center">Staff Only</h1>
+<h1 align="center">Animatomy</h1>
 
 <p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, as one continuous story.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a run that plays the whole mechanism on a loop.</p>
 
@@ -12,13 +12,13 @@
 
 ## The idea
 
-Anatomy explains an idea by inventing a real machine whose working *is* the idea, then building it from dozens of small, solid, shaded parts. Staff Only keeps all of that and adds one thing: **the machine is real, the workforce is fake.** Every part that moves on its own has an operator, and the operator's motion is the part's motion. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade.
+Anatomy explains an idea by inventing a real machine whose working *is* the idea, then building it from dozens of small, solid, shaded parts. Animatomy keeps all of that and adds one thing: **the machine is real, the workforce is fake.** Every part that moves on its own has an operator, and the operator's motion is the part's motion. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade.
 
 Take the crew away and the mechanism is still true. Leave it in and people remember how the thing works.
 
 ## What's different from Anatomy
 
-| | Anatomy | Staff Only |
+| | Anatomy | Animatomy |
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
 | Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
@@ -54,18 +54,18 @@ Props are rare and only where they read cleanly: glasses on Mo, who times things
 
 ## Install
 
-Staff Only is a standard [Agent Skill](https://agentskills.io): this folder, with `SKILL.md` at its root.
+Animatomy is a standard [Agent Skill](https://agentskills.io): this folder, with `SKILL.md` at its root.
 
 | For | Put this folder at |
 |---|---|
-| You, in Claude Code | `~/.claude/skills/staff-only` |
-| One project, in Claude Code | `.claude/skills/staff-only` |
+| You, in Claude Code | `~/.claude/skills/animatomy` |
+| One project, in Claude Code | `.claude/skills/animatomy` |
 | OpenCode, Codex, Antigravity | that agent's skills folder, as in `ANATOMY-README.md` |
 
 From a terminal, with this folder downloaded:
 
 ```sh
-mkdir -p ~/.claude/skills && cp -R staff-only ~/.claude/skills/staff-only
+mkdir -p ~/.claude/skills && cp -R animatomy ~/.claude/skills/animatomy
 ```
 
 Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. Nothing to `npm install`.
@@ -73,9 +73,9 @@ Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. N
 ## Usage
 
 ```text
-/staff-only how a pop-up toaster knows when the toast is done
-/staff-only a stapler, crewed, light theme, one HTML file
-/staff-only explain a token bucket rate limiter, with a crew
+/animatomy how a pop-up toaster knows when the toast is done
+/animatomy a stapler, crewed, light theme, one HTML file
+/animatomy explain a token bucket rate limiter, with a crew
 ```
 
 Claude sizes the figure, finds the real numbers, invents (or uses) the machine, writes the parts list, the crew list and the beats, renders a cast sheet, builds the scene and the machine, poses the crew from the same model that moves the parts, plays the story on a loop, and checks every beat in both themes.
@@ -95,4 +95,4 @@ open cast-sheet-light.html
 
 ## Credits and license
 
-Staff Only is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Staff Only's. See [LICENSE](LICENSE).
+Animatomy is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Animatomy's. See [LICENSE](LICENSE).
