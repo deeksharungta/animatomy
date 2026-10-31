@@ -1,4 +1,4 @@
-import { WIDTH, HEIGHT, C, P, HICKORY, PINCH, KNOCK } from "./model.mjs";
+import { WIDTH, HEIGHT, C, P, ROCKY, MO, KNOCK } from "./model.mjs";
 import { dynamic, poses } from "./moving.mjs";
 import { STEPS, views, rest } from "./story.mjs";
 
@@ -6,7 +6,7 @@ import { STEPS, views, rest } from "./story.mjs";
 export const MODEL_SCRIPT = `
 const P = ${JSON.stringify(P)};
 const C = ${JSON.stringify(C)};
-const HICKORY = ${JSON.stringify(HICKORY)}, PINCH = ${JSON.stringify(PINCH)}, KNOCK = ${JSON.stringify(KNOCK)};
+const ROCKY = ${JSON.stringify(ROCKY)}, MO = ${JSON.stringify(MO)}, KNOCK = ${JSON.stringify(KNOCK)};
 const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, hold, pace }) => ({ title, text, who, hold, pace })))};
 const VIEWS = ${JSON.stringify(views.map((v) => v.map((n) => +n.toFixed(2))))};
 const COLORS = ${JSON.stringify(STEPS.map((s) => s.color))};
@@ -52,7 +52,7 @@ function step(dt) {
     if (Math.abs(S.hamV) < 0.02 && Math.abs(S.ham - C.HAMMER.rest) < 0.004) { S.hamV = 0; S.ham = C.HAMMER.rest; }
   }
   S.ring *= Math.exp(-dt / 0.9);
-  S.duty = S.winding ? "hickory" : (S.sp >= 0 && S.sp < 1) || S.ring > 0.3 ? "knock" : S.amp > 0.1 ? "pinch" : "";
+  S.duty = S.winding ? "rocky" : (S.sp >= 0 && S.sp < 1) || S.ring > 0.3 ? "knock" : S.amp > 0.1 ? "mo" : "";
   if (S.swap >= 0) {
     S.swap += dt / 0.9;
     if (S.swap >= 0.5 && S.wt > C.WEIGHT.low) Object.assign(S, { ...REST, swap: S.swap, go: false, struck: false, sp: -1, escT: S.escT, esc: S.esc, pins: S.pins, pinBase: S.pins, fly: S.fly });
