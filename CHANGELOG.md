@@ -4,7 +4,7 @@
 
 ### Added
 
-- `?bare` on a run page's URL hides the caption panel and shows the light theme only, for embedding a figure; the run plays on as before. It lives in `mountSteps`, so the toaster, sharpener, vending machine and seasons pages all take it.
+- Run pages open bare: the figure plays on its own with no caption panel on screen (the panel stays in the page for screen readers) and in the light theme only, whichever theme it was built in. `?full` on the URL shows the caption panel and the built theme. It lives in `mountSteps`, so the toaster, sharpener, vending machine and seasons pages all take it.
 
 ### Changed
 

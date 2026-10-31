@@ -85,7 +85,7 @@ const body = `<style>${crewCss()}${STEPS_CSS}</style>` + k.plateHtml({ …, hint
 STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, update, done, advance, draw, save, load, onView });
 ```
 
-`mountSteps` owns the animation loop: it calls `update` at each beat's pace, eases the camera, fills the progress bar, moves on when a beat is done and read, loops after the last beat, and stops drawing while the figure is offscreen. Space pauses and resumes; Home starts again from beat 1. Under reduced motion each beat jumps straight to its finished state and view, and the run moves on every few seconds. To embed a figure without its captions, open the page with `?bare`: the caption panel is hidden, the run plays on as before, and the page shows the light theme only.
+`mountSteps` owns the animation loop: it calls `update` at each beat's pace, eases the camera, fills the progress bar, moves on when a beat is done and read, loops after the last beat, and stops drawing while the figure is offscreen. Space pauses and resumes; Home starts again from beat 1. Under reduced motion each beat jumps straight to its finished state and view, and the run moves on every few seconds. By default a run page is bare: the caption panel is hidden on screen (it stays in the page for screen readers, so each beat's title is still announced), and the page shows the light theme whichever theme it was built in. Open it with `?full` for the full page: the caption panel and progress bar under the picture, in the theme it was built in. Write every caption anyway: the full page and screen readers read them, and they pace the beats.
 
 It returns `{ go(i), toggle(), aim(viewBox), index, playing }`.
 
@@ -94,9 +94,9 @@ It returns `{ go(i), toggle(), aim(viewBox), index, playing }`.
 ## 8. Verifying
 
 - **Time the run.** Log each beat's start time and how long its action took (the run sets `data-action-took` on the caption box). No beat should flip before its caption can be read, and the whole loop should be a comfortable watch (the toaster takes a little over a minute, the sharpener about half a minute).
-- **A contact sheet of every beat in both themes:** with reduced motion each beat shows its finished state; capture each once and read every PNG. Each beat's actor is in frame, big enough to read, and lit; the caption matches what the frame shows.
+- **A contact sheet of every beat in both themes,** with `?full` so the captions and the dark build show: with reduced motion each beat shows its finished state; capture each once and read every PNG. Each beat's actor is in frame, big enough to read, and lit; the caption matches what the frame shows.
 - **Every `done` is reachable.** A beat whose condition never comes true stalls the run. The timing run gives up after 40 s of model time per beat; a beat that hits that is a bug.
-- **The line check** passes in the overview (`scripts/lines.mjs` reads the page at load, which is beat 1).
+- **The line check** passes in the overview (`scripts/lines.mjs` reads the page at load, which is beat 1). A run page is light unless opened with `?full`, so check the dark build as `node scripts/lines.mjs "file://$PWD/page.html?full"`.
 - **390 px wide:** the caption wraps and the progress bar fits; the zoomed beats make the crew readable on a phone, which is what the overview can't do.
 
 ## 9. Anti-patterns
