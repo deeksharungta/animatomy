@@ -3,7 +3,7 @@ export const RUN_SCRIPT = `
 const stage = document.querySelector(".lc-stage");
 const svg = stage.querySelector("svg");
 const part = (name) => svg.querySelector('[data-part="' + name + '"]');
-const names = ["great", "center", "third", "pins", "esc", "anchor", "rod", "crutch", "bob", "weight", "cord", "cordUp", "crank", "hands", "hammer", "fly", "hickory", "pinch", "knock"];
+const names = ["great", "center", "third", "pins", "esc", "anchor", "rod", "crutch", "bob", "weight", "cord", "cordUp", "crank", "hands", "hammer", "fly", "rocky", "mo", "knock"];
 const el = Object.fromEntries(names.map((n) => [n, part(n)]));
 const readout = document.querySelector("[data-readout]");
 let lastPose = {};
@@ -22,8 +22,8 @@ function draw() {
   el.weight.setAttribute("transform", D.weight);
   for (const n of ["weight", "cord", "cordUp", "hands", "rod", "bob"]) el[n].style.opacity = S.fade.toFixed(3);
   const p = poses(C, S, D);
-  paintCrew("hickory", el.hickory, HICKORY, p.hickory, S.duty === "hickory");
-  paintCrew("pinch", el.pinch, PINCH, p.pinch, S.duty === "pinch");
+  paintCrew("rocky", el.rocky, ROCKY, p.rocky, S.duty === "rocky");
+  paintCrew("mo", el.mo, MO, p.mo, S.duty === "mo");
   paintCrew("knock", el.knock, KNOCK, p.knock, S.duty === "knock");
   const word = S.swap >= 0 ? "run down" : S.winding ? "winding" : S.ring > 0.3 ? "striking one" : S.amp > 0.6 ? (Math.floor(S.ph / Math.PI) % 2 ? "tock" : "tick") : S.amp > 0.05 ? "starting" : S.wt > C.WEIGHT.low + 1 ? "wound" : "stopped";
   const text = word + " · " + hms(S.t) + " · weight " + Math.round(S.wt - C.WEIGHT.low) + " cm up";

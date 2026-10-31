@@ -33,7 +33,7 @@ export function wheels() {
   return out.join("");
 }
 
-// The ratchet and click on the great wheel, which let Hickory wind one way only.
+// The ratchet and click on the great wheel, which let Rocky wind one way only.
 export function click() {
   const G = C.GREAT;
   return S(disc(G.x, G.z, 4.4, Y + 0.7, 0.6), { tone: "mid" }) + S(rod([G.x - 5.4, Y + 1, G.z + 2.6], [0, 1, 0], 0.5, 0, 1, 8), { tone: "hi" });
@@ -55,12 +55,10 @@ export function dial() {
   return out.join("");
 }
 
-// Brackets off the plate: a cock just behind the escape wheel for Pinch, a perch by the hammer for Knock.
-export const COCK = { x: 0.4, w: 5.2, top: 185 };
+// A bracket off the plate: the perch by the hammer for Knock.
 export const PERCH = { x: -26, y: -20, w: 5, d: 5, top: 194 };
 export function brackets() {
   const out = [];
-  out.push(S(k.slabOf({ x: COCK.x, y: PY, w: COCK.w, d: 2.8, r: 0.5 }, COCK.top - 2, 2, P, 3, 0.3), { tone: "mid" }));
   out.push(S(k.slabOf({ x: PERCH.x + 4, y: C.PLATE_Y, w: 4, d: PERCH.d + 1, r: 0.4 }, PERCH.top - 6, 3, P, 2), { tone: "mid" }));
   out.push(S(k.slabOf({ x: PERCH.x, y: PERCH.y, w: PERCH.w, d: PERCH.d, r: 0.6 }, PERCH.top - 3, 3, P, 3, 0.3), { tone: "mid" }));
   return out.join("");

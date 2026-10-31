@@ -33,10 +33,10 @@ export const C = {
   T0: 12 * 3600 + 59 * 60 + 52,
 };
 
-export const HICKORY = { species: "mouse", name: "Hickory", size: 14, role: "power" };
-export const PINCH = { species: "crab", name: "Pinch", size: 16, role: "holding" };
+export const ROCKY = { species: "raccoon", name: "Rocky", size: 12, role: "power" };
+export const MO = { species: "sloth", name: "Mo", size: 16, role: "sensing", wear: ["glasses"] };
 export const KNOCK = { species: "woodpecker", name: "Knock", size: 14, role: "spring" };
-export const ROLE = { power: "#F5C518", holding: "#E5484D", spring: "#E93D82" };
+export const ROLE = { power: "#F5C518", sensing: "#3E9BDB", spring: "#E93D82" };
 
 export const FLOOR = { x: -54, y: -44, w: 104, d: 90, r: 4 };
 export const WALL_TOP = 228;
