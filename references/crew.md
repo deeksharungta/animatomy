@@ -224,3 +224,15 @@ Most of the crew wear nothing but their collar. A prop goes on only where it rea
 - **Floating paws.** A paw a few units short of its handle reads like a pipe ending in the air. The reach check catches it; a 4× close-up confirms it.
 - **Crowds.** More critters than mechanisms, or more than seven on one machine. One per mechanism, one on duty at a time.
 - **A crew that hides the mechanism.** A body parked over the part it explains. Put the critter beside its handle on the viewer's side, and make the part visible around it.
+
+## 14. The illustrated crew (sprite variant)
+
+On this variant some animals are drawn from bundled illustrations instead of the painted rig: natural-history drawings with fine contours and muted colour, made once by the maintainers and shipped in `assets/crew/` (WebP atlases of twelve 512-unit cells, and `sprites.json`). Nobody using the skill needs an image model: the figure picks an existing animal and action and the page places it.
+
+- **What exists.** The hamster and the sloth, twelve frames each: 0 to 3 idle and blink, 4 to 7 work, 8 to 11 react. One camera (azimuth 45°, elevation 30°), facing right. Anything else (another species, a heading, an action) needs a new approved atlas; don't stretch a frame to fake one, use the painted critter instead.
+- **Placing.** `byFeet(frame, point, scale)` lands the frame's foot anchor on a projected world point (Bun on the toaster's lever knob). `byGrips(frame, [a, b])` lands its two grip points on two projected points by a rotation and a uniform scale (Mo's claws 0.8 and 10.8 units from the strip's free end, so he rides its curl). Compute the points from the part, as with paws.
+- **Frames from the model.** Idle blinks every few seconds; work loops while the animal is on duty; react plays once on a sudden event (the pop).
+- **Duty.** A thin rim in `--crew-duty`, drawn with drop shadows on the sprite's slot.
+- **Portable.** `spriteDefs` embeds each atlas once as a data URL, so a one-file page works offline; the toaster's two atlases add about 0.2 MB.
+- **Known limits.** Dark theme uses the same artwork, which reads but was drawn for paper. A hanging animal rotates with what it grips instead of hanging plumb. The toaster mixes the two illustrated animals with three painted ones until the others have art.
+

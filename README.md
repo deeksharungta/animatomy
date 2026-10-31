@@ -80,6 +80,8 @@ Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, 
 
 Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. One crew member per mechanism, so a detailed machine gets a bigger crew (up to seven).
 
+On this branch the toaster's hamster and sloth are drawn from bundled illustrations instead (`assets/crew/`, `kit/sprites.mjs`): natural-history drawings placed by their feet or their two grips, with no image model needed to use the skill. The other animals stay painted until they have art.
+
 Props are rare and only where they read cleanly: glasses on Mo, who times things, and sweatbands on the runners. `references/crew.md` has the full rules and how to add a species.
 
 ## Install
