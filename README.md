@@ -1,12 +1,23 @@
 <h1 align="center">Animatomy</h1>
 
-<p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it, as one continuous story.</b><br>A fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a>: the same crafted isometric figures, kit and checks, with a crew of real animals inside, a full scene, and a run that plays the whole mechanism on a loop.</p>
+<p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it.</b><br>Animals + anatomy: a fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a> where every moving part has an animal on shift.</p>
 
 <p align="center">
   <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole holds the latch hook, an electric eel lies along the live wire, crackling, a kangaroo in a sweatband rides the lever, and a raccoon lifts the browning knob's lever.">
 </p>
 
 <p align="center"><sub><code>examples/toaster</code>, light theme, mid-toast. Mo feels the heat while Dig, Volta, Roo and Rocky hold their posts. Whoever is working is lit.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%"><img src=".github/assets/seasons-crew.webp" alt="A tellurion on a desk in June: a lamp glows orange as the Sun, a globe tilted toward it on a gear arm. A sloth in glasses on a shelf turns the globe by a crank; a red squirrel pushes the arm round the base."><br><sub><code>examples/seasons</code>: why the Earth has seasons. Drag the globe to any date.</sub></td>
+    <td width="50%"><img src=".github/assets/sharpener-crew.webp" alt="An electric pencil sharpener cut open: a yellow pencil with a pink eraser feeds down into a cutter, a beaver gnaws its point, two hamsters run the motor wheel and a sloth hangs on the switch lever. Wood shavings fall into the drawer."><br><sub><code>examples/pencil-sharpener</code>: Chomp the beaver is the cutter.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src=".github/assets/vending-crew.webp" alt="Inside a vending machine: a brass coin rolls down a rail past a mole, who checks it, under a keypad that reads CREDIT 1.00."><br><sub><code>examples/vending-machine</code>: Dig the mole checks the coin.</sub></td>
+    <td width="50%"><img src=".github/assets/dial-indicator-crew.webp" alt="A dial indicator on a surface plate: a squirrel pushes a carriage of steel gauge blocks under the plunger while a sloth rides the dial's needle."><br><sub><code>examples/dial-indicator-crew</code>: Pip slides the blocks, Mo turns with the needle.</sub></td>
+  </tr>
+</table>
 
 ---
 
@@ -16,20 +27,39 @@ Anatomy explains an idea by inventing a real machine whose working *is* the idea
 
 Take the crew away and the mechanism is still true. Leave it in and people remember how the thing works.
 
+## How it works
+
+1. **You ask:** `/animatomy how a pop-up toaster knows when the toast is done`.
+2. **Claude plans:** it sizes the figure, finds the real numbers, picks a machine whose working *is* the idea, lists 40 to 150 parts, casts an animal for every part that moves on its own, and writes the beats: "Meet the crew", one beat per step of the mechanism, then back to rest.
+3. **Claude builds:** one model moves both the parts and the crew, so every paw stays on its handle. The machine and scene are drawn in Anatomy's monochrome; colour goes only on the animals, the thing being worked on and any heat or light.
+4. **Claude checks:** paws reach their handles across the whole motion, no line ends float, and every beat is screenshotted in both themes and at phone width.
+5. **You get one HTML file** that plays the whole story on a loop, with the camera easing onto whoever is working.
+
 ## What's different from Anatomy
 
 | | Anatomy | Animatomy |
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
 | Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
-| Colour | Monochrome, one lit accent | The machine and scene stay monochrome, as in Anatomy; colour is only on the animals (their fur and a collar in their role colour), the thing the machine works on in its own colour (the toaster's golden bread, the sharpener's yellow pencil, the vending machine's brass coin, the dial's steel gauge blocks), and the light and heat the machine gives off, drawn with WebGL |
-| Format | One interactive figure | A full scene played as one continuous story on a loop: the camera eases onto whoever is working, no buttons and no stops. It opens bare, the figure alone in light; `?full` on the URL adds a caption per beat and the dark theme |
+| Colour | Monochrome, one lit accent | Monochrome machine; colour only on the animals, the thing being worked on, and any heat or light |
+| Format | One interactive figure | A full scene played as one continuous story on a loop, with no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
 | Examples | 8 | 13: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
+The subject keeps its real colours: the toaster's golden bread, the sharpener's yellow pencil, the vending machine's brass coin, the dial's steel gauge blocks. Heat and light (the toaster's ribbons, the seasons lamp) glow on a WebGL layer, only while they are on.
+
 Everything else, from the craft rules to the audit, the line check, WebGL, the 3D mode and printable sheets, is Anatomy's, unchanged. `ANATOMY-README.md` is Anatomy's own README, kept for reference.
+
+## Two ways to open a figure
+
+| URL | Shows |
+|---|---|
+| `toaster.html` | The figure alone, playing on its loop, in the light theme. Made for embedding. The captions stay in the page for screen readers. |
+| `toaster.html?full` | The full page: a caption and progress bar under the figure, one beat at a time, in the theme it was built in. |
+
+Space pauses and resumes, Home starts again. The seasons figure also takes a drag on the globe, or ← and →, to set any date.
 
 ## The crew
 
@@ -62,10 +92,10 @@ Animatomy is a standard [Agent Skill](https://agentskills.io): this folder, with
 | One project, in Claude Code | `.claude/skills/animatomy` |
 | OpenCode, Codex, Antigravity | that agent's skills folder, as in `ANATOMY-README.md` |
 
-From a terminal, with this folder downloaded:
+From a terminal:
 
 ```sh
-mkdir -p ~/.claude/skills && cp -R animatomy ~/.claude/skills/animatomy
+git clone https://github.com/deeksharungta/staff-only ~/.claude/skills/animatomy
 ```
 
 Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. Nothing to `npm install`.
@@ -78,20 +108,20 @@ Needs Node.js 20.10 or later for builds and Chrome or Chromium for the checks. N
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Claude sizes the figure, finds the real numbers, invents (or uses) the machine, writes the parts list, the crew list and the beats, renders a cast sheet, builds the scene and the machine, poses the crew from the same model that moves the parts, plays the story on a loop, and checks every beat in both themes.
+Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
 
-Try the examples:
+Try the examples. The built pages are in the repo, so you can open them straight away; rebuild one with `node examples/<name>/build.mjs` (add `--light` for the light build):
 
 ```sh
-node examples/toaster/build.mjs --light
 open examples/toaster/toaster-light.html
-node examples/pencil-sharpener/build.mjs --light
 open examples/pencil-sharpener/pencil-sharpener-light.html
-node examples/vending-machine/build.mjs --light
 open examples/vending-machine/vending-machine-light.html
-node scripts/cast-sheet.mjs --light
-open cast-sheet-light.html
+open examples/seasons/seasons-light.html
+open examples/dial-indicator-crew/dial-indicator-crew-light.html
+node scripts/cast-sheet.mjs --light && open cast-sheet-light.html
 ```
+
+To see the captions, open a page in a browser with `?full` on the end of its address.
 
 ## Credits and license
 
