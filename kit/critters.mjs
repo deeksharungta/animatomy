@@ -1042,7 +1042,9 @@ export const paletteOf = () => ({});
 export function crewCss() {
   const rules = [
     `.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}`,
-    `.crew[data-duty]>.so-fig{filter:url(#so-duty)}`,
+    `.crew .so-tuft,.crew .so-strand,.crew [fill="#fff"]{display:none}`,
+    `.crew [fill*="-eye)"]{transform-box:fill-box;transform-origin:center;transform:scale(1.4)}`,
+    `.crew{--so-px-ink:color-mix(in srgb,var(--so-fur-shade,#3a2a20) 60%,#3a2c22)}.crew[data-duty]{--so-px-ink:var(--crew-duty)}`,
     `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
     `.crew{--so-ground:#000}`,
     `.iso{--so-zap:#FFE14D;--so-zap-core:#FFFBE8}.iso[data-theme="light"]{--so-zap:#E8A600;--so-zap-core:#FFF4C2}`,
@@ -1062,8 +1064,9 @@ function defs(sp) {
   const fx = 0.5;
   for (const t of TONES) {
     if (!a.colors[t]) continue;
-    out.push(`<radialGradient id="${id(`v-${t}`)}" cx="${fx}" cy=".3" r=".82" fx="${fx}" fy=".26"><stop offset="0" style="stop-color:var(--so-${t}-lit)"/><stop offset=".5" style="stop-color:var(--so-${t})"/><stop offset="1" style="stop-color:var(--so-${t}-shade)"/></radialGradient>`);
-    out.push(`<radialGradient id="${id(`s-${t}`)}"><stop offset="0" style="stop-color:var(--so-${t})"/><stop offset=".55" style="stop-color:var(--so-${t});stop-opacity:.92"/><stop offset="1" style="stop-color:var(--so-${t});stop-opacity:0"/></radialGradient>`);
+    // Pixel shading: three hard bands of the animal's own tones, so every block keeps its true colour.
+    out.push(`<radialGradient id="${id(`v-${t}`)}" cx="${fx}" cy=".3" r=".82" fx="${fx}" fy=".26"><stop offset="0" style="stop-color:var(--so-${t}-lit)"/><stop offset=".34" style="stop-color:var(--so-${t}-lit)"/><stop offset=".34" style="stop-color:var(--so-${t})"/><stop offset=".76" style="stop-color:var(--so-${t})"/><stop offset=".76" style="stop-color:var(--so-${t}-shade)"/><stop offset="1" style="stop-color:var(--so-${t}-shade)"/></radialGradient>`);
+    out.push(`<radialGradient id="${id(`s-${t}`)}"><stop offset="0" style="stop-color:var(--so-${t})"/><stop offset=".7" style="stop-color:var(--so-${t})"/><stop offset=".7" style="stop-color:var(--so-${t});stop-opacity:0"/></radialGradient>`);
   }
   out.push(`<radialGradient id="${id("ao")}"><stop offset="0" style="stop-color:var(--so-fur-shade);stop-opacity:.75"/><stop offset="1" style="stop-color:var(--so-fur-shade);stop-opacity:0"/></radialGradient>`);
   out.push(`<radialGradient id="${id("ground")}"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".6" stop-color="#000" stop-opacity=".14"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`);
@@ -1617,22 +1620,28 @@ function inner(c) {
   return `${S.defs}<g data-k="ground" transform="${dyn.root}">${S.ground}</g><g class="so-fig"><g data-k="root" transform="${dyn.root}">${parts.join("")}</g></g>`;
 }
 
-// The pixel look: each animal is sampled on a grid of square blocks, about 22 to its height, fixed in the
-// figure so it moves across the grid like a sprite; each sample fills its block and its colours are cut to a few levels.
-const PX = 22;
+// The pixel look: each animal is sampled on a grid of square blocks, about 20 to its height, fixed in the figure
+// so it moves across the grid like a sprite. Each sample fills its block (the shading is already in three hard bands
+// of the animal's own tones), and a one-block outline goes round the silhouette: the animal's dark tone, or the
+// duty colour while it is the one at work.
+const PX = 20;
 const pxId = (c) => `so-px-${c.species}-${c.name}`.replace(/[^\w-]/g, "");
 function pxGrid(c) {
   const [x0, y0, x1, y1] = critterBox(c);
   const sc = c.dyn.root ? Math.abs(+c.dyn.root.match(/scale\(([-\d.]+)/)[1]) : 0;
-  const t = sc ? (100 * sc) / PX : Math.max(x1 - x0, y1 - y0) / (PX * 1.4), d = t / 2, pad = t * 3;
+  const t = sc ? (100 * sc) / PX : Math.max(x1 - x0, y1 - y0) / (PX * 1.4), d = t / 3, pad = t * 3;
   const gx = Math.floor((x0 - pad) / t) * t, gy = Math.floor((y0 - pad) / t) * t;
   const f = (v) => +v.toFixed(3);
   return { t: f(t), d: f(d), x: f(gx), y: f(gy), w: f(Math.ceil((x1 + pad - gx) / t) * t), h: f(Math.ceil((y1 + pad - gy) / t) * t), dx: f(gx + (t - d) / 2), dy: f(gy + (t - d) / 2), r: f((t - d) / 2) };
 }
-const LEVELS = "0 .2 .4 .55 .7 .85 1";
 function pxFilter(c) {
   const g = pxGrid(c);
-  return `<filter id="${pxId(c)}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" color-interpolation-filters="sRGB"><feFlood x="${g.dx}" y="${g.dy}" width="${g.d}" height="${g.d}" result="dot"/><feComposite in="dot" x="${g.x}" y="${g.y}" width="${g.t}" height="${g.t}" result="cell"/><feTile in="cell" result="dots"/><feComposite in="SourceGraphic" in2="dots" operator="in"/><feMorphology operator="dilate" radius="${g.r}"/><feComponentTransfer><feFuncR type="discrete" tableValues="${LEVELS}"/><feFuncG type="discrete" tableValues="${LEVELS}"/><feFuncB type="discrete" tableValues="${LEVELS}"/><feFuncA type="discrete" tableValues="0 1 1 1"/></feComponentTransfer></filter>`;
+  return `<filter id="${pxId(c)}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" color-interpolation-filters="sRGB">` +
+    `<feFlood x="${g.dx}" y="${g.dy}" width="${g.d}" height="${g.d}" result="dot"/><feComposite in="dot" x="${g.x}" y="${g.y}" width="${g.t}" height="${g.t}" result="cell"/><feTile in="cell" result="dots"/>` +
+    `<feComposite in="SourceGraphic" in2="dots" operator="in" result="samples"/><feMorphology in="samples" operator="dilate" radius="${g.r}" result="blocks"/>` +
+    `<feComponentTransfer in="blocks" result="sprite"><feFuncA type="discrete" tableValues="0 1 1 1"/></feComponentTransfer>` +
+    `<feMorphology in="sprite" operator="dilate" radius="${g.t}" result="grow"/><feFlood style="flood-color:var(--so-px-ink)" result="ink"/><feComposite in="ink" in2="grow" operator="in" result="ring"/>` +
+    `<feMerge><feMergeNode in="ring"/><feMergeNode in="sprite"/></feMerge></filter>`;
 }
 // Move the grid's window with the animal each frame; the blocks themselves stay put in the figure.
 function pxUpdate(el, c) {
@@ -1640,10 +1649,11 @@ function pxUpdate(el, c) {
   if (!f || f.__k === `${g.x},${g.y},${g.w},${g.h},${g.t}`) return;
   f.__k = `${g.x},${g.y},${g.w},${g.h},${g.t}`;
   for (const [k, v] of Object.entries({ x: g.x, y: g.y, width: g.w, height: g.h })) f.setAttribute(k, v);
-  const [flood, cell, , , dilate] = f.children;
+  const [flood, cell, , , blocks, , grow] = f.children;
   for (const [k, v] of Object.entries({ x: g.dx, y: g.dy, width: g.d, height: g.d })) flood.setAttribute(k, v);
   for (const [k, v] of Object.entries({ x: g.x, y: g.y, width: g.t, height: g.t })) cell.setAttribute(k, v);
-  dilate.setAttribute("radius", g.r);
+  blocks.setAttribute("radius", g.r);
+  grow.setAttribute("radius", g.t);
 }
 
 export function critterSvg(c, { duty = false, part } = {}) {

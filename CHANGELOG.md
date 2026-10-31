@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Pixel variant: every critter is drawn as a pixel sprite. Each one gets its own SVG filter that samples its painting on a grid of square blocks, about 22 to its height, fixed in the figure, and cuts its colours to seven levels per channel; `paintCritter` moves the filter's window with the animal. The rig, reach checks and duty rim are unchanged, and every crewed example and README image is rebuilt.
+- Pixel variant: every critter is drawn as a pixel sprite. Its shading is three hard bands of its own tones, its fur strokes and eye glints are left out and its eyes are drawn larger; an SVG filter per critter samples it on a grid of square blocks, about 20 to its height, fixed in the figure, and draws a one-block outline in its dark tone, which turns to the duty colour while it works. `paintCritter` moves the filter's window with the animal. The rig, reach checks and poses are unchanged, and every crewed example and README image is rebuilt.
 
 ### Added
 
