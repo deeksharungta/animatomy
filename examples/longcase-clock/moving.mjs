@@ -74,13 +74,15 @@ export function poses(C, S, D) {
     paws: S.winding || S.wt < C.WEIGHT.high - 0.5 ? { l: [h[0] - 0.4, h[1], h[2]], r: [h[0] + 0.3, h[1], h[2] + 0.4] } : {},
     eyes: S.wt >= C.WEIGHT.high - 0.5 && !S.winding ? "happy" : "open",
   };
-  const Pn = C.PEND, dir = [Math.sin(S.th), 0, -Math.cos(S.th)], on = (d) => [C.ESC.x + d * dir[0], Pn.y + 0.6, Pn.z + d * dir[2]], grip = on(72);
+  // His paws sit side by side across the rod, so the left one stays left all through the swing and he never flips.
+  const Pn = C.PEND, dir = [Math.sin(S.th), 0, -Math.cos(S.th)], across = [Math.cos(S.th), 0, Math.sin(S.th)];
+  const on = (d, s = 0) => [C.ESC.x + d * dir[0] + s * across[0], Pn.y + 0.6, Pn.z + d * dir[2] + s * across[2]], grip = on(72);
   const mo = {
     at: [grip[0], Pn.y + 1.5, grip[2] - 16 * 0.8],
-    heading: 45,
+    heading: 60,
     stance: "hang",
     look: [-10, 8],
-    paws: { l: on(73), r: on(71) },
+    paws: { l: on(72, -0.6), r: on(72, 0.6) },
     eyes: S.amp < 0.05 ? "shut" : S.ring > 0.4 ? "wide" : "open",
   };
   const knock = {
