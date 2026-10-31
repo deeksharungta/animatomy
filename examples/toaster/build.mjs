@@ -1015,10 +1015,10 @@ function draw() {
   const now = still.matches ? 0 : performance.now() / 1000;
   const moClip = S.duty === "mo" ? "work" : "idle", bunClip = S.hop > 0.05 ? "react" : S.hand ? "work" : "idle";
   const mi = SPRITE.frameOf(SM, moClip, moClip === "idle" ? now + 1.7 : S.stepT), bi = SPRITE.frameOf(SM, bunClip, bunClip === "idle" ? now : S.stepT);
-  // Mo's claws grip the curling strip 0.8 and 10.8 units from its free end, so he rides its bend.
+  // Mo's claws grip the curling strip 0.8 and 6.8 units from its free end, so he rides its bend.
   const St = C.STRIP, kap = Math.max(1e-6, (2 * C.MM * C.BEND * (S.strip - 20)) / (St.len * St.len)), lift = C.CAM_E * (Math.cos((S.knob * C.KNOB_TURN * Math.PI) / 180) - 1);
   const grip = (s) => K.iso([St.x1 - 0.4, St.y + Math.sin(kap * s) / kap, St.z + lift + (1 - Math.cos(kap * s)) / kap + 0.2], P);
-  SPRITE.paint(el.mo, SM, "sloth", mi, SPRITE.byGrips(SM.characters.sloth.frames[mi], [grip(St.len - 0.8), grip(St.len - 10.8)]), S.duty === "mo");
+  SPRITE.paint(el.mo, SM, "sloth", mi, SPRITE.byGrips(SM.characters.sloth.frames[mi], [grip(St.len - 0.8), grip(St.len - 6.8)]), S.duty === "mo");
   paintCrew("dig", el.dig, DIG, p.dig, S.duty === "dig");
   paintCrew("rocky", el.rocky, ROCKY, p.rocky, S.duty === "rocky");
   SPRITE.paint(el.roo, SM, "hamster", bi, SPRITE.byFeet(SM.characters.hamster.frames[bi], K.iso([p.roo.at[0], p.roo.at[1], p.roo.at[2] + p.roo.hop], P), BUN_SCALE), S.duty === "roo");
