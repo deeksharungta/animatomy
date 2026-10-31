@@ -7,7 +7,6 @@ import { critter, critterSvg, crewCss, ellipsoidOf } from "../../kit/critters.mj
 import { kitScript, glScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { glCamera } from "../../kit/gl.mjs";
 import { STEPS_CSS, stepsHtml, fitView } from "../../kit/steps.mjs";
-import { spriteDefs, spriteSvg, spriteManifest, SPRITES, SPRITE_SCRIPT, SPRITE_CSS } from "../../kit/sprites.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const theme = process.argv.includes("--light") ? "light" : "dark";
@@ -63,7 +62,7 @@ const HEAT = { strip: 230, tauStrip: 165, coolStrip: 75, element: 620, tauElemen
 const MO = { species: "sloth", name: "Mo", size: 18, role: "sensing", wear: ["glasses"] };
 const DIG = { species: "mole", name: "Dig", size: 18, role: "holding" };
 const ROCKY = { species: "raccoon", name: "Rocky", size: 24, role: "sensing" };
-const ROO = { species: "hamster", name: "Bun", size: 17, role: "spring", wear: ["sweatband"] };
+const ROO = { species: "kangaroo", name: "Roo", size: 17, role: "spring", wear: ["sweatband"] };
 const VOLTA = { species: "eel", name: "Volta", size: 50, role: "power" };
 
 const DESK = { x: -150, y: -96, w: 286, d: 214, r: 6 };
@@ -280,7 +279,7 @@ function poses(C, S, D) {
     paws: { l: on(t + 0.6), r: on(t - 1) },
     eyes: S.knob > 0.02 && S.knob < 0.73 ? "wide" : "open",
   };
-  // Bun stands on the lever knob: stamps it down, rides it, and the pop throws Bun up.
+  // Roo stands on the lever knob: she stamps it down, rides it, and the pop throws her up.
   const zs = S.zb + 6;
   const roo = {
     at: [63.5, 56.5, zs + 4.5],
@@ -635,7 +634,6 @@ const mv = (name, html) => `<g data-part="${name}">${html}</g>`;
 
 const WIN = ringX(C.FACE, -41, -25, 47, 62, 2);
 const parts = [
-    spriteDefs(["hamster", "sloth"]),
     `<defs><clipPath id="tz-up"><path d="${clipUpper}"/></clipPath><clipPath id="tz-low"><path d="${clipLower}"/></clipPath></defs>`,
     room(),
     desk(),
@@ -674,18 +672,18 @@ const parts = [
     mv("strip", dyn0.strip),
     mv("clamp", clampTop()),
     crew(DIG, pose0.dig, "dig"),
-    spriteSvg("sloth", "mo"),
+    crew(MO, pose0.mo, "mo"),
     crew(VOLTA, pose0.volta, "volta"),
     stub(),
     mv("knob", dyn0.knobFace),
     book(),
     crew(ROCKY, pose0.rocky, "rocky"),
     mv("slider-out", sliderOuter()),
-    spriteSvg("hamster", "roo"),
+    crew(ROO, pose0.roo, "roo"),
     propsFront(),
 ];
 const cut = parts.indexOf("|");
-const LABEL = "A two-slice pop-up toaster on a kitchen counter, with its front wall, open end and the front half of its top cut away, run by five animals. Inside, two slices of bread stand between mica boards wound with nichrome ribbon. At the open end the carriage slides on a rod with a lift spring round it. Rocky the raccoon, on a stack of books, lifts the browning knob by its pointer lever; the knob's cam sets the height of a brass and steel bimetal strip. Bun the hamster stands on the lever knob and stamps it down, and the carriage's foot closes the contacts. Volta the electric eel lies along the live wire with his snout on its terminal, and crackles while current flows to the heaters. Dig the mole holds the hook that catches the carriage's pin, and Mo the sloth hangs from the strip, which curls as it heats until it pushes the hook's tail and lets the carriage go.";
+const LABEL = "A two-slice pop-up toaster on a kitchen counter, with its front wall, open end and the front half of its top cut away, run by five animals. Inside, two slices of bread stand between mica boards wound with nichrome ribbon. At the open end the carriage slides on a rod with a lift spring round it. Rocky the raccoon, on a stack of books, lifts the browning knob by its pointer lever; the knob's cam sets the height of a brass and steel bimetal strip. Roo the kangaroo stands on the lever knob and stamps it down, and the carriage's foot closes the contacts. Volta the electric eel lies along the live wire with his snout on its terminal, and crackles while current flows to the heaters. Dig the mole holds the hook that catches the carriage's pin, and Mo the sloth hangs from the strip, which curls as it heats until it pushes the hook's tail and lets the carriage go.";
 const backSvg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: LABEL, body: parts.slice(0, cut) });
 const frontSvg = `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg tz-layer" viewBox="0 0 ${WIDTH} ${HEIGHT}" aria-hidden="true">${parts.slice(cut + 1).join("")}</svg>`;
 
@@ -915,7 +913,7 @@ for (const [T, knob, down] of [[20, 0, false], [20, 0.1, false], [20, 0.2, false
   const st = { ...REST, strip: T, phi, knob, zb: down ? C.BOTTOM + 1.5 : C.UP, latched: down, on: down };
   const d = dynamic(K, P, C, st);
   const p = poses(C, st, d);
-  for (const [name, spec, pose] of [["Dig", DIG, p.dig], ["Rocky", ROCKY, p.rocky]]) {
+  for (const [name, spec, pose] of [["Mo", MO, p.mo], ["Dig", DIG, p.dig], ["Rocky", ROCKY, p.rocky]]) {
     const c = critter(spec, pose, P);
     for (const [paw, short] of Object.entries(c.reach)) if (short > 0.3) console.warn(`${name}'s ${paw === "l" ? "left" : "right"} paw is ${short.toFixed(1)} short at ${T} °C, knob ${knob}`);
   }
@@ -923,14 +921,14 @@ for (const [T, knob, down] of [[20, 0, false], [20, 0.1, false], [20, 0.2, false
 
 const ROLE = { sensing: "#3E9BDB", holding: "#E5484D", spring: "#E93D82", power: "#F5C518" };
 const STEPS = [
-  { title: "Meet the crew", who: "Rocky, Bun, Dig, Volta and Mo", color: "var(--anatomy-hi)", text: "Five animals run this toaster: Rocky on the browning knob, Bun on the lever, Dig on the hook, Volta on the live wire and Mo on the strip.", points: null, hold: 1.6 },
+  { title: "Meet the crew", who: "Rocky, Roo, Dig, Volta and Mo", color: "var(--anatomy-hi)", text: "Five animals run this toaster: Rocky on the browning knob, Roo on the lever, Dig on the hook, Volta on the live wire and Mo on the strip.", points: null, hold: 1.6 },
   { title: "Rocky sets the browning", who: "Rocky · sensing", color: ROLE.sensing, text: "Rocky lifts the knob's lever toward dark. Its cam drops the strip's bracket, so the strip must curl further, and stay hot longer, before it trips.", points: [[96, -30, 14], [96, -30, 30], [110, -40, 0], [58, -44, 26], [58, -20, 50], [70, -46, 46]] },
-  { title: "Bun stamps the lever down", who: "Bun · spring", color: ROLE.spring, text: "Bun jumps on the lever knob. The carriage slides down, stretching the lift spring; its pin knocks Dig's hook aside and its foot closes the contacts.", points: [[64, 14, 96], [64, 14, 18], [64, 62, 24], [64, 62, 104], [64, -14, 56]] },
+  { title: "Roo stamps the lever down", who: "Roo · spring", color: ROLE.spring, text: "Roo jumps on the lever knob. The carriage slides down, stretching the lift spring; its pin knocks Dig's hook aside and its foot closes the contacts.", points: [[64, 14, 96], [64, 14, 18], [64, 62, 24], [64, 62, 104], [64, -14, 56]] },
   { title: "Dig holds it down", who: "Dig · holding", color: ROLE.holding, text: "The spring pulls back up, but Dig has swung the hook back over the pin, and it stops there. The carriage is held at the bottom.", points: [[64, -18, 24], [64, 22, 14], [64, -4, 56], [68, 14, 36]] },
   { title: "Volta powers the heaters", who: "Volta · power", color: ROLE.power, text: "With the contacts closed, Volta's current runs through them into the nichrome ribbons, which glow at about 600 °C.", points: [[76, 24, 12], [76, -22, 12], [66, 22, 24], [-40, 17, 40], [40, 34, 46], [58, -40, 62]] },
   { title: "Mo feels the heat", who: "Mo · sensing", color: ROLE.sensing, text: "Brass grows more than steel when hot, so the strip curls up, lifting Mo toward the hook's tail. The bread dries, then browns.", points: [[60, -44, 28], [60, -44, 66], [66, -16, 58], [70, -20, 24]] },
   { title: "Mo trips the hook", who: "Mo · sensing", color: ROLE.sensing, text: "The strip pushes the hook's tail up. The hook swings off the pin, and Dig can't hold it against Mo.", points: [[60, -44, 28], [60, -26, 62], [66, 6, 58], [66, 6, 22]] },
-  { title: "Pop!", who: "Bun · spring", color: ROLE.spring, text: "The spring yanks the carriage up in a fifth of a second and throws Bun with it. The contacts spark open and the ribbons go dark.", points: [[-52, 17, 150], [24, 17, 140], [64, 62, 84], [64, 62, 120], [64, 14, 18]] },
+  { title: "Pop!", who: "Roo · spring", color: ROLE.spring, text: "The spring yanks the carriage up in a fifth of a second and throws Roo with it. The contacts spark open and the ribbons go dark.", points: [[-52, 17, 150], [24, 17, 140], [64, 62, 84], [64, 62, 120], [64, 14, 18]] },
   { title: "Cool down", who: "everyone", color: "var(--anatomy-hi)", text: "The strip cools and straightens, lowering Mo. Rocky lowers the lever again. The strip timed the toast with the same heat that browned it.", points: [[-90, -48, 0], [110, 48, 0], [-14, 17, 150], [64, 62, 90]], hold: 2 },
 ];
 const views = STEPS.map((step) => (step.points ? fitView(step.points.map(at), [WIDTH, HEIGHT], { pad: 22, least: 0.32 }) : [0, 0, WIDTH, HEIGHT]));
@@ -952,9 +950,6 @@ const dynamic = ${dynamic.toString()};
 const poses = ${poses.toString()};
 const model = ${model.toString()};
 const MDL = model(C, HEAT, ${T0});
-const SM = ${JSON.stringify(spriteManifest(["hamster", "sloth"]))};
-// Bun is placed by the feet on the lever knob, Mo by both claws on the strip; frames follow the model.
-const BUN_SCALE = ${(ROO.size * k.cameraOf(P).k / (SPRITES.characters.hamster.frames[0].box[3] - SPRITES.characters.hamster.frames[0].box[1])).toFixed(5)};
 const stage = document.querySelector(".tz-stage");
 const svgs = [...stage.querySelectorAll(":scope > svg")];
 const part = (name) => stage.querySelector('[data-part="' + name + '"]');
@@ -1012,16 +1007,10 @@ function draw() {
   el.wire.toggleAttribute("data-flow", S.on); el.wire2.toggleAttribute("data-flow", S.on);
   leafZ = D.leafZ;
   const p = poses(C, S, D);
-  const now = still.matches ? 0 : performance.now() / 1000;
-  const moClip = S.duty === "mo" ? "work" : "idle", bunClip = S.hop > 0.05 ? "react" : S.hand ? "work" : "idle";
-  const mi = SPRITE.frameOf(SM, moClip, moClip === "idle" ? now + 1.7 : S.stepT), bi = SPRITE.frameOf(SM, bunClip, bunClip === "idle" ? now : S.stepT);
-  // Mo's claws grip the curling strip 0.8 and 6.8 units from its free end, so he rides its bend.
-  const St = C.STRIP, kap = Math.max(1e-6, (2 * C.MM * C.BEND * (S.strip - 20)) / (St.len * St.len)), lift = C.CAM_E * (Math.cos((S.knob * C.KNOB_TURN * Math.PI) / 180) - 1);
-  const grip = (s) => K.iso([St.x1 - 0.4, St.y + Math.sin(kap * s) / kap, St.z + lift + (1 - Math.cos(kap * s)) / kap + 0.2], P);
-  SPRITE.paint(el.mo, SM, "sloth", mi, SPRITE.byGrips(SM.characters.sloth.frames[mi], [grip(St.len - 0.8), grip(St.len - 6.8)]), S.duty === "mo");
+  paintCrew("mo", el.mo, MO, p.mo, S.duty === "mo");
   paintCrew("dig", el.dig, DIG, p.dig, S.duty === "dig");
   paintCrew("rocky", el.rocky, ROCKY, p.rocky, S.duty === "rocky");
-  SPRITE.paint(el.roo, SM, "hamster", bi, SPRITE.byFeet(SM.characters.hamster.frames[bi], K.iso([p.roo.at[0], p.roo.at[1], p.roo.at[2] + p.roo.hop], P), BUN_SCALE), S.duty === "roo");
+  paintCrew("roo", el.roo, ROO, p.roo, S.duty === "roo");
   paintCrew("volta", el.volta, VOLTA, p.volta, S.duty === "volta");
   paintGL();
   const word = S.swap >= 0 ? "fresh bread" : Math.abs(S.knobV) > 0.02 ? "setting the browning" : S.hand ? "going down" : S.on ? (S.duty === "mo" && S.phi > 0.02 ? "tripping" : "toasting") : S.zb < C.UP - 0.5 ? (S.latched ? "held down" : "pop!") : S.strip > 30 ? "cooling" : S.brown > 0.5 ? "toast is up" : "ready";
@@ -1085,13 +1074,13 @@ STEPS.mountSteps({
 const keys = [
   { mark: "lit", label: "On duty: whoever is doing the work right now" },
   { mark: "raised", label: "Rocky, raccoon, sensing: sets the browning knob" },
-  { mark: "raised", label: "Bun, hamster, spring: stamps the lever down and rides the pop" },
+  { mark: "raised", label: "Roo, kangaroo, spring: stamps the lever down and rides the pop" },
   { mark: "raised", label: "Dig, mole, holding: keeps the hook closed over the carriage pin" },
   { mark: "raised", label: "Volta, electric eel, power: carries the current from the cord to the heaters" },
   { mark: "raised", label: "Mo, sloth, sensing: rides the bimetal strip as it curls" },
 ];
 
-const css = `${crewCss()}${STEPS_CSS}${SPRITE_CSS}
+const css = `${crewCss()}${STEPS_CSS}
 .so-void{fill:var(--anatomy-halo);opacity:.55;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
 .tz-bread{--tz-crust:#C88A45;--tz-crumb:#F2E0BC;--tz-toasted:#6E4119}
 .iso[data-theme="dark"] .tz-bread,.iso:not([data-theme]) .tz-bread{--tz-crust:#A8743A;--tz-crumb:#DCC69C;--tz-toasted:#5A3412}
@@ -1117,5 +1106,5 @@ const body = `<style>${css}</style>` + k.plateHtml({
 });
 
 const file = theme === "light" ? "toaster-light.html" : "toaster.html";
-writeFileSync(join(HERE, file), k.pageHtml({ title: "Pop-up toaster, staffed", theme, body, script: kitScript() + glScript() + crewScript() + stepsScript() + SPRITE_SCRIPT + live, width: 680 }));
+writeFileSync(join(HERE, file), k.pageHtml({ title: "Pop-up toaster, staffed", theme, body, script: kitScript() + glScript() + crewScript() + stepsScript() + live, width: 680 }));
 console.log("wrote", file);
