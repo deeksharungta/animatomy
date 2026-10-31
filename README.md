@@ -45,7 +45,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 | Format | One interactive figure | A full scene played as one continuous story on a loop, with no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: painted animals on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
-| Examples | 8 | 14: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine` and `examples/dial-indicator-crew` |
+| Examples | 8 | 15: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
 The subject keeps its real colours: the toaster's golden bread, the sharpener's yellow pencil, the vending machine's brass coin, the dial's steel gauge blocks. Heat and light (the toaster's ribbons, the seasons lamp) glow on a WebGL layer, only while they are on.
@@ -105,7 +105,7 @@ Then open Claude Code in your project and ask how anything works. Name the machi
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Fourteen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
+Fifteen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
 
 Animatomy is a standard [Agent Skill](https://agentskills.io), so it also runs in OpenCode, Codex and Antigravity: put this folder in that agent's skills folder, as in `ANATOMY-README.md`. Builds need Node.js 20.10 or later and the checks need Chrome or Chromium. Nothing to `npm install`.
 
@@ -119,6 +119,7 @@ open examples/pencil-sharpener/pencil-sharpener-light.html
 open examples/vending-machine/vending-machine-light.html
 open examples/seasons/seasons-light.html
 open examples/espresso-machine/espresso-machine-light.html
+open examples/longcase-clock/longcase-clock-light.html
 open examples/dial-indicator-crew/dial-indicator-crew-light.html
 node scripts/cast-sheet.mjs --light && open cast-sheet-light.html
 ```
@@ -127,4 +128,4 @@ To see the captions, open a page in a browser with `?full` on the end of its add
 
 ## Credits and license
 
-Animatomy is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Animatomy's. See [LICENSE](LICENSE).
+Animatomy is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/dial-indicator-crew`) and the changes to `SKILL.md` are Animatomy's. See [LICENSE](LICENSE).

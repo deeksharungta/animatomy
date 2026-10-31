@@ -1,4 +1,4 @@
-> Animatomy is a fork of [Anatomy](https://github.com/wheresryan22/anatomy). The rules below are Anatomy's and still apply to the kit and its examples. Crew changes live in `kit/critters.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `examples/seasons`, `examples/espresso-machine` and `examples/dial-indicator-crew`; keep them out of Anatomy's files so the fork can follow upstream.
+> Animatomy is a fork of [Anatomy](https://github.com/wheresryan22/anatomy). The rules below are Anatomy's and still apply to the kit and its examples. Crew changes live in `kit/critters.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock` and `examples/dial-indicator-crew`; keep them out of Anatomy's files so the fork can follow upstream.
 >
 > **History and upstream.** This repository's history starts with Anatomy's own commits (up to 1482e84, 18 Oct 2026), and Animatomy's commits sit on top, so `git blame` credits every line to whoever wrote it. The `upstream` remote is Ryan's repo. To take his updates:
 >
