@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- `?bare` on a run page's URL hides the caption panel and shows the light theme only, for embedding a figure; the run plays on as before. It lives in `mountSteps`, so the toaster, sharpener, vending machine and seasons pages all take it.
+
 ### Changed
 
 - The pencil sharpener's pencil is drawn in its own colours instead of glowing: yellow paint, bare wood and graphite on the cone as it is cut, and a pink eraser, each with `subjectCss`. The shavings it sheds are bare wood with a band of yellow paint along one edge, and the pile in the drawer is wood. The metal ferrule stays in the kit's tones. The sharpener no longer uses `subjectDefs()`.

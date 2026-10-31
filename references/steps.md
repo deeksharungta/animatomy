@@ -85,7 +85,7 @@ const body = `<style>${crewCss()}${STEPS_CSS}</style>` + k.plateHtml({ …, hint
 STEPS.mountSteps({ root, svg, stage, steps, views, colors, size: [W, H], enter, update, done, advance, draw, save, load, onView });
 ```
 
-`mountSteps` owns the animation loop: it calls `update` at each beat's pace, eases the camera, fills the progress bar, moves on when a beat is done and read, loops after the last beat, and stops drawing while the figure is offscreen. Space pauses and resumes; Home starts again from beat 1. Under reduced motion each beat jumps straight to its finished state and view, and the run moves on every few seconds.
+`mountSteps` owns the animation loop: it calls `update` at each beat's pace, eases the camera, fills the progress bar, moves on when a beat is done and read, loops after the last beat, and stops drawing while the figure is offscreen. Space pauses and resumes; Home starts again from beat 1. Under reduced motion each beat jumps straight to its finished state and view, and the run moves on every few seconds. To embed a figure without its captions, open the page with `?bare`: the caption panel is hidden, the run plays on as before, and the page shows the light theme only.
 
 It returns `{ go(i), toggle(), aim(viewBox), index, playing }`.
 
