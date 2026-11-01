@@ -5,6 +5,7 @@
 // to points in the world. critterSvg draws it at build time and paintCritter updates it each frame.
 import { iso, depthOf, pathOf } from "./iso-kit.mjs";
 import { frameAlong, viewOf, lightOf, pointOf, hullOf, add3, mul3, unit3, len3, cross3, dot3 } from "./lathe.mjs";
+import { pxInner, PX_CELL } from "./pixel/draw.mjs";
 
 const TAU = Math.PI * 2;
 
@@ -1042,9 +1043,8 @@ export const paletteOf = () => ({});
 export function crewCss() {
   const rules = [
     `.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}`,
-    `.crew .so-tuft,.crew .so-strand,.crew [fill="#fff"]{display:none}`,
-    `.crew [fill*="-eye)"]{transform-box:fill-box;transform-origin:center;transform:scale(1.4)}`,
-    `.crew{--so-px-ink:color-mix(in srgb,var(--so-fur-shade,#3a2a20) 60%,#3a2c22)}.crew[data-duty]{--so-px-ink:var(--crew-duty)}`,
+    `.crew .px{shape-rendering:crispEdges}.crew .px-ground{fill:#000;opacity:.13}`,
+    `.crew{--so-px-ink:color-mix(in srgb,var(--so-fur-shade,#3a2a20) 45%,#1a120c);--so-px-glass:#f4efe6}.crew .px-o{fill:var(--so-px-ink)}.crew .px-zap{fill:var(--so-zap)}.crew[data-duty] .px-o{fill:var(--crew-duty)}`,
     `.iso{--crew-duty:#ffffff}.iso[data-theme="light"]{--crew-duty:#000000}`,
     `.crew{--so-ground:#000}`,
     `.iso{--so-zap:#FFE14D;--so-zap-core:#FFFBE8}.iso[data-theme="light"]{--so-zap:#E8A600;--so-zap-core:#FFF4C2}`,
@@ -1064,9 +1064,8 @@ function defs(sp) {
   const fx = 0.5;
   for (const t of TONES) {
     if (!a.colors[t]) continue;
-    // Pixel shading: three hard bands of the animal's own tones, so every block keeps its true colour.
-    out.push(`<radialGradient id="${id(`v-${t}`)}" cx="${fx}" cy=".3" r=".82" fx="${fx}" fy=".26"><stop offset="0" style="stop-color:var(--so-${t}-lit)"/><stop offset=".34" style="stop-color:var(--so-${t}-lit)"/><stop offset=".34" style="stop-color:var(--so-${t})"/><stop offset=".76" style="stop-color:var(--so-${t})"/><stop offset=".76" style="stop-color:var(--so-${t}-shade)"/><stop offset="1" style="stop-color:var(--so-${t}-shade)"/></radialGradient>`);
-    out.push(`<radialGradient id="${id(`s-${t}`)}"><stop offset="0" style="stop-color:var(--so-${t})"/><stop offset=".7" style="stop-color:var(--so-${t})"/><stop offset=".7" style="stop-color:var(--so-${t});stop-opacity:0"/></radialGradient>`);
+    out.push(`<radialGradient id="${id(`v-${t}`)}" cx="${fx}" cy=".3" r=".82" fx="${fx}" fy=".26"><stop offset="0" style="stop-color:var(--so-${t}-lit)"/><stop offset=".5" style="stop-color:var(--so-${t})"/><stop offset="1" style="stop-color:var(--so-${t}-shade)"/></radialGradient>`);
+    out.push(`<radialGradient id="${id(`s-${t}`)}"><stop offset="0" style="stop-color:var(--so-${t})"/><stop offset=".55" style="stop-color:var(--so-${t});stop-opacity:.92"/><stop offset="1" style="stop-color:var(--so-${t});stop-opacity:0"/></radialGradient>`);
   }
   out.push(`<radialGradient id="${id("ao")}"><stop offset="0" style="stop-color:var(--so-fur-shade);stop-opacity:.75"/><stop offset="1" style="stop-color:var(--so-fur-shade);stop-opacity:0"/></radialGradient>`);
   out.push(`<radialGradient id="${id("ground")}"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".6" stop-color="#000" stop-opacity=".14"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`);
@@ -1438,7 +1437,7 @@ function eelCritter(spec, pose, P) {
   const ys = outline.map((q) => q[1]).concat([snout[1] - hw[0] * 2.4, snout[1] + hw[0] * 1.4]);
   return {
     name: spec.name ?? sp, species: sp, role: spec.role, size, stance: "path", hang: false, front: true, mirror, eyes,
-    key: `${sp}|path|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0],
+    key: `${sp}|path|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0], px: { p, n, hw, fin, D, cell: Math.max(0.6, Math.min(k * PX_CELL, hw[0] * 0.5)) },
     box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], lines: { ray: k * 0.14, glow: Math.max(1, hw[0] * 0.55), core: Math.max(0.4, hw[0] * 0.17) },
   };
 }
@@ -1522,6 +1521,7 @@ export function critter(spec, pose = {}, P) {
   const sway = (pose.tailSway ?? 0) * 12;
   if (R.tail) dyn.tail = `rotate(${n1(-lean / RAD + sway)} ${pt(R.tail.pivot ?? R.pivot)})`;
 
+  const limbs = {};
   if (stance === "up") {
     // Which side of the animal is nearer the viewer.
     const side = [-Math.sin(h), Math.cos(h), 0];
@@ -1547,6 +1547,7 @@ export function critter(spec, pose = {}, P) {
       const u = unit(sub(W, r.E));
       const wrist = add(W, u, -A.paw.len * 0.55);
       dyn[`arm${which}`] = curve(limb([S0, r.E, wrist], A.w)).d;
+      limbs[which] = { S: S0, E: r.E, W: r.W, len: A.l1 + A.l2, w: Math.max(1, Math.round(A.w[1] / PX_CELL)), tone: A.tone ?? "fur", paw: A.paw.pincer ? "fur" : A.paw.tone, claw: (A.paw.clawLen ?? 0) >= 4 ? Math.max(1.5, A.paw.clawLen / PX_CELL) : 0 };
       dyn[`paw${which}`] = `${tr(wrist[0], wrist[1])} rotate(${n1(Math.atan2(u[1], u[0]) / RAD)})`;
     }
     const st = (stride.amount ?? 0) * 60;
@@ -1577,104 +1578,20 @@ export function critter(spec, pose = {}, P) {
     });
   }
   const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${spread}`;
-  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base };
+  const px = { base, sx, sy, k, lift: (g0[1] - base[1]) / (k * PX_CELL), stride: pose.stride, limbs, beak: pose.beak && R.head.beakTip ? toLocal(pose.beak) : null, wings: wingsOpen, wear };
+  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base, px };
 }
 
-const node = (k, tag, attr, inner = "") => (tag === "path" ? `<path data-k="${k}" ${attr}/>` : `<g data-k="${k}" ${attr}>${inner}</g>`);
-
-function eelInner(c) {
-  const { S, dyn, lines: w } = c;
-  const fill = (k, style, op) => `<path data-k="${k}" d="${dyn[k]}" style="${style}"${op ? ` opacity="${op}"` : ""}/>`;
-  const line = (k, style) => `<path data-k="${k}" d="${dyn[k]}" class="so-line" style="${style}"/>`;
-  return `${S.defs}${fill("shade", "fill:var(--so-ground)", ".16")}<g class="so-fig">${fill("fin", "fill:var(--so-fur-shade)", ".85")}${line("rays", `stroke:var(--so-dark);stroke-width:${n1(w.ray * 10) / 10};opacity:.3`)}${fill("body", "fill:var(--so-fur)")}${fill("under", "fill:var(--so-fur-shade)", ".55")}${fill("lit", "fill:var(--so-fur-lit)", ".5")}${fill("belly", "fill:var(--so-belly)", ".9")}${fill("gloss", "fill:#fff", ".22")}${fill("charge", "fill:var(--so-zap)", ".24")}<g data-k="head" transform="${dyn.head}">${S.head}</g>${line("zapGlow", `stroke:var(--so-zap);stroke-width:${n1(w.glow)};opacity:.45`)}${line("zap", `stroke:var(--so-zap-core);stroke-width:${n1(w.core * 10) / 10}`)}</g>`;
-}
-
-function inner(c) {
-  if (c.stance === "path") return eelInner(c);
-  const { S, dyn } = c;
-  const a = ART[c.species];
-  const R = c.stance === "four" ? a.four : a.up;
-  const g = (k, html) => node(k, "g", `transform="${dyn[k]}"`, html);
-  const limbPath = (k, tone) => `<path data-k="${k}" d="${dyn[k]}" fill="url(#so-${c.species}-v-${tone})"/>`;
-  const parts = [];
-  const tailBehind = !R.tail || (c.front ? R.tail.front !== "over" : R.tail.back !== "over");
-  if (c.stance === "up") {
-    const armTone = R.arms?.tone ?? "fur";
-    if (R.tail && tailBehind) parts.push(g("tail", S.tail));
-    if (R.arms) parts.push(limbPath("armF", armTone), g("pawF", S.pawF));
-    if (S.footF) parts.push(g("footF", S.footF));
-    const neck = R.neck ? `<path data-k="neck" d="${dyn.neck}" fill="url(#so-${c.species}-v-${R.neck.tone ?? "fur"})"/>` : "";
-    const torso = (R.wing ? g("wingF", S.wingF) : "") + neck + S.body + (R.wing ? g("wingN", S.wingN) : "") + S.collar;
-    parts.push(node("lean", "g", `transform="${dyn.lean}"`, torso + g("head", S.head)));
-    if (S.footN) parts.push(g("footN", S.footN));
-    if (R.tail && !tailBehind) parts.push(g("tail", S.tail));
-    if (R.arms) parts.push(limbPath("armN", armTone), g("pawN", S.pawN));
-  } else {
-    const legTone = (G) => G.tone ?? "fur";
-    R.legs.forEach((G, i) => { if (G.far) parts.push(limbPath(`leg${i}`, legTone(G)), g(`foot${i}`, S.legFoot[i])); });
-    if (R.tail && tailBehind) parts.push(g("tail", S.tail));
-    parts.push(node("lean", "g", `transform="${dyn.lean}"`, S.body + S.collar + g("head", S.head)));
-    R.legs.forEach((G, i) => { if (!G.far) parts.push(limbPath(`leg${i}`, legTone(G)), g(`foot${i}`, S.legFoot[i])); });
-    if (R.tail && !tailBehind) parts.push(g("tail", S.tail));
-  }
-  return `${S.defs}<g data-k="ground" transform="${dyn.root}">${S.ground}</g><g class="so-fig"><g data-k="root" transform="${dyn.root}">${parts.join("")}</g></g>`;
-}
-
-// The pixel look: each animal is sampled on a grid of square blocks, about 20 to its height, fixed in the figure
-// so it moves across the grid like a sprite. Each sample fills its block (the shading is already in three hard bands
-// of the animal's own tones), and a one-block outline goes round the silhouette: the animal's dark tone, or the
-// duty colour while it is the one at work.
-const PX = 20;
-const pxId = (c) => `so-px-${c.species}-${c.name}`.replace(/[^\w-]/g, "");
-function pxGrid(c) {
-  const [x0, y0, x1, y1] = critterBox(c);
-  const sc = c.dyn.root ? Math.abs(+c.dyn.root.match(/scale\(([-\d.]+)/)[1]) : 0;
-  const t = sc ? (100 * sc) / PX : Math.max(x1 - x0, y1 - y0) / (PX * 1.4), d = t / 3, pad = t * 3;
-  const gx = Math.floor((x0 - pad) / t) * t, gy = Math.floor((y0 - pad) / t) * t;
-  const f = (v) => +v.toFixed(3);
-  return { t: f(t), d: f(d), x: f(gx), y: f(gy), w: f(Math.ceil((x1 + pad - gx) / t) * t), h: f(Math.ceil((y1 + pad - gy) / t) * t), dx: f(gx + (t - d) / 2), dy: f(gy + (t - d) / 2), r: f((t - d) / 2) };
-}
-function pxFilter(c) {
-  const g = pxGrid(c);
-  return `<filter id="${pxId(c)}" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" color-interpolation-filters="sRGB">` +
-    `<feFlood x="${g.dx}" y="${g.dy}" width="${g.d}" height="${g.d}" result="dot"/><feComposite in="dot" x="${g.x}" y="${g.y}" width="${g.t}" height="${g.t}" result="cell"/><feTile in="cell" result="dots"/>` +
-    `<feComposite in="SourceGraphic" in2="dots" operator="in" result="samples"/><feMorphology in="samples" operator="dilate" radius="${g.r}" result="blocks"/>` +
-    `<feComponentTransfer in="blocks" result="sprite"><feFuncA type="discrete" tableValues="0 1 1 1"/></feComponentTransfer>` +
-    `<feMorphology in="sprite" operator="dilate" radius="${g.t}" result="grow"/><feFlood style="flood-color:var(--so-px-ink)" result="ink"/><feComposite in="ink" in2="grow" operator="in" result="ring"/>` +
-    `<feMerge><feMergeNode in="ring"/><feMergeNode in="sprite"/></feMerge></filter>`;
-}
-// Move the grid's window with the animal each frame; the blocks themselves stay put in the figure.
-function pxUpdate(el, c) {
-  const f = el.querySelector("filter"), g = pxGrid(c);
-  if (!f || f.__k === `${g.x},${g.y},${g.w},${g.h},${g.t}`) return;
-  f.__k = `${g.x},${g.y},${g.w},${g.h},${g.t}`;
-  for (const [k, v] of Object.entries({ x: g.x, y: g.y, width: g.w, height: g.h })) f.setAttribute(k, v);
-  const [flood, cell, , , blocks, , grow] = f.children;
-  for (const [k, v] of Object.entries({ x: g.dx, y: g.dy, width: g.d, height: g.d })) flood.setAttribute(k, v);
-  for (const [k, v] of Object.entries({ x: g.x, y: g.y, width: g.t, height: g.t })) cell.setAttribute(k, v);
-  blocks.setAttribute("radius", g.r);
-  grow.setAttribute("radius", g.t);
-}
+const inner = (c) => pxInner(c);
 
 export function critterSvg(c, { duty = false, part } = {}) {
-  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""} style="filter:url(#${pxId(c)})">${pxFilter(c)}${inner(c)}</g>`;
+  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${inner(c)}</g>`;
 }
 
+// A sprite is a few short paths, so a changed pose simply redraws it.
 export function paintCritter(el, c) {
-  if (el.__crew !== c.key) {
-    el.innerHTML = pxFilter(c) + inner(c);
-    el.style.filter = `url(#${pxId(c)})`;
-    el.__crew = c.key;
-    el.__nodes = Object.fromEntries([...el.querySelectorAll("[data-k]")].map((n) => [n.getAttribute("data-k"), n]));
-    return;
-  }
-  for (const [k, v] of Object.entries(c.dyn)) {
-    const n = el.__nodes[k];
-    if (!n) continue;
-    const attr = n.tagName === "path" ? "d" : "transform";
-    if (n.getAttribute(attr) !== v) n.setAttribute(attr, v);
-  }
-  pxUpdate(el, c);
+  const html = inner(c);
+  if (el.__px !== html) { el.innerHTML = html; el.__px = html; }
 }
 
 // The box a critter covers on screen, for framing.

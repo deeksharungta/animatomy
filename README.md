@@ -65,7 +65,7 @@ Space pauses and resumes, Home starts again. The seasons figure also takes a dra
 
 <p align="center"><img src=".github/assets/cast-sheet.webp" width="720" alt="A cast sheet: thirteen painted animals (hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel, woodpecker), each at four headings and in six poses including on all fours, hanging and flying, each with a thin collar in its role colour."></p>
 
-Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel and woodpecker. Each is a painted illustration of the real animal, drawn on screen as a pixel sprite (about 20 blocks tall, in flat bands of its own colours with a dark outline), (its silhouette, proportions, markings and fur, no outlines) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. The woodpecker works with its beak, striking over and over, and flies. Each wears a thin collar in its role colour:
+Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, fennec fox, raccoon, otter, crab, electric eel and woodpecker. Each is a hand-drawn pixel sprite of the real animal (about 20 pixels tall, in its own colours with a one-pixel outline that lights up while it works) on a rig that places it in the figure's camera, turns it to its heading and reaches its paws to the parts it works. The eel has no paws: it lies along a wire and crackles while current flows. The woodpecker works with its beak, striking over and over, and flies. Each wears a thin collar in its role colour:
 
 | Role | Colour | Does |
 |---|---|---|

@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Pixel variant: every critter is drawn as a pixel sprite. Its shading is three hard bands of its own tones, its fur strokes and eye glints are left out and its eyes are drawn larger; an SVG filter per critter samples it on a grid of square blocks, about 20 to its height, fixed in the figure, and draws a one-block outline in its dark tone, which turns to the duty colour while it works. `paintCritter` moves the filter's window with the animal. The rig, reach checks and poses are unchanged, and every crewed example and README image is rebuilt.
+- Pixel variant: the crew is redrawn from scratch as hand-drawn pixel sprites in `kit/pixel/`, one grid per species and stance (standing, all fours, the sloth hanging, the woodpecker in flight), about 20 cells tall in each animal's own tones, with a lit top row, a shaded bottom row and a one-cell outline that turns to the duty colour while it works. The rig still places every animal; `pxInner` lays the arms in cells from shoulder to the rig's paw point, steps the feet, turns the sprite to show its back, and lays the eel along its spine with sparks off its body. The filter over the painted rig is gone. Every crewed example and README image is rebuilt.
 
 ### Added
 

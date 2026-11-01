@@ -17,8 +17,8 @@ test("every species builds at every heading, stance and eye state without a NaN"
         const c = critter({ species, size: 24, role }, { at: [0, 0, 0], heading, stance, lean: 8, look: [0, 10], eyes: eyes[(heading / 45 + i) % 4], stride: { phase: 0.3, amount: 0.1 }, paws: { l: [6, 3, 12] } }, P);
         const svg = critterSvg(c);
         assert.ok(!svg.includes("NaN") && !svg.includes("undefined"), `${species} at ${heading} ${stance ?? "up"} draws cleanly`);
-        assert.ok(svg.includes(`url(#so-${species}-v-fur)`), `${species} is painted with its own fur`);
-        for (const [key, value] of Object.entries(c.dyn)) assert.ok(svg.includes(`data-k="${key}"`) || value === "scale(0)", `${species} has a node for ${key}`);
+        assert.ok(svg.includes("var(--so-fur"), `${species} is painted with its own fur`);
+        assert.ok(svg.includes('class="px"') && svg.includes('class="px-o"'), `${species} is drawn as an outlined pixel sprite`);
         const [x0, y0, x1, y1] = critterBox(c);
         assert.ok(x1 > x0 && y1 > y0, `${species} has a box`);
       });

@@ -28,7 +28,7 @@ export function glSharedScript() {
 const unmodule = (file) => readFileSync(join(KIT, file), "utf8").replace(/^import[^;]+;\s*$/gm, "").replace(/^export /gm, "");
 
 export function crewScript() {
-  return `const CREW = (() => {\n${unmodule("lathe.mjs")}\nreturn (() => {\n${unmodule("critters.mjs")}\nreturn { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };\n})();\n})();\n`;
+  return `const CREW = (() => {\n${unmodule("lathe.mjs")}\nconst { pxInner, PX_CELL } = (() => {\n${["sprites-small", "sprites-climb", "sprites-tall", "sprites-water", "sprites-odd", "eel", "draw"].map((f) => unmodule(`pixel/${f}.mjs`)).join("\n")}\nreturn { pxInner, PX_CELL };\n})();\nreturn (() => {\n${unmodule("critters.mjs")}\nreturn { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };\n})();\n})();\n`;
 }
 
 export function stepsScript() {
