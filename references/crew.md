@@ -225,3 +225,14 @@ Most of the crew wear nothing but their collar. A prop goes on only where it rea
 - **Floating paws.** A paw a few units short of its handle reads like a pipe ending in the air. The reach check catches it; a 4× close-up confirms it.
 - **Crowds.** More critters than mechanisms, or more than seven on one machine. One per mechanism, one on duty at a time.
 - **A crew that hides the mechanism.** A body parked over the part it explains. Put the critter beside its handle on the viewer's side, and make the part visible around it.
+
+## 14. The drawn crew (sprite sheets)
+
+On this variant an animal can be drawn from an illustrated sprite sheet instead of the rig's painting: natural-history drawings with fine contours and muted colour, made once by whoever adds the animal and shipped in `assets/crew/` (a WebP sheet per animal and `sprites.json`). Nobody using the skill needs an image model. `assets/crew/README.md` is the guide to adding one, `PROMPTS.md` the prompts.
+
+- **Automatic.** A species with a sheet is drawn from it in every machine, with no change to the figure: `critter()` places it as always, and `critterSvg` and `paintCritter` draw the sheet's frame instead of the painting whenever the sheet has art for the pose.
+- **Actions.** The pose picks the action: hanging is `hang`, on all fours `run` or `stand4`, a beak target `peck`, open wings `fly`, wide eyes or a hop `react`, shut eyes `sleep`, paws on a target `work`, a stride `walk`, else `idle`. The first action the sheet has wins; with none, the rig draws that pose. Walk and run frames follow the stride, idle blinks every few seconds, react plays once, the rest loop.
+- **Placing.** A frame's feet land on the rig's ground point, at the rig's height, turned the way the animal faces. A `hang` frame's two claws land on the midpoint of the pose's two paw targets, at the same scale, turned with the bar by up to 35°.
+- **Duty.** A thin rim in `--crew-duty`, drawn with drop shadows.
+- **Portable.** The first drawing of each species in a page carries its sheet as a data URL, so a one-file page works offline; a 12-frame sheet adds about 0.1 MB.
+- **Known limits.** One camera (azimuth 45°, elevation 30°), mirrored for the other side; no back view yet, so an animal walking away shows its front. Paws in `work` frames land near, not exactly on, their handle; the reach check still checks the rig's paws. The eel always uses the rig. Mixed casts (some sheets, some paintings) are expected until every animal has art.

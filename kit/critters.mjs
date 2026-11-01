@@ -5,6 +5,8 @@
 // to points in the world. critterSvg draws it at build time and paintCritter updates it each frame.
 import { iso, depthOf, pathOf } from "./iso-kit.mjs";
 import { frameAlong, viewOf, lightOf, pointOf, hullOf, add3, mul3, unit3, len3, cross3, dot3 } from "./lathe.mjs";
+import { SPRITE_MANIFEST, atlasDefs, SPRITE_CSS } from "./sprites.mjs";
+import { spriteOf, spriteSlot, spritePaint } from "./sprite-pick.mjs";
 
 const TAU = Math.PI * 2;
 
@@ -1045,6 +1047,7 @@ export const paletteOf = () => ({});
 export function crewCss() {
   const rules = [
     `.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}`,
+    SPRITE_CSS,
     `.crew{--so-ink:color-mix(in srgb,var(--so-fur-shade,#6b5d50) 45%,#3d3631)}`,
     `.crew .so-fig path[fill*="-v-"]{stroke:var(--so-ink);stroke-width:.6px;stroke-linejoin:round;vector-effect:non-scaling-stroke;paint-order:stroke}`,
     `.crew .so-strand{stroke:var(--so-ink)!important;opacity:.6!important;stroke-width:.35px!important;vector-effect:non-scaling-stroke}`,
@@ -1584,7 +1587,10 @@ export function critter(spec, pose = {}, P) {
     });
   }
   const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${spread}`;
-  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base };
+  // What a sprite sheet needs to stand in for the rig's drawing: ground point, scale, height, stride, paw targets.
+  const paws = pose.paws ? Object.fromEntries(Object.entries(pose.paws).map(([s, w]) => [s, iso(w, P)])) : null;
+  const place = { base, k, h: -R.box[1], hop, stride: (pose.stride?.amount ?? 0) > 0.02 ? pose.stride : null, paws, beak: !!pose.beak, wings: wingsOpen };
+  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base, place };
 }
 
 const node = (k, tag, attr, inner = "") => (tag === "path" ? `<path data-k="${k}" ${attr}/>` : `<g data-k="${k}" ${attr}>${inner}</g>`);
@@ -1627,11 +1633,22 @@ function inner(c) {
   return `${S.defs}<g data-k="ground" transform="${dyn.root}">${S.ground}</g><g class="so-fig"><g data-k="root" transform="${dyn.root}">${parts.join("")}</g></g>`;
 }
 
+// A species with a sprite sheet is drawn from it for every pose the sheet has art for, the rig otherwise.
+const sprite = (c, t) => (c.place && SPRITE_MANIFEST.characters[c.species] ? spriteOf(SPRITE_MANIFEST, c, t) : null);
+const clock = () => (typeof performance === "undefined" || globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? 0 : performance.now() / 1000);
+
 export function critterSvg(c, { duty = false, part } = {}) {
-  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${inner(c)}</g>`;
+  const s = sprite(c, 0);
+  const body = s ? spriteSlot(c.species, SPRITE_MANIFEST.cell).replace('class="so-sprite"', `class="so-sprite" transform="matrix(${s.m.map((v) => +v.toFixed(4)).join(" ")})"`).replace(/viewBox="[^"]*"/, `viewBox="${s.rect.join(" ")}"`) : inner(c);
+  return `${s ? atlasDefs(c.species) : ""}<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${body}</g>`;
 }
 
 export function paintCritter(el, c) {
+  const s = sprite(c, clock());
+  if (s) {
+    if (el.__crew !== "sprite") { el.innerHTML = spriteSlot(c.species, SPRITE_MANIFEST.cell); el.__crew = "sprite"; }
+    return spritePaint(el.firstElementChild, s);
+  }
   if (el.__crew !== c.key) {
     el.innerHTML = inner(c);
     el.__crew = c.key;

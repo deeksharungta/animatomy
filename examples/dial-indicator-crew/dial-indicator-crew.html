@@ -112,6 +112,7 @@ body[data-theme="light"]{color-scheme:light}
 body{margin:0;background:var(--anatomy-page);color:var(--anatomy-text);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 .iso-page{width:min(650px,100% - 32px);margin:64px auto 96px}
 </style></head><body class="iso" data-theme="dark"><main class="iso-page"><style>.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}
+.crew .so-sprite{pointer-events:none}.crew[data-duty] .so-sprite{filter:drop-shadow(6px 0 0 var(--crew-duty)) drop-shadow(-6px 0 0 var(--crew-duty)) drop-shadow(0 6px 0 var(--crew-duty)) drop-shadow(0 -6px 0 var(--crew-duty))}
 .crew{--so-ink:color-mix(in srgb,var(--so-fur-shade,#6b5d50) 45%,#3d3631)}
 .crew .so-fig path[fill*="-v-"]{stroke:var(--so-ink);stroke-width:.6px;stroke-linejoin:round;vector-effect:non-scaling-stroke;paint-order:stroke}
 .crew .so-strand{stroke:var(--so-ink)!important;opacity:.6!important;stroke-width:.35px!important;vector-effect:non-scaling-stroke}
@@ -2002,12 +2003,73 @@ function arcPoints(F, s, r, a0, a1, steps = 24) {
   return Array.from({ length: steps + 1 }, (_, index) => pointOf(F, s, r, a0 + ((a1 - a0) * index) / steps));
 }
 
+const SPRITE_MANIFEST = {"version":2,"cell":512,"camera":{"azimuth":45,"elevation":30},"actions":{"idle":{"fps":5,"loop":true},"walk":{"fps":0,"loop":true},"run":{"fps":0,"loop":true},"work":{"fps":5,"loop":true},"hang":{"fps":3,"loop":true},"react":{"fps":4,"loop":false},"sleep":{"fps":1,"loop":true}},"characters":{"hamster":{"atlas":"hamster.webp","facing":"right","height":343,"actions":{"idle":[0,1,2,3],"work":[4,5,6,7],"react":[8,9,10,11]},"frames":[{"rect":[0,0,512,512],"feet":[230,454],"box":[78,15,303,358]},{"rect":[512,0,512,512],"feet":[230,454],"box":[440,15,663,358]},{"rect":[1024,0,512,512],"feet":[230,454],"box":[801,15,1024,358]},{"rect":[1536,0,512,512],"feet":[230,454],"box":[1161,15,1384,358]},{"rect":[0,512,512,512],"feet":[230,454],"box":[60,381,337,714]},{"rect":[512,512,512,512],"feet":[230,454],"box":[421,407,721,714]},{"rect":[1024,512,512,512],"feet":[230,454],"box":[783,418,1097,714]},{"rect":[1536,512,512,512],"feet":[230,454],"box":[1146,383,1423,713]},{"rect":[0,1024,512,512],"feet":[230,454],"box":[74,721,283,1069]},{"rect":[512,1024,512,512],"feet":[230,454],"box":[447,720,648,1069]},{"rect":[1024,1024,512,512],"feet":[230,454],"box":[791,734,1013,1069]},{"rect":[1536,1024,512,512],"feet":[230,454],"box":[1160,732,1388,1070]}],"grid":[4,3]},"sloth":{"atlas":"sloth.webp","facing":"right","height":352,"actions":{"hang":[0,1,2,3,4,5,6,7]},"frames":[{"rect":[0,0,512,512],"feet":[256,82],"box":[65,11,316,363],"grips":[[208.3,105.01],[303.33,58.53]]},{"rect":[512,0,512,512],"feet":[256,82],"box":[440,11,691,363],"grips":[[208.87,105.01],[302.32,58.53]]},{"rect":[1024,0,512,512],"feet":[256,82],"box":[810,11,1059,364],"grips":[[208.07,105.01],[302.98,58.53]]},{"rect":[1536,0,512,512],"feet":[256,82],"box":[1179,11,1422,363],"grips":[[208.97,103.77],[302.87,60.53]]},{"rect":[0,512,512,512],"feet":[256,82],"box":[64,370,311,725],"grips":[[209,103.85],[303.45,59.53]]},{"rect":[512,512,512,512],"feet":[256,82],"box":[435,369,692,725],"grips":[[209.56,103.93],[301.96,59.62]]},{"rect":[1024,512,512,512],"feet":[256,82],"box":[813,369,1052,728],"grips":[[209.42,105.01],[303.25,58.53]]},{"rect":[1536,512,512,512],"feet":[256,82],"box":[1179,370,1428,724],"grips":[[210.26,103.85],[302.19,60.62]]},{"rect":[0,1024,512,512],"feet":[256,82],"box":[73,731,312,1045],"grips":[[209.15,103.85],[303.36,60.62]]},{"rect":[512,1024,512,512],"feet":[256,82],"box":[440,731,692,1069],"grips":[[208.72,103.85],[302.75,60.62]]},{"rect":[1024,1024,512,512],"feet":[256,82],"box":[808,732,1061,1072],"grips":[[209.83,102.69],[302.37,60.53]]},{"rect":[1536,1024,512,512],"feet":[256,82],"box":[1182,732,1426,1076],"grips":[[209.97,102.69],[301.6,60.53]]}],"grid":[4,3]}}};
+const atlasDefs = () => "", SPRITE_CSS = "";
+// Drawn crew: for a species with a bundled sprite sheet (assets/crew/), turn the rig's pose into a frame of
+// that sheet and the matrix that pins it in the drawing. Pure, so the build and the page share it. The rig
+// still decides everything that moves: where the animal stands, which way it faces, what it is doing.
+
+// The actions a pose asks for, best first. A pose with none of them in the sheet is drawn by the rig instead.
+function spriteActions(c) {
+  if (c.hang) return ["hang"];
+  if (c.stance === "four") return c.place.stride ? ["run"] : ["stand4", "run"];
+  if (c.place.wings >= 0.5) return ["fly", "idle"];
+  if (c.place.beak) return ["peck", "work", "idle"];
+  if (c.eyes === "wide" || c.place.hop > 0.5) return ["react", "idle"];
+  if (c.eyes === "shut") return ["sleep", "idle"];
+  if (c.place.paws) return ["work", "idle"];
+  return c.place.stride ? ["walk", "idle"] : ["idle"];
+}
+
+// Which frame of an action plays now: walking and running follow the stride, idle blinks now and then,
+// a reaction plays once, everything else loops at its own pace.
+function spriteFrame(M, list, action, t, phase) {
+  const A = M.actions[action] ?? { fps: 4, loop: true }, n = list.length;
+  if (action === "walk" || action === "run") return list[Math.floor((((phase % 1) + 1) % 1) * n) % n];
+  if (action === "idle") { const q = t % 4.8; return list[q < 4 ? 0 : Math.min(n - 1, Math.floor((q - 4) / 0.2) + 1)]; }
+  const i = Math.floor(t * A.fps);
+  return list[A.loop ? i % n : Math.min(n - 1, i)];
+}
+
+// Claws onto what they hold: the sheet's scale stays the rig's, the grips' midpoint lands on the paws'
+// midpoint, and the figure turns with the bar (at most 35°), whichever way round the paws pair up.
+function spriteGrips(g, paws, s, flip) {
+  const G = g.map(([x, y]) => [x * flip * s, y * s]), mid = (q) => [(q[0][0] + q[1][0]) / 2, (q[0][1] + q[1][1]) / 2];
+  const turn = (p) => { let t = Math.atan2(p[1][1] - p[0][1], p[1][0] - p[0][0]) - Math.atan2(G[1][1] - G[0][1], G[1][0] - G[0][0]); t = Math.atan2(Math.sin(t), Math.cos(t)); return t; };
+  const [ta, tb] = [turn(paws), turn([paws[1], paws[0]])], t = Math.max(-0.6, Math.min(0.6, Math.abs(ta) <= Math.abs(tb) ? ta : tb));
+  const c = Math.cos(t), sn = Math.sin(t), gm = mid(G), pm = mid(paws);
+  return [c * flip * s, sn * flip * s, -sn * s, c * s, pm[0] - (c * gm[0] - sn * gm[1]), pm[1] - (sn * gm[0] + c * gm[1])];
+}
+
+// The frame and its matrix (from cell units to the drawing), or null when the sheet has no art for the pose.
+function spriteOf(M, c, t = 0) {
+  const ch = M.characters[c.species];
+  const action = ch && spriteActions(c).find((a) => ch.actions[a]?.length);
+  if (!action) return null;
+  const index = spriteFrame(M, ch.actions[action], action, t, c.place.stride?.phase ?? 0), f = ch.frames[index];
+  const { base, k, h, paws } = c.place;
+  const s = (k * h) / ch.height, flip = (ch.facing === "right") !== c.mirror ? -1 : 1;
+  if (f.grips && paws?.l && paws?.r) return { index, rect: f.rect, m: spriteGrips(f.grips, [paws.l, paws.r], s, flip) };
+  // Otherwise the feet on the ground point, scaled to the rig's height and turned the way the animal faces.
+  return { index, rect: f.rect, m: [s * flip, 0, 0, s, base[0] - f.feet[0] * s * flip, base[1] - f.feet[1] * s] };
+}
+
+// A drawn critter's slot: a cell-sized window onto its sheet, framed and pinned by `spritePaint`.
+const spriteSlot = (name, cell) => `<g class="so-sprite"><svg width="${cell}" height="${cell}" viewBox="0 0 ${cell} ${cell}" overflow="hidden"><use href="#so-atlas-${name}"/></svg></g>`;
+function spritePaint(slot, s) {
+  const win = slot.firstElementChild, box = s.rect.join(" "), m = `matrix(${s.m.map((v) => +v.toFixed(4)).join(" ")})`;
+  if (win.getAttribute("viewBox") !== box) win.setAttribute("viewBox", box);
+  if (slot.getAttribute("transform") !== m) slot.setAttribute("transform", m);
+}
+
 return (() => {
 // The Animatomy crew. Each animal is a painted illustration on a 2D rig: authored shapes facing left,
 // standing on y = 0 and about 100 units tall, filled with soft gradients, fur at the edges and strands
 // inside, no outlines. critter(spec, pose, P) places one in the figure's camera: it faces left or right
 // by its heading, shows its back when it walks away, leans, hops, looks up and down, and reaches its paws
 // to points in the world. critterSvg draws it at build time and paintCritter updates it each frame.
+
+
 
 
 const TAU = Math.PI * 2;
@@ -3049,6 +3111,7 @@ const paletteOf = () => ({});
 function crewCss() {
   const rules = [
     `.crew .so-tuft,.crew .so-strand,.crew .so-line{fill:none;stroke-linecap:round}`,
+    SPRITE_CSS,
     `.crew{--so-ink:color-mix(in srgb,var(--so-fur-shade,#6b5d50) 45%,#3d3631)}`,
     `.crew .so-fig path[fill*="-v-"]{stroke:var(--so-ink);stroke-width:.6px;stroke-linejoin:round;vector-effect:non-scaling-stroke;paint-order:stroke}`,
     `.crew .so-strand{stroke:var(--so-ink)!important;opacity:.6!important;stroke-width:.35px!important;vector-effect:non-scaling-stroke}`,
@@ -3588,7 +3651,10 @@ function critter(spec, pose = {}, P) {
     });
   }
   const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${spread}`;
-  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base };
+  // What a sprite sheet needs to stand in for the rig's drawing: ground point, scale, height, stride, paw targets.
+  const paws = pose.paws ? Object.fromEntries(Object.entries(pose.paws).map(([s, w]) => [s, iso(w, P)])) : null;
+  const place = { base, k, h: -R.box[1], hop, stride: (pose.stride?.amount ?? 0) > 0.02 ? pose.stride : null, paws, beak: !!pose.beak, wings: wingsOpen };
+  return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base, place };
 }
 
 const node = (k, tag, attr, inner = "") => (tag === "path" ? `<path data-k="${k}" ${attr}/>` : `<g data-k="${k}" ${attr}>${inner}</g>`);
@@ -3631,11 +3697,22 @@ function inner(c) {
   return `${S.defs}<g data-k="ground" transform="${dyn.root}">${S.ground}</g><g class="so-fig"><g data-k="root" transform="${dyn.root}">${parts.join("")}</g></g>`;
 }
 
+// A species with a sprite sheet is drawn from it for every pose the sheet has art for, the rig otherwise.
+const sprite = (c, t) => (c.place && SPRITE_MANIFEST.characters[c.species] ? spriteOf(SPRITE_MANIFEST, c, t) : null);
+const clock = () => (typeof performance === "undefined" || globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? 0 : performance.now() / 1000);
+
 function critterSvg(c, { duty = false, part } = {}) {
-  return `<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${inner(c)}</g>`;
+  const s = sprite(c, 0);
+  const body = s ? spriteSlot(c.species, SPRITE_MANIFEST.cell).replace('class="so-sprite"', `class="so-sprite" transform="matrix(${s.m.map((v) => +v.toFixed(4)).join(" ")})"`).replace(/viewBox="[^"]*"/, `viewBox="${s.rect.join(" ")}"`) : inner(c);
+  return `${s ? atlasDefs(c.species) : ""}<g class="crew" data-crew="${c.name}" data-species="${c.species}"${c.role ? ` data-role="${c.role}"` : ""}${duty ? " data-duty" : ""}${part ? ` data-part="${part}"` : ""}>${body}</g>`;
 }
 
 function paintCritter(el, c) {
+  const s = sprite(c, clock());
+  if (s) {
+    if (el.__crew !== "sprite") { el.innerHTML = spriteSlot(c.species, SPRITE_MANIFEST.cell); el.__crew = "sprite"; }
+    return spritePaint(el.firstElementChild, s);
+  }
   if (el.__crew !== c.key) {
     el.innerHTML = inner(c);
     el.__crew = c.key;

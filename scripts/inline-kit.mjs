@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SPRITE_MANIFEST } from "../kit/sprites.mjs";
 
 const KIT = join(dirname(fileURLToPath(import.meta.url)), "..", "kit");
 const strip = (file) => readFileSync(join(KIT, file), "utf8").replace(/^export /gm, "");
@@ -28,7 +29,7 @@ export function glSharedScript() {
 const unmodule = (file) => readFileSync(join(KIT, file), "utf8").replace(/^import[^;]+;\s*$/gm, "").replace(/^export /gm, "");
 
 export function crewScript() {
-  return `const CREW = (() => {\n${unmodule("lathe.mjs")}\nreturn (() => {\n${unmodule("critters.mjs")}\nreturn { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };\n})();\n})();\n`;
+  return `const CREW = (() => {\n${unmodule("lathe.mjs")}\nconst SPRITE_MANIFEST = ${JSON.stringify(SPRITE_MANIFEST)};\nconst atlasDefs = () => "", SPRITE_CSS = "";\n${unmodule("sprite-pick.mjs")}\nreturn (() => {\n${unmodule("critters.mjs")}\nreturn { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };\n})();\n})();\n`;
 }
 
 export function stepsScript() {
