@@ -25,11 +25,11 @@ function spriteFrame(M, list, action, t, phase) {
 }
 
 // Claws onto what they hold: the sheet's scale stays the rig's, the grips' midpoint lands on the paws'
-// midpoint, and the figure turns with the bar (at most 35°), whichever way round the paws pair up.
+// midpoint, and the figure leans with the bar a little (at most 11°: it hangs, so gravity keeps it upright).
 function spriteGrips(g, paws, s, flip) {
   const G = g.map(([x, y]) => [x * flip * s, y * s]), mid = (q) => [(q[0][0] + q[1][0]) / 2, (q[0][1] + q[1][1]) / 2];
   const turn = (p) => { let t = Math.atan2(p[1][1] - p[0][1], p[1][0] - p[0][0]) - Math.atan2(G[1][1] - G[0][1], G[1][0] - G[0][0]); t = Math.atan2(Math.sin(t), Math.cos(t)); return t; };
-  const [ta, tb] = [turn(paws), turn([paws[1], paws[0]])], t = Math.max(-0.6, Math.min(0.6, Math.abs(ta) <= Math.abs(tb) ? ta : tb));
+  const [ta, tb] = [turn(paws), turn([paws[1], paws[0]])], t = Math.max(-0.2, Math.min(0.2, Math.abs(ta) <= Math.abs(tb) ? ta : tb));
   const c = Math.cos(t), sn = Math.sin(t), gm = mid(G), pm = mid(paws);
   return [c * flip * s, sn * flip * s, -sn * s, c * s, pm[0] - (c * gm[0] - sn * gm[1]), pm[1] - (sn * gm[0] + c * gm[1])];
 }
@@ -40,8 +40,9 @@ export function spriteOf(M, c, t = 0) {
   const action = ch && spriteActions(c).find((a) => ch.actions[a]?.length);
   if (!action) return null;
   const index = spriteFrame(M, ch.actions[action], action, t, c.place.stride?.phase ?? 0), f = ch.frames[index];
-  const { base, k, h, paws } = c.place;
-  const s = (k * h) / ch.height, flip = (ch.facing === "right") !== c.mirror ? -1 : 1;
+  // One art scale per sheet, set by the animal standing; a sheet drawn only on all fours is scaled by that.
+  const { base, k, h, h4, paws } = c.place;
+  const s = (k * (ch.fourScale?.includes(action) ? h4 : h)) / ch.height, flip = (ch.facing === "right") !== c.mirror ? -1 : 1;
   if (f.grips && paws?.l && paws?.r) return { index, rect: f.rect, m: spriteGrips(f.grips, [paws.l, paws.r], s, flip) };
   // Otherwise the feet on the ground point, scaled to the rig's height and turned the way the animal faces.
   return { index, rect: f.rect, m: [s * flip, 0, 0, s, base[0] - f.feet[0] * s * flip, base[1] - f.feet[1] * s] };

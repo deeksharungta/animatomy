@@ -80,7 +80,7 @@ Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, 
 
 Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. One crew member per mechanism, so a detailed machine gets a bigger crew (up to seven).
 
-On this branch an animal can be drawn from an illustrated sprite sheet instead (`assets/crew/`): natural-history drawings made once with an image model and bundled, so nobody using the skill needs one. A species with a sheet is drawn from it in every machine, for every pose its sheet covers, and moves as before; the hamster and the sloth have sheets so far. `assets/crew/README.md` shows how to add an animal: generate a sheet with the prompts in `assets/crew/PROMPTS.md`, then `node scripts/pack-sprites.mjs <species> <sheet.png> --actions idle:4,work:4,react:4`.
+On this branch an animal can be drawn from an illustrated sprite sheet instead (`assets/crew/`): natural-history drawings made once with an image model and bundled, so nobody using the skill needs one. A species with a sheet is drawn from it in every machine, for every pose its sheet covers, and moves as before; every species but the eel has a sheet now. `assets/crew/README.md` shows how to add an animal: generate a sheet with the prompts in `assets/crew/PROMPTS.md`, then `node scripts/pack-sprites.mjs <species> <sheet.png> --actions idle:4,work:4,react:4` (`--add` puts new actions under an animal's existing sheet).
 
 Props are rare and only where they read cleanly: glasses on Mo, who times things, and sweatbands on the runners. `references/crew.md` has the full rules and how to add a species.
 

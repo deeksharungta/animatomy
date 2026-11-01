@@ -1589,7 +1589,7 @@ export function critter(spec, pose = {}, P) {
   const key = `${sp}|${stance}|${front}|${mirror}|${eyes}|${spread}`;
   // What a sprite sheet needs to stand in for the rig's drawing: ground point, scale, height, stride, paw targets.
   const paws = pose.paws ? Object.fromEntries(Object.entries(pose.paws).map(([s, w]) => [s, iso(w, P)])) : null;
-  const place = { base, k, h: -R.box[1], hop, stride: (pose.stride?.amount ?? 0) > 0.02 ? pose.stride : null, paws, beak: !!pose.beak, wings: wingsOpen };
+  const place = { base, k, h: -a.up.box[1], h4: -(a.four ?? a.up).box[1], hop, stride: (pose.stride?.amount ?? 0) > 0.02 ? pose.stride : null, paws, beak: !!pose.beak, wings: wingsOpen };
   return { name: spec.name ?? sp, species: sp, role: spec.role, size, stance, hang, front, mirror, eyes, key, S, dyn, reach, depth: depthOf(at, P), anchor: base, place };
 }
 

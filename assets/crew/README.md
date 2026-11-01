@@ -35,9 +35,9 @@ What the shipped machines use: `hang` (Mo in the toaster, sharpener and clock), 
    node scripts/pack-sprites.mjs fennec fennec-sheet.png --actions idle:4,work:4,react:4 --facing right
    ```
 
-   It cuts every cell, keys out a plain background, drops specks spilled from neighbouring cells, scales every frame to one body height, pins it by its feet (by its claws in `hang`), writes `fennec.webp`, merges its entry into `sprites.json` and writes `review-fennec.html`.
+   It keys out a plain background, finds each whole animal on the sheet (named by the cell its centre sits in, so a paw that reaches past the cell line is kept and a neighbour's never comes along), drops stray specks, scales every frame to one body height, pins it by its feet (the lowest point under its centre of mass; by its claws in `hang`, by its centre in `fly`), writes `fennec.webp`, merges its entry into `sprites.json` and writes `review-fennec.html`.
 3. **Review**. Open the review sheet: every frame on paper and on dark, feet marked red, grips blue, and any problem in red under it (a figure cut off by its cell, a pale fringe left from the background, an empty cell). Regenerate a frame rather than living with one.
 4. **Check it in place**: `node scripts/cast-sheet.mjs --only=fennec --light` shows the animal in all ten poses; poses still drawn by the rig are the actions it lacks. Then rebuild a machine that uses it and watch it run.
-5. **Ship** the `.webp` and the `sprites.json` change. Packing again replaces the animal's sheet; add actions by packing a sheet that holds all of them.
+5. **Ship** the `.webp` and the `sprites.json` change. Packing again replaces the animal's sheet. To add actions and keep the art it has, pack a sheet of just the new rows with `--add` (same number of columns): they go under the existing ones at the same body height.
 
 The art is made once, by whoever adds the animal; the skill never generates art. Covered by the repository's MIT licence.
