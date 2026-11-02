@@ -3499,12 +3499,14 @@ function eelCritter(spec, pose, P) {
   let zap = "";
   if (charge > 0) {
     const r = rng(Math.floor(pose.flicker ?? 0) * 7919 + 13);
-    for (let i = 1; i < N - 2; i += 3) {
-      if (r() > charge * 0.85) continue;
-      const side = r() < 0.5 ? 1 : -1;
-      let q = at(i, side * 0.9);
+    // Each spark is an arc that leaves the body, runs along it and curls back in, at irregular spacing, so a
+    // row of them reads as crackle and never as legs.
+    for (let i = 1; i < N - 2; i += 3 + Math.floor(r() * 3)) {
+      if (r() > charge * 0.8) continue;
+      const side = r() < 0.5 ? 1 : -1, dir = r() < 0.5 ? 1 : -1, along = unit(sub(p[i + 1], p[i]));
+      let q = at(i, side * 0.85);
       zap += `M${pt(q)}`;
-      for (let j = 0; j < 3; j++) { q = add(add(q, n[i], side * hw[0] * (0.35 + r() * 0.3)), unit(sub(p[i + 1], p[i])), hw[0] * (r() - 0.5) * 0.8); zap += `L${pt(q)}`; }
+      for (const out of [0.45, 0.2, -0.5]) { q = add(add(q, n[i], side * hw[0] * out * (0.7 + r() * 0.6)), along, dir * hw[0] * (0.7 + r() * 0.5)); zap += `L${pt(q)}`; }
     }
     zap += `M${pt(p[0])}` + p.slice(1, N - 2).map((q, i) => `L${pt(add(q, n[i + 1], hw[i + 1] * (r() - 0.5) * 0.7))}`).join("");
     if (pose.target) {
