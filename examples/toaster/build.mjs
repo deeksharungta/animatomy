@@ -840,8 +840,9 @@ function model(C, H, T0) {
     // Rocky's knob.
     const kPrev = S.knob;
     S.knob += (S.knobT - S.knob) * (1 - Math.exp(-dt / 0.55));
-    if (Math.abs(S.knobT - S.knob) < 0.002) S.knob = S.knobT;
     S.knobV = (S.knob - kPrev) / Math.max(dt, 1e-3);
+    // Snapping onto the target is not a turn: the knob stops there, and so does Rocky's duty.
+    if (Math.abs(S.knobT - S.knob) < 0.002) { S.knob = S.knobT; S.knobV = 0; }
     const tip = tipOf(S.strip, S.knob);
     S.phi = Math.max(relax < 1e-4 ? 0 : relax, S.hand ? camPhi(S.zb + 6) : 0, tailPhi(tip[0], tip[1]));
     // Swept test: a pin that was below the hook's underside last frame can't pass through it this frame.
