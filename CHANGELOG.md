@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Detail rules: the parts count is of the machine alone (not the scene or the crew), the parts list starts from the three components the real thing is recognised by, at their real proportions and never as a plain bar or box, and the verify step maps bare faces with `scripts/bare.mjs`. Three of four figures built from scratch in testing passed every check and still came out plain.
+- Themes work as in Anatomy: a run page keeps the theme it was built in. Bare mode only hides the caption panel; it no longer forces every page to light, which made a dark figure impossible to deliver. Light stays the default: SKILL.md says to hand over the `-light` page unless the user asks for dark.
 - The toaster's jam jar stands on the open counter (it was hidden behind the toaster's end wall), and Volta stays on duty for as long as his current flows (the light passed to Dig before his own beat ended).
 - The sweatband sits across the forehead between the crown and the brow, edge to edge of the head at that height. It was placed from the head's bounding box, so it covered the kangaroo's eyes and floated above the hamsters' heads like a halo.
 - The pencil sharpener's label no longer promises arrow keys (the run takes Space and Home), and its unused back-step code is gone.
@@ -13,6 +15,7 @@
 
 ### Added
 
+- `scripts/bare.mjs` maps bare faces: it captures a figure at 1x and rings the largest empty square inside every flat area, for the 4× pass. It is advisory: on the shipped examples it finds plain walls, and a thin figure can have no bare face at all.
 - `examples/token-bucket`: a token bucket rate limiter built as a token dispenser, the reference for an idea rather than a machine. Mo turns the feeder, one token every 2 s into a tube of 5; Pip spends one per request, and a burst of seven finds the seventh refused. Every caption number comes from the model's decisions, and the build stops if they disagree.
 - `examples/longcase-clock`: an eight-day longcase clock. Rocky the raccoon (power) winds the weight up with the crank, Mo the sloth (sensing and timing) hangs from the pendulum's rod and swings with it while the anchor lets the escape wheel go half a tooth a second, and at one o'clock Knock the woodpecker (spring), who is the hammer, strikes the bell once. The hands are in blued steel; the woodpecker gets its first job. It is written in files of 150 lines or fewer.
 - `examples/espresso-machine`: a single-boiler espresso machine, staffed by three crew members no example used before. Ember the fennec fox (heat) holds the heater switch on top of the boiler until the thermostat knocks it back at 93 °C, Ollie the otter (fluid) works the vibratory pump's piston, and Crumb the mouse (sensing) sits on the over-pressure valve until 9 bar lifts her off it. The coffee runs into the cup in its own colours, 36 g in 28 s, and WebGL draws the band heater's glow, the steam off the cup and the vent's puff into the drip tray. It is written in files of 150 lines or fewer.
@@ -33,6 +36,7 @@
 
 ### Removed
 
+- The "break it" flaw rule in `crew.md`, and the flaws in its crew-list example. Anatomy has no such mode, and no example used it.
 - `subjectDefs()`, `subjectSvg()` and the glow CSS (`.so-subject`, `--so-subject`) in `kit/critters.mjs`. Every subject is now drawn in its own colour with `subjectCss()`.
 
 ## Staff Only 0.10.0 (2026-10-29)

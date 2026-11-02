@@ -69,7 +69,7 @@ node scripts/lines.mjs page-light.html --out shots/lines-light.png --reduced
 node scripts/drive.mjs page.html '[["key"," "],["wait",2000],["lines","shots/lines-apart.png"]]'
 ```
 
-An Animatomy run page opens light whatever its build, so check its dark build as `"file://$PWD/page.html?full"`.
+An Animatomy run page hides its captions unless the URL has `?full`; add it (`"file://$PWD/page.html?full"`) to check them.
 ```
 line ends: 3 of 1148 ends on 295 lines float
   iso-line faint in it k -0.080  end  7.25 px from anything   at card 507.4,407.2   length 75.7   d M392.1 381.7L507.4 407.2…

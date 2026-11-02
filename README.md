@@ -59,10 +59,10 @@ Everything else, from the craft rules to the audit, the line check, WebGL, the 3
 
 | URL | Shows |
 |---|---|
-| `toaster.html` | The figure alone, playing on its loop, in the light theme. Made for embedding. The captions stay in the page for screen readers. |
-| `toaster.html?full` | The full page: a caption and progress bar under the figure, one beat at a time, in the theme it was built in. |
+| `toaster.html` | The figure alone, playing on its loop, in the theme it was built in (`toaster-light.html` for light). Made for embedding. The captions stay in the page for screen readers. |
+| `toaster.html?full` | The full page: a caption and progress bar under the figure, one beat at a time. |
 
-Space pauses and resumes, Home starts again. The seasons figure also takes a drag on the globe, or ← and →, to set any date.
+Light is the default: Claude hands you the `-light` page unless you ask for dark, and builds both. Space pauses and resumes, Home starts again. The seasons figure also takes a drag on the globe, or ← and →, to set any date.
 
 ## The crew
 

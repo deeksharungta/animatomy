@@ -3962,7 +3962,7 @@ function fitView(points, [W, H], { pad = 24, least = 0.38 } = {}) {
 // Give `draw` too and reduced motion runs each beat to its end on the model alone and draws it once.
 // Space pauses and resumes; Home starts again. aim(viewBox) points the camera somewhere else until the
 // next beat or until the run resumes (a figure that lets you drag it can show the whole machine while paused).
-// By default the caption panel is only read to screen readers and the page is light; ?full shows the panel and the built theme.
+// By default the caption panel is only read to screen readers; ?full shows it. The page keeps the theme it was built in.
 function mountSteps({ root, svg, stage, steps, views, enter, update, done, size, colors = [], ease = 0.45, advance, save, load, draw, slowest = 0.35, onView }) {
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const box = root.querySelector("[data-steps]") ?? root;
@@ -3972,10 +3972,7 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
     text: root.querySelector("[data-steps-text]"),
     bars: [...root.querySelectorAll(".so-steps-track i")],
   };
-  if (!new URLSearchParams(location.search).has("full")) {
-    box.setAttribute("data-bare", "");
-    for (const el of document.querySelectorAll("[data-theme]")) el.setAttribute("data-theme", "light");
-  }
+  if (!new URLSearchParams(location.search).has("full")) box.setAttribute("data-bare", "");
   const full = [0, 0, size[0], size[1]];
   let index = 0, playing = true, finished = false, held = 0, age = 0, frame = 0, last = 0, visible = false, swap = 0;
   let cam = views[0] ? [...views[0]] : [...full];
