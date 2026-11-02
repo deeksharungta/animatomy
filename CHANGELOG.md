@@ -18,6 +18,7 @@
 
 ### Added
 
+- `kit/reach.mjs`: `checkReach` prints the reach warnings every crew build wrote by hand, and `findPlace` searches sizes, headings and spots for a place where every paw lands (test runs brute-forced this with throwaway scripts).
 - `?beat=n` on a run page plays beats 0 to n to their ends and stops on n, for a screenshot of one beat. `mountSteps` also returns `destroy()` (stop the loop and its listeners, for a React unmount) and clips its stage when the page hasn't.
 - `scripts/bare.mjs` maps bare faces: it captures a figure at 1x and rings the largest empty square inside every flat area, for the 4× pass. It is advisory: on the shipped examples it finds plain walls, and a thin figure can have no bare face at all.
 - `examples/token-bucket`: a token bucket rate limiter built as a token dispenser, the reference for an idea rather than a machine. Mo turns the feeder, one token every 2 s into a tube of 5; Pip spends one per request, and a burst of seven finds the seventh refused. Every caption number comes from the model's decisions, and the build stops if they disagree.
