@@ -9,7 +9,7 @@ const argv = process.argv.slice(2);
 if (!argv.length || argv.includes("--help") || argv.includes("-h")) {
   console.log(`Map bare faces: large flat areas in a figure with nothing on them.
 
-  node bare.mjs <file.html | url> [--max 8] [--out rings.png] [--wait 2500] [capture.mjs flags]
+  node bare.mjs <file.html | url> [--max 3] [--out rings.png] [--wait 2500] [capture.mjs flags]
 
 Captures the figure at 1x, then finds every connected area of flat or smoothly shaded colour (no seam, line, dot,
 part or texture inside it) that isn't the card's paper, and the largest empty square inside each. Prints every square
@@ -27,7 +27,7 @@ const take = (flag, fallback) => {
   argv.splice(at, 2);
   return value;
 };
-const max = Number(take("--max", 8));
+const max = Number(take("--max", 3));
 const out = take("--out", null);
 const wait = take("--wait", "2500");
 

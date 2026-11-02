@@ -138,7 +138,7 @@ Anatomy lights exactly one part: the one to watch. Animatomy lights exactly one 
 - Set `data-duty` on that critter's group (`critterSvg(c, { duty: true })` or `el.toggleAttribute("data-duty", …)`). A thin rim in `--crew-duty` (white in dark, black in light) appears round its silhouette; the fill is untouched.
 - Choose it from the motion itself: the fastest-moving part's operator, above a small threshold, so a stop hands the light back.
 - When nothing moves, nobody is on duty and the lit accent returns to the subject part, as in Anatomy. The dial example lights the plunger at rest and toggles the plunger's `data-lit` off while a critter is on duty.
-- Never light two critters, and never light a critter and a part at the same time.
+- Never light two critters, and never light a critter and a part at the same time. A part is lit only in the gaps between duties (the dial's plunger, the toaster's strip, the sharpener's pencil); while a critter is on duty, turn every part's `data-lit` off, the parts that critter moves included.
 
 ## 8. Motion
 

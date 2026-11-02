@@ -4,6 +4,7 @@
 
 ### Changed
 
+- From a rerun of the stapler prompt under the detail rules (clearly more detailed and recognisable than the first attempt): `scripts/bare.mjs` lists squares over 3% of the card by default (8% found nothing that mattered), SKILL.md says how to show a part too small to read at its true size (a close-up beat and a section cut), and `crew.md` says a part is lit only between duties, the parts a critter moves included.
 - Detail rules: the parts count is of the machine alone (not the scene or the crew), the parts list starts from the three components the real thing is recognised by, at their real proportions and never as a plain bar or box, and the verify step maps bare faces with `scripts/bare.mjs`. Three of four figures built from scratch in testing passed every check and still came out plain.
 - Themes work as in Anatomy: a run page keeps the theme it was built in. Bare mode only hides the caption panel; it no longer forces every page to light, which made a dark figure impossible to deliver. Light stays the default: SKILL.md says to hand over the `-light` page unless the user asks for dark.
 - The toaster's jam jar stands on the open counter (it was hidden behind the toaster's end wall), and Volta stays on duty for as long as his current flows (the light passed to Dig before his own beat ended).
