@@ -62,7 +62,7 @@ Mo  · sloth    · sensing · walks the needle round the dial
 
 ## 4. The cast
 
-`SPECIES` in `kit/critters.mjs` lists the cast; the drawings are in `ART` in the same file. Each species is a natural-history illustration authored from the real animal: its silhouette, proportions, markings and fur colours.
+`SPECIES` in `kit/critters.mjs` lists the cast; the drawings are in `kit/crew/art-*.mjs`, two or three species to a file, gathered into `ART` in `kit/crew/cast.mjs`. Each species is a natural-history illustration authored from the real animal: its silhouette, proportions, markings and fur colours.
 
 | Species | Good at | What it looks like |
 |---|---|---|
@@ -171,7 +171,7 @@ Add these to `verify.md`'s list:
 
 ## 11. Adding a species
 
-Add a drawing to `ART` in `kit/critters.mjs`: colours, a coat, and an `up` drawing (and a `four` one if it will ever run on all fours), all facing left, feet on y = 0, about 100 units tall, y down. Shapes are point lists drawn as smooth closed curves (a third value marks a corner). A sketch for an otter, trimmed:
+Add a drawing as `export const <species> = { … }` in a `kit/crew/art-*.mjs` file (start a new one when a file would pass 150 lines, and add it to `CREW_FILES` in `scripts/inline-kit.mjs` before `cast`), then list it in `ART` in `kit/crew/cast.mjs`: colours, a coat, and an `up` drawing (and a `four` one if it will ever run on all fours), all facing left, feet on y = 0, about 100 units tall, y down. Shapes are point lists drawn as smooth closed curves (a third value marks a corner). A sketch for an otter, trimmed:
 
 ```js
 otter: {

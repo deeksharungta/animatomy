@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `kit/critters.mjs` (1,674 lines) is split into 17 files of 150 lines or fewer in `kit/crew/`; `critters.mjs` is now an index of the same public API, and `crewScript()` inlines the files in order. Every example's drawing and the cast sheet are byte-identical, and frozen beats match where the page is deterministic.
 - The README's toaster and sharpener images are recaptured with the sweatband on the forehead (the toaster's from `?beat=5`).
 - `drive.mjs`: `key` holds modifiers (`"Shift+ArrowRight"`), and `eval` takes a timeout for long promises. `capture.mjs` with `--times`: the summary readout is the main shot's, read as it is taken (it was the last timed shot's).
 - Seasons: Space after a date set during the first beat replays it from that date (it jumped back to 20 March), and without WebGL the lamp shows lit in the drawing itself.
