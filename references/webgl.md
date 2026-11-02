@@ -310,7 +310,7 @@ The other figures use the form `vec4(colour·a, a)`: `colour` comes from a ramp 
 |---|---|---|
 | Emission, the hot thing itself | ramp body plus a pale core, alpha up to .96–.97 | plasma cutter `bodyInk`, forge `barInk`, tokamak `glowInk` |
 | Light falling on a surface | hue pulled warm or cool, alpha capped at .5–.8 | foundry `castInk` and `tintInk`, tokamak `tintInk` (.5), plasma cutter `tintInk` (.75–.8) |
-| Haze: steam, smoke, fume, breakdown gas | grey or lightly tinted, alpha `1 − exp(−density·k)` | plasma cutter `hazeInk`, tokamak `gasInk`, forge steam |
+| Haze: steam, smoke, fume, breakdown gas | grey or lightly tinted, alpha `1 − exp(−density·k)`; on paper a mid grey (the espresso machine's steam is `vec3(0.46, 0.48, 0.52)`), since pale grey on paper vanishes | plasma cutter `hazeInk`, tokamak `gasInk`, forge steam |
 | Sparks and streaks | on top of everything | foundry and forge `sparks` |
 
 The plasma cutter's `lightInkOf` is the clearest example: `over(arcCore, over(bodyInk(body), over(arc, over(fumeInk, over(steamInk, tintInk(tint))))))`. If you sum the energies first and ink the sum, everything gets one hue and the pale core is lost.

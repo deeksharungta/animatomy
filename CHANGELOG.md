@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Docs from the test runs: which heading faces the viewer; the 0.35 × size placement is a first guess (a crab needs about 0.2); who can hang; zeroing a part's speed so a stale duty light goes out; mid-grey steam on paper; a short takeover hint; what the mount-time timing pass does to `enter`, `done` and a rest state sitting on a threshold; and that `kitScript()` makes every iso-kit export a page global.
 - `kit/critters.mjs` (1,674 lines) is split into 17 files of 150 lines or fewer in `kit/crew/`; `critters.mjs` is now an index of the same public API, and `crewScript()` inlines the files in order. Every example's drawing and the cast sheet are byte-identical, and frozen beats match where the page is deterministic.
 - The README's toaster and sharpener images are recaptured with the sweatband on the forehead (the toaster's from `?beat=5`).
 - `drive.mjs`: `key` holds modifiers (`"Shift+ArrowRight"`), and `eval` takes a timeout for long promises. `capture.mjs` with `--times`: the summary readout is the main shot's, read as it is taken (it was the last timed shot's).
