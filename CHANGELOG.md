@@ -4,11 +4,10 @@
 
 ### Changed
 
-- Illustrated variant: the whole crew is drawn like a natural-history plate. Every tone is lighter and more muted, each body part gets a fine warm-grey ink contour, fur strands become pen hatching, edge tufts become a sketched outline, and eyes are smaller with one glint. It is a style over the same rig, so all thirteen species, every pose and the reach checks are unchanged; every crewed example and README image is rebuilt.
+- The whole crew is drawn like a natural-history plate, and this is now the only crew: the pixel, illustrated and drawn-crew variant branches are gone, and the illustrated crew is on `main`. Every tone is lighter and more muted, each body part gets a fine warm-grey ink contour, fur strands become pen hatching, edge tufts become a sketched outline, and eyes are smaller with one glint. It is a style over the same rig, so all thirteen species, every pose and the reach checks are unchanged; every crewed example and README image is rebuilt.
 
 ### Added
 
-- `examples/kettle`: a cordless kettle, the first "break it" figure. Roo the kangaroo (spring) switches it on, Volta the eel (power) carries the current, Mo the sloth (sensing) is the steam switch and Crumb the mouse (sensing) holds the boil-dry contacts. After a normal boil Mo dozes off, his disc never snaps, and the same heat model boils the litre away until the boil-dry cut-out trips at 140 °C. Nine beats, WebGL steam, files of 150 lines or fewer.
 - `examples/token-bucket`: a token bucket rate limiter built as a token dispenser, the reference for an idea rather than a machine. Mo turns the feeder, one token every 2 s into a tube of 5; Pip spends one per request, and a burst of seven finds the seventh refused. Every caption number comes from the model's decisions, and the build stops if they disagree.
 - `examples/longcase-clock`: an eight-day longcase clock. Rocky the raccoon (power) winds the weight up with the crank, Mo the sloth (sensing and timing) hangs from the pendulum's rod and swings with it while the anchor lets the escape wheel go half a tooth a second, and at one o'clock Knock the woodpecker (spring), who is the hammer, strikes the bell once. The hands are in blued steel; the woodpecker gets its first job. It is written in files of 150 lines or fewer.
 - `examples/espresso-machine`: a single-boiler espresso machine, staffed by three crew members no example used before. Ember the fennec fox (heat) holds the heater switch on top of the boiler until the thermostat knocks it back at 93 °C, Ollie the otter (fluid) works the vibratory pump's piston, and Crumb the mouse (sensing) sits on the over-pressure valve until 9 bar lifts her off it. The coffee runs into the cup in its own colours, 36 g in 28 s, and WebGL draws the band heater's glow, the steam off the cup and the vent's puff into the drip tray. It is written in files of 150 lines or fewer.
@@ -16,6 +15,7 @@
 
 ### Changed
 
+- The README shows the token bucket, and the docs describe the crew as natural-history illustrations with a fine ink contour (they still said "painted" and "no outlines" in places).
 - The capture, drive, print and turn-check scripts start Chrome with `--use-mock-keychain --password-store=basic`, so macOS no longer asks for keychain access on every run.
 - The README's install line adds `-g -a claude-code` and says the installer needs Node.js 22.20 or later (the builds still need 20.10).
 - `examples/push-button/`, the print reference, now has its own line in SKILL.md and counts among the examples.
