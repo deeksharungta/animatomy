@@ -12,6 +12,7 @@
 
 ### Changed
 
+- The capture, drive, print and turn-check scripts start Chrome with `--use-mock-keychain --password-store=basic`, so macOS no longer asks for keychain access on every run.
 - The README's install line adds `-g -a claude-code` and says the installer needs Node.js 22.20 or later (the builds still need 20.10).
 - `examples/push-button/`, the print reference, now has its own line in SKILL.md and counts among the examples.
 - The README shows four more figures (seasons, the sharpener, the vending machine and the dial, from the current builds), says how a figure gets made in five steps, explains the default and `?full` ways to open a page, installs with one `git clone`, and lists every example. The old dial image, which still showed the glow, is replaced.
