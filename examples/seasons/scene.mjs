@@ -62,7 +62,9 @@ export function pillarHigh() {
 }
 
 export function lamp() {
-  return S(L.sphereOf(C.LAMP, C.LAMP_R, P, { steps: 48 }), { tone: "hi", lit: true });
+  // The lit bulb in the drawing itself, shown only when there is no WebGL glow to light it.
+  const [cx, cy] = at(C.LAMP);
+  return S(L.sphereOf(C.LAMP, C.LAMP_R, P, { steps: 48 }), { tone: "hi", lit: true }) + `<circle class="sn-lampglow" data-part="lampglow" cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${(C.LAMP_R * P.scale * 0.96).toFixed(2)}" style="opacity:0"/>`;
 }
 
 // The globe's mount, drawn at the June position and moved with the arm. It never turns: the gear train

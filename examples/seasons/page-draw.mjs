@@ -45,7 +45,7 @@ const stage = document.querySelector(".sn-stage");
 const svgs = [...stage.querySelectorAll(":scope > svg")];
 const part = (name) => stage.querySelector('[data-part="' + name + '"]');
 const orbit = stage.querySelector("[data-orbit]");
-const el = { back: part("orbit-back"), front: part("orbit-front"), bar: part("bar"), gears: part("gears"), handle: part("handle"), lowA: part("low-a"), lowB: part("low-b"), pipA: part("pip-a"), pipB: part("pip-b"), mount: part("mount"), crank: part("crank"), crankH: part("crank-h"), moSlot: part("mo-slot"), globe: part("globe"), land: part("land"), night: part("night"), london: part("london"), pip: part("pip"), mo: part("mo"), volta: part("volta") };
+const el = { back: part("orbit-back"), front: part("orbit-front"), bar: part("bar"), gears: part("gears"), handle: part("handle"), lowA: part("low-a"), lowB: part("low-b"), pipA: part("pip-a"), pipB: part("pip-b"), mount: part("mount"), crank: part("crank"), crankH: part("crank-h"), moSlot: part("mo-slot"), globe: part("globe"), land: part("land"), night: part("night"), lampglow: part("lampglow"), london: part("london"), pip: part("pip"), mo: part("mo"), volta: part("volta") };
 const readout = document.querySelector("[data-readout]");
 const REST = ${JSON.stringify(REST)};
 const S = { ...REST };
@@ -96,6 +96,7 @@ function draw() {
   put(el.land, "d", D.land);
   put(el.night, "d", D.night);
   put(el.night, "style", "--sn-lamp:" + D.lamp);
+  put(el.lampglow, "style", "opacity:" + (glow ? 0 : D.lamp));
   put(el.london, "cx", D.london ? D.london[0].toFixed(2) : "-999");
   put(el.london, "cy", D.london ? D.london[1].toFixed(2) : "-999");
   const p = poses(C, M, S, D);
@@ -127,8 +128,11 @@ function step(dt) {
   if (S.turning) S.spin += (lock ? C.TURN : C.SPIN) * dt;
   S.duty = Math.abs(S.lamp - S.lampT) > 0.01 ? "volta" : S.walk ? "pip" : S.turning && S.lamp > 0.5 ? "mo" : "";
 }
+// keepDay: Space after the reader set a date in the first beat replays it from that date.
+let keepDay = false;
 function enter(i) {
-  if (i === 0) Object.assign(S, { ...REST, spin: S.spin });
+  if (i === 0) Object.assign(S, { ...REST, spin: S.spin, ...(keepDay ? { day: S.day } : {}) });
+  keepDay = false;
   Object.assign(S, { lampT: i >= 1 ? 1 : 0, turning: i >= 3, target: TARGETS[i], lock: i === 4, stepT: 0 });
   draw();
 }

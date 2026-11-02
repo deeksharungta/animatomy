@@ -64,6 +64,7 @@ stage.addEventListener("keydown", (e) => {
     // The run's own Space handler has just resumed it: replay the beat from the date set.
     scrubbed = false;
     S.day += 365 * Math.round((TARGETS[run.index] - S.day) / 365);
+    keepDay = true;
     run.go(run.index);
   } else if (e.key === " " && !run.playing) idleStart();
   else if (e.key === "Home") scrubbed = false;

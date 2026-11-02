@@ -72,6 +72,7 @@ const css = `${crewCss()}${STEPS_CSS}
 .iso[data-theme="light"]{--sn-ocean:#6FA6D6;--sn-land:#8DB46E;--sn-night:#0B1630;--sn-dark:.62;--sn-line:#ffffff}
 .sn-ocean{fill:var(--sn-ocean)}
 .sn-land{fill:var(--sn-land);stroke:none}
+.sn-lampglow{fill:#f4b04c}
 .sn-night{fill:var(--sn-night);filter:url(#sn-soft);opacity:calc(var(--sn-dark) * var(--sn-lamp, 0))}
 .sn-lat{fill:none;stroke:var(--sn-line);stroke-width:.45;opacity:.5;stroke-linecap:round}
 .sn-trop{stroke-dasharray:1.6 1.6}
