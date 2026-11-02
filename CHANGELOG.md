@@ -4,6 +4,11 @@
 
 ### Changed
 
+- The toaster's jam jar stands on the open counter (it was hidden behind the toaster's end wall), and Volta stays on duty for as long as his current flows (the light passed to Dig before his own beat ended).
+- The sweatband sits across the forehead between the crown and the brow, edge to edge of the head at that height. It was placed from the head's bounding box, so it covered the kangaroo's eyes and floated above the hamsters' heads like a halo.
+- The pencil sharpener's label no longer promises arrow keys (the run takes Space and Home), and its unused back-step code is gone.
+- `scripts/cast-sheet.mjs` writes to the current folder by default (it wrote into the skill folder), makes the `--out=<file>` folder if needed, and SKILL.md and `crew.md` document `--out=` and the capture step that turns it into a PNG.
+- SKILL.md says where to build a figure (in the user's project, importing the kit by the skill's absolute path), what to do when the request is a shipped example (copy it, or build a new figure when it asks a different question of the same machine), when the audit is needed (routed pipes and cables, not crew figures of kit solids), and to compare the overview with the closest example at 1× before calling a figure done. These came from end-to-end tests of the website's prompts.
 - The whole crew is drawn like a natural-history plate, and this is now the only crew: the pixel, illustrated and drawn-crew variant branches are gone, and the illustrated crew is on `main`. Every tone is lighter and more muted, each body part gets a fine warm-grey ink contour, fur strands become pen hatching, edge tufts become a sketched outline, and eyes are smaller with one glint. It is a style over the same rig, so all thirteen species, every pose and the reach checks are unchanged; every crewed example and README image is rebuilt.
 
 ### Added

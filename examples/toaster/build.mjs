@@ -362,8 +362,8 @@ function cord() {
 
 function propsBack() {
   const out = [];
-  // Jam jar with a gingham lid.
-  const [jx, jy] = [-120, -30];
+  // Jam jar with a gingham lid, on the open counter where the toaster doesn't hide it.
+  const [jx, jy] = [-122, 62];
   out.push(`<path class="iso-halo" d="${k.haloOf({ x: jx - 13, y: jy - 13, w: 26, d: 26, r: 13 }, 0, 2, P)}"/>`);
   out.push((S(k.cylinder(jx, jy, 11, 0, 26, P, 40, 0.6), { tone: "hi", inner: Ln(k.sideArc(jx, jy, 11, 4, P, 32) + k.sideArc(jx, jy, 11, 22, P, 32), { tone: "faint" }) })));
   out.push((S(k.cylinder(jx, jy, 11.2, 9, 9, P, 40), { tone: "mid", crease: "none" })));
@@ -876,7 +876,7 @@ function model(C, H, T0) {
     else if (Math.abs(S.knobV) > 0.02) duty = "rocky";
     else if (dph > 0.05) duty = "dig";
     else if (S.hand || (S.zb < C.UP - 0.2 && !S.latched)) duty = "roo";
-    else if (S.on && S.glow > 0 && S.glow < 0.97) duty = "volta";
+    else if (S.on && S.glow > 0) duty = "volta";
     else if (S.latched) duty = "dig";
     S.duty = duty;
     S.strain = S.latched && S.phi < 0.01;

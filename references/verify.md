@@ -87,7 +87,7 @@ Every open subpath of every `.iso-line` in the card (seams, grooves, ribs from `
 | Rule lines on a label plate | `free: true`. They stand for text. |
 
 ## Audit
-Screenshots catch what you think to look at. A figure with pipes, cables and round parts also needs the geometry checked, because a cable through a duct or a part drawn over the thing in front of it is invisible at 1× and obvious at 4×. Wire `kit/audit.mjs` into the build (`kit.md`, section 12): helpers put into one `A.recorder(P, { order, spring })`, the build calls `A.settle(R, P)` and ends with `A.auditOrExit(R, P)`, then run:
+Screenshots catch what you think to look at. A figure with pipes, cables or hoses routed between parts, or many overlapping round parts, also needs the geometry checked (a crew figure of kit solids in a clear back-to-front order doesn't; see SKILL.md, step 12), because a cable through a duct or a part drawn over the thing in front of it is invisible at 1× and obvious at 4×. Wire `kit/audit.mjs` into the build (`kit.md`, section 12): helpers put into one `A.recorder(P, { order, spring })`, the build calls `A.settle(R, P)` and ends with `A.auditOrExit(R, P)`, then run:
 
 ```sh
 node examples/raptor-engine/build.mjs --audit

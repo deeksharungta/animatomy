@@ -1,15 +1,14 @@
-import { writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import * as k from "../kit/iso-kit.mjs";
 import { critter, critterSvg, crewCss, SPECIES, ROLES } from "../kit/critters.mjs";
 
-const HERE = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const theme = args.includes("--light") ? "light" : "dark";
 const only = args.find((a) => a.startsWith("--only="))?.slice(7).split(",");
 const roleArg = args.find((a) => a.startsWith("--role="))?.slice(7);
-const out = args.find((a) => a.startsWith("--out="))?.slice(6) ?? join(HERE, "..", `cast-sheet${theme === "light" ? "-light" : ""}.html`);
+// Written to the current folder (or --out=<file>), never into the skill itself.
+const out = resolve(args.find((a) => a.startsWith("--out="))?.slice(6) ?? `cast-sheet${theme === "light" ? "-light" : ""}.html`);
 const species = only ?? Object.keys(SPECIES);
 const SIZE = 30;
 const AZ = 45;
@@ -70,5 +69,6 @@ const tile = (name, i, cell) => {
 const grid = species.map((name, i) => cells.map((cell) => tile(name, i, cell)).join("")).join("");
 const css = `${crewCss()}.cast{display:grid;grid-template-columns:repeat(${cells.length},1fr);gap:4px}.cell{display:flex;flex-direction:column;align-items:center}.cell span{font:11px var(--anatomy-mono);color:var(--anatomy-muted)}`;
 const html = k.pageHtml({ title: "Cast sheet", theme, width: W * cells.length + 80, body: `<style>${css}</style>${k.plateHtml({ fig: "Cast", title: "Animatomy crew", hint: "every species, every heading, every pose", body: `<div class="cast">${grid}</div>` })}` });
+mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, html);
 console.log("wrote", out);

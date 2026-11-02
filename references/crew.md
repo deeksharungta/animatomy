@@ -81,7 +81,7 @@ Mo  · sloth    · sensing · walks the needle round the dial  · flaw: dozes of
 | woodpecker | striking: hammers, needles, strikers, anything that hits over and over | great spotted woodpecker: black back and wings with white shoulder patches and barred flight feathers, white face and underparts, black crown and moustache, red nape and red under the tail, a chisel beak; clings upright, propped on its stiff tail |
 | eel | power: current, wires, circuits, batteries (an electric eel makes electricity) | electric eel: long smooth olive body, orange throat and belly, a flat head with small eyes, a long fin under its whole length and no other limbs; lies along a path and crackles while charged |
 
-Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` with every species at four headings (facing you, left, right, away) and in six poses (reaching, walking, on all fours, hanging, asleep, startled; birds peck and fly instead, and the eel curls). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
+Show the cast before placing anyone: `node scripts/cast-sheet.mjs --light` (and without `--light`) writes `cast-sheet*.html` in the current folder (`--out=<file>` to choose) with every species at four headings (facing you, left, right, away) and in six poses (reaching, walking, on all fours, hanging, asleep, startled; birds peck and fly instead, and the eel curls). `--only=sloth,beaver` and `--role=power` narrow it. Capture it and read it at 2×.
 
 Recurring cast: give each critter a name and keep the same species and role across a set of figures, so readers learn them.
 
@@ -204,7 +204,7 @@ Most of the crew wear nothing but their collar. A prop goes on only where it rea
 | Prop | Sits | For |
 |---|---|---|
 | `glasses` | over the near eye | whoever reads or times things (Mo on the strip, the switch and the dial) |
-| `sweatband` | round the forehead, in the role colour | runners and jumpers big enough to show it (Bun and Mochi in the sharpener's wheel, Roo on the lever) |
+| `sweatband` | across the forehead, between the crown and the brow and never over the eye, edge to edge of the head, in the role colour | runners and jumpers big enough to show it (Bun and Mochi in the sharpener's wheel, Roo on the lever) |
 
 - **Hats are out.** Hard hats, caps and a miner's hat were tried on every species and read as stickers on top of the drawing. So were goggles, a bow tie, oven mitts, a stopwatch, a whistle, a pencil, a notebook and a clipboard: at figure size they were specks or noise.
 - **Small critters go bare.** Below about 15 world units a sweatband is a hairline; the vending machine's hamsters (size 10) wear nothing.

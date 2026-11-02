@@ -487,7 +487,6 @@ const readout = document.querySelector("[data-readout]");
 const FRESH = { s: 0, d: 0, target: 0, bottom: C.BOTTOM_IN + C.TRAVEL, gamma: 0, omega: 0, on: false, cutting: false, chips: [], duty: "", moEyes: "shut", fade: 1, swap: -1, still: 9, closeT: 9, wakeT: 9, spark: 0, stepT: 0 };
 const S = { ...FRESH, wheel: 0.6, carrier: 0.9, pile: 0.3 };
 const PITCH = 18;
-const snaps = [];
 let lastPose = {};
 const rnd = (() => { let seed = 7; return () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; })();
 function contactGamma() {
@@ -595,14 +594,12 @@ const DONE = [
 ];
 const snap = () => JSON.parse(JSON.stringify({ ...S, chips: [] }));
 function enter(i, how) {
-  if ((how === "back" || how === "jump-back") && snaps[i]) { Object.assign(S, JSON.parse(JSON.stringify(snaps[i]))); lastPose = {}; S.stepT = 0; draw(); return; }
   if (i === 0) {
     Object.assign(S, { ...FRESH, wheel: S.wheel, carrier: S.carrier, pile: S.pile, chips: [], s: how === "loop" ? 1 : 0, bottom: C.BOTTOM_IN + C.TRAVEL, swap: how === "loop" ? 0 : -1, spark: how === "loop" ? 9 : 0 });
   }
   if (i === 1) S.target = 1;
   if (i === 5) S.target = 0;
   S.stepT = 0;
-  snaps[i] = snap();
   draw();
 }
 STEPS.mountSteps({
@@ -645,7 +642,7 @@ const body = `<style>${css}</style>` + k.plateHtml({
   keys,
   caption:
     "An electric pencil sharpener with its front walls off, shown one step at a time. The pencil swings the switch lever onto a microswitch, the hamsters' wheel turns the cutter carrier through a pinion and crown teeth, Chomp cuts an 18 mm cone on a 7 mm pencil as the carrier turns, and the shavings fall into the drawer.",
-  body: `<div class="iso-stage" tabindex="0" role="group" aria-label="Pencil sharpener, step by step: arrow keys move between steps, Space plays or pauses">${svg}</div>${stepsHtml(STEPS)}`,
+  body: `<div class="iso-stage" tabindex="0" role="group" aria-label="Pencil sharpener, playing on a loop: Space pauses, Home starts again">${svg}</div>${stepsHtml(STEPS)}`,
 });
 
 const file = theme === "light" ? "pencil-sharpener-light.html" : "pencil-sharpener.html";
