@@ -21,6 +21,7 @@
 
 ### Added
 
+- `scripts/beats.mjs`: a contact sheet of every beat of a run page at its end, from `?beat=n`, labelled with each readout (`--full` adds the captions). The test runs each built one by hand.
 - `examples/stapler`: a desk stapler, the reference for the detail rules. Roo the kangaroo (spring) presses the head, the blade drives a 26/6 staple through twelve sheets and a section cut shows the anvil folding the legs; Pip the squirrel (moving) feeds the strip. It came from a rerun of the website's stapler prompt under the new rules, is written in files of 150 lines or fewer and checks reach with `kit/reach.mjs`.
 - `kit/reach.mjs`: `checkReach` prints the reach warnings every crew build wrote by hand, and `findPlace` searches sizes, headings and spots for a place where every paw lands (test runs brute-forced this with throwaway scripts).
 - `?beat=n` on a run page plays beats 0 to n to their ends and stops on n, for a screenshot of one beat. `mountSteps` also returns `destroy()` (stop the loop and its listeners, for a React unmount) and clips its stage when the page hasn't.
