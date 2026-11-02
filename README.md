@@ -19,6 +19,7 @@
   </tr>
   <tr>
     <td width="50%"><img src=".github/assets/token-bucket-crew.webp" alt="A token dispenser on a desk: a red squirrel pushes a slide under a tube of brass tokens, mid-burst, as envelopes drop onto a see-saw flap; a sloth in glasses turns the feeder crank above."><br><sub><code>examples/token-bucket</code>: an idea, not a machine. Pip spends a token per request.</sub></td>
+    <td width="50%"><img src=".github/assets/stapler-crew.webp" alt="A desk stapler cut away on an office desk: a kangaroo stands on the head's press pad and a red squirrel leans on the follower behind a strip of staples, over a stack of yellow notes on the anvil."><br><sub><code>examples/stapler</code>: built from its real parts. Roo presses, Pip feeds.</sub></td>
   </tr>
 </table>
 
@@ -48,7 +49,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 | Format | One interactive figure | A full scene played as one continuous story on a loop, with no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: animals drawn as natural-history illustrations on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
-| Examples | 8 | 17: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/token-bucket` and `examples/dial-indicator-crew` |
+| Examples | 8 | 18: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/stapler`, `examples/token-bucket` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
 The subject keeps its real colours: the toaster's golden bread, the sharpener's yellow pencil, the vending machine's brass coin, the dial's steel gauge blocks. Heat and light (the toaster's ribbons, the seasons lamp) glow on a WebGL layer, only while they are on.
@@ -110,7 +111,7 @@ Then open Claude Code in your project and ask how anything works. Name the machi
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Seventeen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
+Eighteen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
 
 Animatomy is a standard [Agent Skill](https://agentskills.io), so it also runs in OpenCode, Codex and Antigravity: put this folder in that agent's skills folder, as in `ANATOMY-README.md`. Builds need Node.js 20.10 or later and the checks need Chrome or Chromium. Nothing to `npm install`.
 
@@ -125,6 +126,7 @@ open examples/vending-machine/vending-machine-light.html
 open examples/seasons/seasons-light.html
 open examples/espresso-machine/espresso-machine-light.html
 open examples/longcase-clock/longcase-clock-light.html
+open examples/stapler/stapler-light.html
 open examples/token-bucket/token-bucket-light.html
 open examples/dial-indicator-crew/dial-indicator-crew-light.html
 node scripts/cast-sheet.mjs --light && open cast-sheet-light.html
