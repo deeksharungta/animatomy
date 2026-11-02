@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Stapler: the "notes go in" beat frames Roo and Pip whole (Roo was cut off at the corner).
 - Toaster: snapping the browning knob onto its setting zeroes its speed, so Rocky's duty light and "setting the browning" end with his beat (under reduced motion and `?beat=1` they stayed on).
 - Volta's sparks are arcs that leave his body, run along it and curl back in, at irregular spacing. They stuck straight out at a fixed interval and read as legs at overview size.
 - Docs from the test runs: which heading faces the viewer; the 0.35 × size placement is a first guess (a crab needs about 0.2); who can hang; zeroing a part's speed so a stale duty light goes out; mid-grey steam on paper; a short takeover hint; what the mount-time timing pass does to `enter`, `done` and a rest state sitting on a threshold; and that `kitScript()` makes every iso-kit export a page global.

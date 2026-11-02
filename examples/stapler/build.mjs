@@ -67,7 +67,7 @@ const svg = k.figureSvg({
 
 const STEPS = [
   { title: "Meet the crew", who: "Roo and Pip", color: "var(--anatomy-hi)", text: "Roo stands on the head's press pad. Pip stands on the magazine's rail with both paws on the follower behind the staples.", points: null, hold: 1.6 },
-  { title: "The notes go in", who: "the notes", color: "var(--anatomy-hi)", text: "Twelve sheets slide over the anvil until their back edge meets the paper stop.", points: [[13, -18, 11], [120, 16, 13], [82, 0, 40]] },
+  { title: "The notes go in", who: "the notes", color: "var(--anatomy-hi)", text: "Twelve sheets slide over the anvil until their back edge meets the paper stop.", points: [[13, -18, 11], [120, 16, 13], [82, 0, 40], [26, 0, 66]] },
   { title: "Roo stamps on the head", who: "Roo · spring", color: "#E93D82", text: "The head and the magazine swing down together on the hinge pin until the magazine's nose rests on the notes.", points: [[0, -11, 11], [96, 11, 11], [32, 0, 70], [-90, 0, 40]] },
   { title: "The blade drives a staple", who: "Roo · spring", color: "#E93D82", text: "The magazine can go no lower, so the head goes on alone. Its blade shears the front staple off the strip and pushes the legs through.", points: [[70, -6, 10], [92, 12, 10], [82, 0, 34]], least: 0.2 },
   { title: "The anvil folds the legs", who: "the anvil", color: "var(--anatomy-hi)", text: "Each 6 mm leg meets a curved groove in the anvil and is bent inward, flat under the notes.", points: [[80.5, 1, 11], [83.5, 7.5, 11], [82, 4, 15]], least: 0.09 },
