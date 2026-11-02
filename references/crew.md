@@ -31,7 +31,7 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
 2. **Colour by role, not by species.** Eight role colours, fixed for every figure (section 3). Many species share one role; a reader learns eight colours, never forty.
 3. **One operator per mechanism.** A part that moves on its own power gets exactly one operator. A part pushed by another part (a plunger riding a block, a gear driven by a gear) needs none. A swarm of one species (ants, hamsters) counts as one operator.
 4. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the live wire and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
-5. **A flaw for every member, kept for later.** Each species has a habit that would cause a real failure (the sloth dozes off, the crab won't let go). Note it in the crew list. Don't show it unless the user asks for a "break it" moment; then the failure shown must be the real failure that habit causes.
+5. **A flaw for every member, kept for later.** Each species has a habit that would cause a real failure (the sloth dozes off, the crab won't let go). Note it in the crew list. Don't show it unless the user asks for a "break it" moment; then the failure shown must be the real failure that habit causes. `examples/kettle/` is the reference: the normal run first, then Mo dozes off, his disc never snaps, and the model carries on to the true end (the water boils away and the boil-dry cut-out trips).
 
 Write the crew list next to the parts list, one line each:
 
