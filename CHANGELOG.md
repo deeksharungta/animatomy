@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `drive.mjs`: `key` holds modifiers (`"Shift+ArrowRight"`), and `eval` takes a timeout for long promises. `capture.mjs` with `--times`: the summary readout is the main shot's, read as it is taken (it was the last timed shot's).
 - Seasons: Space after a date set during the first beat replays it from that date (it jumped back to 20 March), and without WebGL the lamp shows lit in the drawing itself.
 - From a rerun of the stapler prompt under the detail rules (clearly more detailed and recognisable than the first attempt): `scripts/bare.mjs` lists squares over 3% of the card by default (8% found nothing that mattered), SKILL.md says how to show a part too small to read at its true size (a close-up beat and a section cut), and `crew.md` says a part is lit only between duties, the parts a critter moves included.
 - Detail rules: the parts count is of the machine alone (not the scene or the crew), the parts list starts from the three components the real thing is recognised by, at their real proportions and never as a plain bar or box, and the verify step maps bare faces with `scripts/bare.mjs`. Three of four figures built from scratch in testing passed every check and still came out plain.

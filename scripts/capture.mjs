@@ -246,6 +246,8 @@ async function main() {
     await shoot(out, first.clip, first.scale);
     const shotAt = Date.now();
     const readoutOf = () => evaluate(options.select === undefined ? `(document.querySelector("[data-readout]")||{}).textContent||""` : `(()=>{const el=document.querySelector(${JSON.stringify(select)});const plate=el.closest(".iso-plate")||el.querySelector(".iso-plate")||el;return(plate.querySelector("[data-readout]")||{}).textContent||""})()`);
+    // Each readout is read as its own shot is taken, so the summary line belongs to the main PNG.
+    const readout = await readoutOf();
     const readouts = [];
     for (const delay of [...options.times].sort((a, b) => a - b)) {
       await sleep(Math.max(0, shotAt + delay - Date.now()));
@@ -255,7 +257,6 @@ async function main() {
       readouts.push(`+${delay}ms "${await readoutOf()}"`);
     }
     const sideways = await evaluate(`document.documentElement.scrollWidth > innerWidth + 1`);
-    const readout = await readoutOf();
     console.log(`saved ${out}`);
     console.log(`clip ${Math.round(box.x)},${Math.round(box.y)} ${Math.round(box.w)}x${Math.round(box.h)} · readout "${readout}" · scrolls sideways: ${sideways ? "YES" : "no"}`);
     if (readouts.length) console.log(`readout over time: ${readouts.join(" · ")}`);

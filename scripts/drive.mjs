@@ -36,11 +36,12 @@ Fractions are 0..1 across the element.
                                           press at one point of the element, glide to another in steps (20) one frame apart,
                                           release: real pointer events (pointerId 1), so setPointerCapture works
   ["key", key, sel?, code?]               focus sel (default [tabindex="0"]) and press a key ("i", "Escape", "ArrowRight", " ", "7");
-                                          pass code for keys that share a name ("Shift" + "ShiftRight", "Enter" + "NumpadEnter")
+                                          pass code for keys that share a name ("Shift" + "ShiftRight", "Enter" + "NumpadEnter");
+                                          hold modifiers with "+": "Shift+ArrowRight", "Control+z", "Alt+Shift+ArrowLeft"
   ["slow", factor]                        run the page's requestAnimationFrame and performance.now clock at factor x real
                                           time (0.05 = 20x slow motion) so sheets catch 100 ms events; ["slow", 1] restores it
   ["until", js, timeoutMs?]               poll a JS expression until it is truthy (default 10 s); a timeout stops the run with exit 1
-  ["eval", js]                            run JS in the page and print the result
+  ["eval", js, timeoutMs?]                run JS in the page and print the result; a promise is awaited (default limit 60 s)
   ["shot", out.png, sel?, scale?, [x,y,w,h]?]           screenshot an element, or a region of it in CSS px
   ["lines", out.png?, sel?, options?]     check every texture line's two ends: each must land on a stroke, a dot or an outline
                                           (within options.tolerance, 1 viewBox px), or hide under a fill painted later; a short
@@ -254,12 +255,14 @@ async function main() {
         mouse = to;
       } else if (kind === "key") {
         await evaluate(`(()=>{const el=${targetOf(args[1], '[tabindex="0"]')};if(el)el.focus()})()`);
-        const key = args[0];
+        // "Shift+ArrowRight": modifiers before the key, joined by "+".
+        const parts = args[0].length > 1 ? args[0].split("+") : [args[0]], key = parts.pop() || "+";
+        const modifiers = parts.reduce((m, p) => m | ({ Alt: 1, Control: 2, Ctrl: 2, Meta: 4, Shift: 8 }[p] ?? 0), 0);
         const named = { " ": "Space", "-": "Minus", "=": "Equal", ",": "Comma", ".": "Period", "/": "Slash", ";": "Semicolon", "'": "Quote", "[": "BracketLeft", "]": "BracketRight", "\\": "Backslash", "`": "Backquote" };
         const code = args[2] ?? (named[key] ?? (/^[0-9]$/.test(key) ? `Digit${key}` : key.length === 1 ? `Key${key.toUpperCase()}` : key));
-        await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, text: key === "Enter" ? "\r" : key.length === 1 ? key : undefined, windowsVirtualKeyCode: key === " " ? 32 : key === "Enter" ? 13 : 0 });
-        await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode: key === "Enter" ? 13 : undefined });
-      } else if (kind === "eval") console.log("eval:", JSON.stringify(await evaluate(args[0])));
+        await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, modifiers, text: key === "Enter" ? "\r" : key.length === 1 ? key : undefined, windowsVirtualKeyCode: key === " " ? 32 : key === "Enter" ? 13 : 0 });
+        await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, modifiers, windowsVirtualKeyCode: key === "Enter" ? 13 : undefined });
+      } else if (kind === "eval") console.log("eval:", JSON.stringify(await evaluate(args[0], args[1])));
       else if (kind === "slow") await evaluate(`window.__driveSpeed=${Number(args[0])}`);
       else if (kind === "until") {
         const limit = Date.now() + (args[1] ?? 10000);
