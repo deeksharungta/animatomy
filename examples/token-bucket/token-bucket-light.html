@@ -3800,6 +3800,9 @@ function fitView(points, [W, H], { pad = 24, least = 0.38 } = {}) {
   return [x, y, w, h];
 }
 
+
+// The run's loop, mounted on a page by mountSteps. kit/steps.mjs has the caption markup, its CSS and fitView.
+
 // steps: [{ title, who, text, hold?, pace? }], views: one viewBox per beat, colors: one per beat.
 // enter(i, how) sets the model up for beat i ("start", "next" or "loop"); update(dt) advances it;
 // done(i) says when beat i's action is over. A beat never ends before its caption can be read

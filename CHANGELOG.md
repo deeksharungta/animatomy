@@ -4,6 +4,7 @@
 
 ### Changed
 
+- `mountSteps` moves to `kit/steps-run.mjs` so both run files stay under 150 lines; `kit/steps.mjs` re-exports it and `stepsScript()` inlines both. Every drawing is identical.
 - Stapler: the "notes go in" beat frames Roo and Pip whole (Roo was cut off at the corner).
 - Toaster: snapping the browning knob onto its setting zeroes its speed, so Rocky's duty light and "setting the browning" end with his beat (under reduced motion and `?beat=1` they stayed on).
 - Volta's sparks are arcs that leave his body, run along it and curl back in, at irregular spacing. They stuck straight out at a fixed interval and read as legs at overview size.

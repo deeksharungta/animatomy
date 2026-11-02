@@ -25,7 +25,7 @@ export function glSharedScript() {
   return strip("gl-shared.mjs");
 }
 
-const unmodule = (file) => readFileSync(join(KIT, file), "utf8").replace(/^import[^;]+;\s*$/gm, "").replace(/^export /gm, "");
+const unmodule = (file) => readFileSync(join(KIT, file), "utf8").replace(/^import[^;]+;\s*$/gm, "").replace(/^export \{[^}]*\} from [^;]+;\s*$/gm, "").replace(/^export /gm, "");
 
 // kit/crew/ in dependency order: each file only uses what the ones before it define at load time.
 const CREW_FILES = ["shapes", "draw", "parts", "art-hamster-mouse", "art-squirrel-beaver", "art-sloth-mole-crab", "art-kangaroo-fennec", "art-raccoon-eel", "art-otter-woodpecker", "cast", "colour", "paint", "head", "pieces", "eel", "rig", "svg"];
@@ -35,5 +35,5 @@ export function crewScript() {
 }
 
 export function stepsScript() {
-  return `const STEPS = (() => {\n${unmodule("steps.mjs")}\nreturn { mountSteps, fitView };\n})();\n`;
+  return `const STEPS = (() => {\n${unmodule("steps.mjs")}\n${unmodule("steps-run.mjs")}\nreturn { mountSteps, fitView };\n})();\n`;
 }
