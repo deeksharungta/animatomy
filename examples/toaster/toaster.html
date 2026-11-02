@@ -3947,6 +3947,7 @@ function fitView(points, [W, H], { pad = 24, least = 0.38 } = {}) {
 // Space pauses and resumes; Home starts again. aim(viewBox) points the camera somewhere else until the
 // next beat or until the run resumes (a figure that lets you drag it can show the whole machine while paused).
 // By default the caption panel is only read to screen readers; ?full shows it. The page keeps the theme it was built in.
+// ?beat=n plays beats 0 to n through to their ends and stops on n, for a screenshot of one beat. destroy() stops it all.
 function mountSteps({ root, svg, stage, steps, views, enter, update, done, size, colors = [], ease = 0.45, advance, save, load, draw, slowest = 0.35, onView }) {
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const box = root.querySelector("[data-steps]") ?? root;
@@ -4048,16 +4049,30 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
   const run = () => { if (!frame && visible) { last = 0; frame = requestAnimationFrame(tick); } };
   const toggle = () => { playing = !playing; if (playing) aimed = null; label(); run(); };
   const aim = (view) => { aimed = view ? [...view] : null; if (still.matches && aimed) { cam = [...aimed]; write(); } run(); };
-  stage.addEventListener("keydown", (event) => {
+  const keys = (event) => {
     if (event.key === " ") { event.preventDefault(); toggle(); }
     else if (event.key === "Home") { event.preventDefault(); playing = true; go(0); }
-  });
-  new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" }).observe(stage);
+  };
+  stage.addEventListener("keydown", keys);
+  // The camera zooms past the figure's edges, so the stage always clips.
+  if (getComputedStyle(stage).overflow === "visible") stage.style.overflow = "hidden";
+  const seen = new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" });
+  seen.observe(stage);
   write();
-  enter(0, "start");
-  if (still.matches) settle();
+  const only = Number(new URLSearchParams(location.search).get("beat"));
+  if (Number.isInteger(only) && only > 0 && only < steps.length) {
+    for (let i = 0; i <= only; i++) { enter(i, i ? "next" : "start"); settle(i); }
+    index = only;
+    playing = false;
+    cam = [...(views[index] ?? full)];
+    write();
+  } else {
+    enter(0, "start");
+    if (still.matches) settle();
+  }
   label();
-  return { go, toggle, aim, get index() { return index; }, get playing() { return playing; } };
+  const destroy = () => { cancelAnimationFrame(frame); frame = 0; visible = false; seen.disconnect(); stage.removeEventListener("keydown", keys); };
+  return { go, toggle, aim, destroy, get index() { return index; }, get playing() { return playing; } };
 }
 
 return { mountSteps, fitView };

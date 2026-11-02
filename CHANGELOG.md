@@ -18,6 +18,7 @@
 
 ### Added
 
+- `?beat=n` on a run page plays beats 0 to n to their ends and stops on n, for a screenshot of one beat. `mountSteps` also returns `destroy()` (stop the loop and its listeners, for a React unmount) and clips its stage when the page hasn't.
 - `scripts/bare.mjs` maps bare faces: it captures a figure at 1x and rings the largest empty square inside every flat area, for the 4× pass. It is advisory: on the shipped examples it finds plain walls, and a thin figure can have no bare face at all.
 - `examples/token-bucket`: a token bucket rate limiter built as a token dispenser, the reference for an idea rather than a machine. Mo turns the feeder, one token every 2 s into a tube of 5; Pip spends one per request, and a burst of seven finds the seventh refused. Every caption number comes from the model's decisions, and the build stops if they disagree.
 - `examples/longcase-clock`: an eight-day longcase clock. Rocky the raccoon (power) winds the weight up with the crank, Mo the sloth (sensing and timing) hangs from the pendulum's rod and swings with it while the anchor lets the escape wheel go half a tooth a second, and at one o'clock Knock the woodpecker (spring), who is the hammer, strikes the bell once. The hands are in blued steel; the woodpecker gets its first job. It is written in files of 150 lines or fewer.
