@@ -4,6 +4,9 @@
 
 ### Changed
 
+- In a WebGL figure the flows that carry the idea (air, water, steam, oil, gas, current, an arc) may be drawn in colour on the shader layer; the machine itself stays monochrome and the crew carry the only solid colour.
+- `findPlace` tries only headings that show the critter's face by default and takes `clear(place)` to reject spots inside parts. The sweatband is slimmer and left off critters under 15 units. Pages get `fadeOf` too.
+- SKILL.md notes from the example builds: numbers into GLSL, a cooling body's colour versus its glow, concave outlines with `extrude`, turning a flat part with a screen transform, `--zoom` on a beat page, and (in `crew.md`) arms that can't reach down to the feet.
 - The console checks in `capture.mjs`, `drive.mjs` and `turn-check.mjs` also report the browser's own errors (`Log.entryAdded`), which never reach `console.*`. The sand casting's handwheel spokes were drawn by a bar that ignored y, flattening them and putting NaN in a path; they are now true spokes in the wheel's plane, and every example is clean under the stricter check.
 - `lines.mjs` skips line ends outside the visible frame, so a zoomed beat (`?beat=n`) is checked on what its camera shows. `capture.mjs` and `drive.mjs` take a local path with a query (`page.html?beat=3`).
 - `beats.mjs` also warns when a beat's named actor is mostly hidden behind other parts (sampled on a grid), not only out of frame or too small.
@@ -33,6 +36,7 @@
 
 ### Added
 
+- Prompt words as in Anatomy, in SKILL.md: `interactive` (the reader can take over), `WebGL` (shaders in the drawing, with the idea's flows in colour from cool blue to hot orange, as Anatomy's turbofan; without it SVG and at most one shader) and `3D` (Anatomy's turning mode; no crewed example yet).
 - `examples/sand-casting`: molten steel poured into a green-sand mould cut in half, the reference for a process inside a mould. You work the crane and the tilt handwheel; Pinch the crab is the flask clamp holding the 140 N the steel's lift exceeds the cope's weight by, and Ollie the otter is the riser's feed, pressing its liquid down into the shrinking casting. It fills, freezes from the sand inward and feeds 3% shrinkage from the riser; take over the tilt to pour too slow (it freezes short) or too fast (it overflows). Files of 150 lines or fewer.
 - `examples/power-grid`: a power station laid out like Anatomy's No. 22 (turbine deck, 660 MW generator, 22/400 kV transformer, 400 kV bay and gantry), the reference for an interactive plant with an interlock. Its crew are its forces (steam valve, field current, oil pump, breaker spring, interlock bolt); you work the controls. It synchronises, takes 660 MW, trips and opens the disconnector dead; Shift+O defeats the interlock to show the arc. Files of 150 lines or fewer.
 - `kit/spring.mjs`: `springAlong(a, b, radius, turns, P)`, a coil spring between any two points with its back and front halves split. `coil()` runs along x or y only, so the stapler, the kettle and the pen each hand-wrote an upright one.

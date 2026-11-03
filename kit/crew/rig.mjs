@@ -32,7 +32,8 @@ export function critter(spec, pose = {}, P) {
   const sq = pose.squash ?? 0;
   const sx = (mirror ? -1 : 1) * k * turn * (1 + 0.1 * sq), sy = k * (1 - 0.26 * sq);
   const eyes = pose.eyes ?? "open";
-  const wear = [].concat(spec.wear ?? []).filter((w) => PROPS[w]);
+  // A sweatband on a critter under 15 units tall is a smudge, so small critters go bare.
+  const wear = [].concat(spec.wear ?? []).filter((w) => PROPS[w] && !(w === "sweatband" && (spec.size ?? 20) < 15));
   const wingsOpen = Math.max(0, Math.min(1, pose.wings ?? 0));
   const spread = !!R.wing?.spread && wingsOpen >= 0.5;
   const S = pieces(sp, stance, front, mirror, eyes, spec.role, wear, spread);

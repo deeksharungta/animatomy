@@ -37,6 +37,16 @@ Nineteen complete examples ship with the skill. Open `examples/toaster/` first: 
 
 The test rig is the quality bar for the drawing itself. The Raptor is the bar for shader work: a WebGL effect has to reach its standard of world-space, no-pop, seamless rendering.
 
+## Words that change the figure
+
+As in Anatomy, three words in the request change what Claude builds, and it reaches for them only when they are written in the line:
+
+- **`interactive`**: the reader can take over. Drag or keys set the model, the run pauses and the camera pulls back to what they now need to see, and Space plays on from there (`references/steps.md`, "Letting the reader take over"; `examples/seasons`, `examples/power-grid`, `examples/dial-indicator-crew`, `examples/sand-casting`). Without it the figure still plays its whole story on a loop; Space pauses it and Home starts it again.
+- **`WebGL`**: shaders inside the drawing, in the same isometric camera: fire, water, plasma, moving air, light, and the flows that make the idea, in colour (cool blue to hot orange), with an SVG fallback. Without it the figure is SVG, with at most one shader where heat or light is itself the subject (the toaster's ribbons). `references/webgl.md`.
+- **`3D`**: parts that really turn in depth, re-projected and re-sorted every frame (`references/3d.md`). Slow: hours to build. No crewed example uses it yet; the crew stay on their 2D rig, placed from the turned parts each frame.
+
+The theme (light by default, dark when asked), "one HTML file" and "Next.js" work as in Anatomy.
+
 ## The one idea that matters
 
 **The object is the explanation, and the crew is how it moves.** Build the real machine exactly as Anatomy would, then staff it: every part that moves on its own gets an operator whose body does that motion. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade. If you took the crew away the mechanism would still be true; if a critter isn't doing a part's job, cut it. The reader learns how the thing works and laughs while they do. `references/crew.md` has the casting rules, the role colours and the cast.
@@ -102,6 +112,8 @@ Work in this order. Write the concept and the parts list before any geometry. Mo
 
 **Build in the user's project, never inside the skill folder.** Make a folder for the figure there. The examples import `../../kit/…` and `../../scripts/…`; from elsewhere, import the same files by the skill's absolute path (for example `~/.claude/skills/animatomy/kit/iso-kit.mjs`, resolved to a full path). The build writes its pages next to its own script, and screenshots go in that folder's `shots/`.
 
+**Kit notes the examples found.** `prismOf` fills a polygon by its convex hull: draw a concave outline (a gear, an annulus, a notched plate) with `extrude(ring, z, h, P, { convex: false })`. A part that turns in its own flat plane (a wheel, a needle, a dial) can be drawn once and turned with a screen transform, the plane's projection times the rotation times its inverse (A·R·A⁻¹), instead of rebuilding its paths each frame. `capture.mjs --zoom` on a `?beat=n` page zooms inside that beat's camera, in card pixels.
+
 **When the request is a shipped example.** If the user asks for a machine that ships (the toaster, the seasons tellurion), copy that example's folder into the project, re-point its imports, build it and say that it starts from the shipped figure; then change only what the request adds (a theme, a format, a different beat). If the request asks a different question of the same machine (how the vending machine *checks* the coin), build the new mechanism as a new figure, borrowing the example's scene, parts and crew poses, and hold it to the example's level of detail.
 
 The kit is in `kit/`:
@@ -146,7 +158,7 @@ Pick the path that fits the project:
 - **Casting is the explanation.** The species' trait is the job (claws grip, teeth cut, wheels run, a slow sloth times things). If you can't say why that animal does that job in three words, it's the wrong animal.
 - **Colour is the crew's.** The machine and the scene are drawn exactly as Anatomy draws them, in its tones with one lit accent and no colour. The animals carry their real fur colours, a thin collar in their role colour and their props, so they are the only colour in the picture. Eight role colours, fixed: power yellow, holding red, cutting violet, sensing blue, moving green, heat orange, fluid aqua, spring pink.
 - **The subject is in its own colour.** The thing the machine works on (the bread, the pencil, the coin) is the one object drawn in its real colour, with `subjectCss()`, so the eye follows it; a colour that changes (toast browning) comes from the model. One subject per figure, and nothing else on the machine is coloured.
-- **Light and heat may glow.** What the machine gives off (a red-hot element, a flame, a spark, an LED) glows in colour on a WebGL layer, as in Anatomy's shader figures, and only while it is on. Never tint the parts themselves.
+- **Light, heat and flow may glow.** What the machine gives off (a red-hot element, a flame, a spark, an LED) glows in colour on a WebGL layer, as in Anatomy's shader figures, and only while it is on. In a WebGL figure the flows that carry the idea are drawn in colour too, as Anatomy's turbofan draws its air: moving air, water, steam, oil and gas on a temperature scale from cool blue to hot orange, current as a pale yellow glow, an arc blue-white. They are light and motion over the drawing; never tint the parts themselves.
 - **A full picture, one continuous story.** Open on the whole scene, then play the action beat after beat without stopping, the camera easing onto whoever is working, and loop. Words go under the picture, never on it.
 - **Props only where they read clean.** Most of the crew wear just their collar. `PROPS` has two that hold up at figure size: glasses for whoever reads or times things, and a sweatband for runners big enough to show it. No hats. Kid-friendly only: no cigarettes, cigars or drinks.
 - **Paws land.** Every paw that works sits on a real handle, knob, rim or pin, at the part's real position in every frame, like a pipe end on its port. `critter(…).reach` reports how far each paw falls short; ship at zero.
@@ -177,6 +189,8 @@ These are the rules that separate a crafted figure from a diagram. `references/c
 
 Use a shader only for what lines can't draw: fire and exhaust, water and caustics, real lamp light, glow, steam. The parts stay SVG. The core rules come from the first shader figure, whose colour change between phases looked cut rather than crossfaded:
 
+- **Numbers into GLSL.** Interpolate a number into shader source through a helper that writes a float in parentheses: `p.x-${-48}` becomes `p.x--48.0`, a compile error.
+- **A cooling body darkens; its glow fades.** In light, the glow's ink follows the light (rising as it comes in, falling as it goes), while the body's own colour may still darken from cream to dull red as it cools (`examples/sand-casting`): the colour is the metal, the alpha is the light.
 - **Three layers.** A back SVG holds what the effect covers, the canvas holds the effect (`pointer-events: none`), and a front SVG holds what covers it. Split a part, or the effect, when it is on both sides.
 - **World space, same camera.** Build every shader point from `onFloor`, `onWallX` and `onWallY`, or march the pixel's ray `rayOf(vb) + t·towardViewer()`. Size everything in world units times `uK`. Anything lying on a plane registers exactly with that plane's SVG lines.
 - **Nothing pops.** Every uniform follows an envelope with an attack and a decay (the kit's `burst` for events, `settle` for levels). Phase changes are crossfades where colour shifts continuously with the physical quantity, and a fade-out only gets darker.

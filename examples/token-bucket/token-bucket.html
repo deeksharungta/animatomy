@@ -3290,7 +3290,7 @@ function headProps(sp, H, wear, front) {
     const cuts = H.pts.flatMap((a, i) => { const b = H.pts[(i + 1) % H.pts.length]; return (a[1] - y) * (b[1] - y) <= 0 && a[1] !== b[1] ? [a[0] + ((y - a[1]) / (b[1] - a[1])) * (b[0] - a[0])] : []; });
     const l = Math.min(...cuts), r = Math.max(...cuts), bw = r - l;
     const band = (dy, i0, i1) => `M${n1(l + bw * i0)},${n1(y + 1.2 * s + dy)}Q${n1(l + bw * 0.5)},${n1(y - 1.6 * s + dy)} ${n1(r - bw * i1)},${n1(y + 1.2 * s + dy)}`;
-    out += `<path d="${band(0, 0.03, 0.03)}" class="so-line" style="stroke:var(--so-role,#888);stroke-width:${n1(3.6 * s)}"/><path d="${band(-0.1, 0.08, 0.08)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.7 * s)};opacity:.75"/>`;
+    out += `<path d="${band(0, 0.03, 0.03)}" class="so-line" style="stroke:var(--so-role,#888);stroke-width:${n1(2.6 * s)}"/><path d="${band(-0.1, 0.08, 0.08)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.5 * s)};opacity:.75"/>`;
   }
   if (wear.includes("glasses") && H.eye) {
     const [cx, cy] = H.eye.at;
@@ -3565,7 +3565,8 @@ function critter(spec, pose = {}, P) {
   const sq = pose.squash ?? 0;
   const sx = (mirror ? -1 : 1) * k * turn * (1 + 0.1 * sq), sy = k * (1 - 0.26 * sq);
   const eyes = pose.eyes ?? "open";
-  const wear = [].concat(spec.wear ?? []).filter((w) => PROPS[w]);
+  // A sweatband on a critter under 15 units tall is a smudge, so small critters go bare.
+  const wear = [].concat(spec.wear ?? []).filter((w) => PROPS[w] && !(w === "sweatband" && (spec.size ?? 20) < 15));
   const wingsOpen = Math.max(0, Math.min(1, pose.wings ?? 0));
   const spread = !!R.wing?.spread && wingsOpen >= 0.5;
   const S = pieces(sp, stance, front, mirror, eyes, spec.role, wear, spread);
@@ -3748,7 +3749,7 @@ function critterBox(c) {
   return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
 }
 
-return { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, lathe, arcOf, circleOf, dotsOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };
+return { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, lathe, arcOf, circleOf, dotsOf, fadeOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };
 })();
 })();
 const STEPS = (() => {

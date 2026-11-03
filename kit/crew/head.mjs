@@ -21,7 +21,7 @@ export function headProps(sp, H, wear, front) {
     const cuts = H.pts.flatMap((a, i) => { const b = H.pts[(i + 1) % H.pts.length]; return (a[1] - y) * (b[1] - y) <= 0 && a[1] !== b[1] ? [a[0] + ((y - a[1]) / (b[1] - a[1])) * (b[0] - a[0])] : []; });
     const l = Math.min(...cuts), r = Math.max(...cuts), bw = r - l;
     const band = (dy, i0, i1) => `M${n1(l + bw * i0)},${n1(y + 1.2 * s + dy)}Q${n1(l + bw * 0.5)},${n1(y - 1.6 * s + dy)} ${n1(r - bw * i1)},${n1(y + 1.2 * s + dy)}`;
-    out += `<path d="${band(0, 0.03, 0.03)}" class="so-line" style="stroke:var(--so-role,#888);stroke-width:${n1(3.6 * s)}"/><path d="${band(-0.1, 0.08, 0.08)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.7 * s)};opacity:.75"/>`;
+    out += `<path d="${band(0, 0.03, 0.03)}" class="so-line" style="stroke:var(--so-role,#888);stroke-width:${n1(2.6 * s)}"/><path d="${band(-0.1, 0.08, 0.08)}" class="so-line" style="stroke:#fff;stroke-width:${n1(0.5 * s)};opacity:.75"/>`;
   }
   if (wear.includes("glasses") && H.eye) {
     const [cx, cy] = H.eye.at;
