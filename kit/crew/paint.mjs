@@ -16,7 +16,7 @@ export function defs(sp) {
   out.push(`<radialGradient id="${id("ao")}"><stop offset="0" style="stop-color:var(--so-fur-shade);stop-opacity:.75"/><stop offset="1" style="stop-color:var(--so-fur-shade);stop-opacity:0"/></radialGradient>`);
   out.push(`<radialGradient id="${id("ground")}"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".6" stop-color="#000" stop-opacity=".14"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`);
   out.push(`<radialGradient id="${id("eye")}" cx=".42" cy=".36" r=".7"><stop offset="0" style="stop-color:color-mix(in srgb,var(--so-eye) 55%,#7a5236)"/><stop offset=".45" style="stop-color:var(--so-eye)"/><stop offset="1" style="stop-color:var(--so-eye)"/></radialGradient>`);
-  out.push(`<filter id="so-duty" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius=".75" result="d"/><feFlood style="flood-color:var(--crew-duty)" result="c"/><feComposite in="c" in2="d" operator="in" result="rim"/><feMerge><feMergeNode in="rim"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`);
+  out.push(`<filter id="so-duty" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius=".4" result="d"/><feFlood style="flood-color:var(--crew-duty)" result="c"/><feComposite in="c" in2="d" operator="in" result="rim"/><feMerge><feMergeNode in="rim"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`);
   return `<defs>${out.join("")}</defs>`;
 }
 

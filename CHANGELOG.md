@@ -4,6 +4,7 @@
 
 ### Changed
 
+- The on-duty rim is about half as thick (the `so-duty` filter dilates by 0.4 instead of 0.75): it read as a heavy black outline in light.
 - A casting rule in `crew.md` and SKILL.md: the crew are parts inside the machine, never its operator. What a person does to use it is "you" in the caption.
 - `mountSteps` moves to `kit/steps-run.mjs` so both run files stay under 150 lines; `kit/steps.mjs` re-exports it and `stepsScript()` inlines both. Every drawing is identical.
 - Toaster: snapping the browning knob onto its setting zeroes its speed, so Rocky's duty light and "setting the browning" end with his beat (under reduced motion and `?beat=1` they stayed on).
