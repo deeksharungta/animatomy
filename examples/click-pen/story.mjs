@@ -6,8 +6,8 @@ import { facetKit } from "./facets.mjs";
 import { drawn } from "./moving.mjs";
 import { poses } from "./poses.mjs";
 
-export const ROCKY = { species: "raccoon", name: "Rocky", size: 8.4, role: "holding" };
-export const ROO = { species: "kangaroo", name: "Roo", size: 8.2, role: "spring" };
+export const ROCKY = { species: "raccoon", name: "Rocky", size: 9.6, role: "holding" };
+export const ROO = { species: "kangaroo", name: "Roo", size: 10, role: "spring" };
 export const ROLE = { holding: "#E5484D", spring: "#E93D82" };
 export const F = facetKit(KIT, P, PEN);
 

@@ -45,7 +45,8 @@ export const tangent = (aDeg) => L.tangentOf(PEN, aDeg * DEG);
 export const angleOfU = (u) => (u + 1) * 45 + C.ROT;
 
 const R = C.ROOM;
-const VIEW = [[R.x0, R.y1, -R.desk], [R.x1, R.y1, -R.desk], [R.x1, R.y0, -R.desk], [R.x0, R.y0, R.top], [R.x1, R.y0, R.top], [R.x0, R.y1, R.top - 8]];
+// The camera fits the pen on its stand, not the room, so the crew read at overview size; the desk and walls run off the card.
+const VIEW = [[-58, 22, 0], [70, 22, 0], [70, -18, 0], [-58, -18, 26], [70, -18, 26], [-58, 22, 26]];
 export const P = k.fitProjection(VIEW, WIDTH, HEIGHT, { pad: 10, azimuth: 60, elevation: 38 });
 
 // The world height of the lug's top corner and of the refill's ball, from the cam's state (mm along the axis).
