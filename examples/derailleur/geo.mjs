@@ -44,7 +44,9 @@ export function chainLoop(C, psi, phi, pos) {
   const segs = [];
   circles.forEach((a, i) => {
     const t0 = runs[(i + 3) % 4][1], t1 = runs[i][0], a0 = Math.atan2(t0[1] - a.c[1], t0[0] - a.c[0]), a1 = Math.atan2(t1[1] - a.c[1], t1[0] - a.c[0]);
-    const T = Math.PI * 2, sweep = a.s > 0 ? ((a1 - a0) % T + T) % T : -(((a0 - a1) % T + T) % T);
+    const T = Math.PI * 2, wrap = a.s > 0 ? ((a1 - a0) % T + T) % T : -(((a0 - a1) % T + T) % T);
+    // A wrap that has come all the way round is the chain leaving the guide pulley's teeth: it bends the other way.
+    const sweep = Math.abs(wrap) > 5.5 ? wrap - Math.sign(wrap) * T : wrap;
     segs.push({ arc: true, c: a.c, r: a.r, a0, sweep, y: a.y, len: Math.abs(sweep) * a.r, der: a.der });
     const b = circles[(i + 1) % 4], [p, q] = runs[i];
     segs.push({ arc: false, p, q, y0: a.y, y1: b.y, len: Math.hypot(q[0] - p[0], q[1] - p[1]), der: a.der || b.der });

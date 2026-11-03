@@ -2,11 +2,12 @@ import { WIDTH, HEIGHT, C, P, ROO, MO } from "./model.mjs";
 import * as G from "./geo.mjs";
 import { partsKit, chainSvg } from "./moving.mjs";
 import { drawn } from "./drawn.mjs";
+import { turning } from "./turning.mjs";
 import { stepModel } from "./sim.mjs";
 import { poses } from "./poses.mjs";
 import { STEPS, views, rest, TARGET, FOCUS } from "./story.mjs";
 
-const fns = [G.linkage, G.lerpCog, G.tangent, G.chainLoop, G.chainLength, G.solvePhi, G.pointAt, partsKit, chainSvg, drawn, stepModel, poses];
+const fns = [G.linkage, G.lerpCog, G.tangent, G.chainLoop, G.chainLength, G.solvePhi, G.pointAt, partsKit, chainSvg, drawn, turning, stepModel, poses];
 
 // The page script, part one: the numbers, the geometry and the model's step with who is on duty.
 export const MODEL_SCRIPT = `
@@ -27,7 +28,8 @@ const S = { ...REST };
 function step(dt) {
   stepModel(S, dt, C, GG);
   const moving = { roo: Math.abs(S.psiV) > 0.04, mo: Math.abs(S.phiV) > 0.02 };
-  S.duty = S.focus && moving[S.focus] ? S.focus : "";
+  // In a beat only its actor can be on duty; when the reader shifts by hand, whichever spring is moving is.
+  S.duty = S.focus === "any" ? (moving.roo ? "roo" : moving.mo ? "mo" : "") : S.focus && moving[S.focus] ? S.focus : "";
   S.lit = S.duty ? "" : "cage";
 }
 `;

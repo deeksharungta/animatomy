@@ -6,9 +6,12 @@ import { critter, critterSvg, crewCss, subjectCss } from "../../kit/critters.mjs
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml } from "../../kit/steps.mjs";
 import { WIDTH, HEIGHT, C, P, ROO, MO } from "./model.mjs";
-import { hub, rim, cog, lockring } from "./bike.mjs";
-import { stays, dropout, bKnuckle, housing } from "./frame.mjs";
+import { hubFar, hubShell, hubNear, rim, cog, lockring } from "./bike.mjs";
+import { frameFar, frameNear, dropout } from "./frame.mjs";
+import { bKnuckle, housing } from "./knuckle.mjs";
 import { wall } from "./scene.mjs";
+import { bench, benchTop, lamp } from "./bench.mjs";
+import { standPost } from "./stand.mjs";
 import { poses } from "./poses.mjs";
 import { STEPS, LABEL, keys, rest, draw0, reach } from "./story.mjs";
 import { MODEL_SCRIPT } from "./page-model.mjs";
@@ -23,17 +26,20 @@ const pose0 = poses(C, S0, D0);
 const crew = (spec, key) => critterSvg(critter(spec, pose0[key], P), { part: key });
 const mv = (name, html = D0[name]) => `<g data-part="${name}">${html}</g>`;
 
-// Back to front: the wall, the wheel, the cassette from its biggest cog out, the cage's inner plate and jockeys,
-// the chain, the frame, the cage's outer plate, the parallelogram, the B-knuckle and its cable, then the crew.
+// Back to front: the wall and bench, the stand and the far side of the bike, the wheel, the cassette from its biggest
+// cog out, the cage's inner plate and jockeys, the chain, the near side of the frame, the cage's outer plate, the
+// parallelogram, the B-knuckle and its cable, with the crew in their slots.
 const body = [
-  wall(), hub(), rim(),
+  wall(), bench(), benchTop(), lamp(), standPost(),
+  frameFar(), hubFar(), mv("spokesN"), hubShell(), rim(), mv("spokesD"), hubNear(),
   ...C.TEETH.map((_, i) => cog(i) + mv("t" + i, D0.teeth[i])).reverse(), lockring(),
-  mv("cageIn"), mv("jockeys"), mv("chainCas"), mv("chainDer"), stays(), dropout(),
-  mv("cageOut"), crew(MO, "mo"), mv("links"), housing(), bKnuckle(), crew(ROO, "roo"),
+  mv("cageIn"), mv("jockeys"), mv("chainCas"), mv("chainDer"), frameNear(), dropout(),
+  mv("cageOut"), mv("moCaps"), crew(MO, "mo"), mv("links"), housing(), bKnuckle(), crew(ROO, "roo"),
 ];
 const svg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: LABEL, body });
 const css = `${crewCss()}${STEPS_CSS}${subjectCss(".bk-chain", "#A3AAB3", "#A8AFB8")}
 .bk-stage{touch-action:pan-y;overflow:hidden}
+.bk-stage [data-part^="spokes"] .iso-line{opacity:.3}
 .bk-stage:focus-visible{outline:1px solid var(--anatomy-muted);outline-offset:6px}
 .bk-said{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`;
 

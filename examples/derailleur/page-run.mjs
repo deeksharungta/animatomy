@@ -5,7 +5,7 @@ export const RUN_SCRIPT = `
 const stage = document.querySelector(".bk-stage");
 const svg = stage.querySelector("svg");
 const part = (name) => svg.querySelector('[data-part="' + name + '"]');
-const HTML = ["cageIn", "jockeys", "chainDer", "chainCas", "cageOut", "links"];
+const HTML = ["cageIn", "jockeys", "chainDer", "chainCas", "cageOut", "links", "moCaps", "spokesN", "spokesD"];
 const CREWS = ["roo", "mo"];
 const el = Object.fromEntries([...HTML, ...CREWS].map((n) => [n, part(n)]));
 const teeth = C.TEETH.map((_, i) => part("t" + i));
@@ -17,7 +17,7 @@ const words = () => {
   return "gear " + C.TEETH[S.g] + "T · cable " + Math.max(0, cable).toFixed(1) + " mm · chain on " + C.TEETH[S.cog] + "T";
 };
 function draw() {
-  const D = drawn(K, P, C, S, Q, GG);
+  const D = { ...drawn(K, P, C, S, Q, GG), ...turning(K, P, C, Q, S) };
   for (const n of HTML) write(n, D[n], () => { el[n].innerHTML = D[n]; });
   D.teeth.forEach((t, i) => { teeth[i].innerHTML = t; });
   const p = poses(C, S, D);
@@ -76,7 +76,7 @@ function shift(by) {
   run.aim([0, 0, ${WIDTH}, ${HEIGHT}]);
   took = true;
   S.gT = Math.max(0, Math.min(10, S.gT + by));
-  S.focus = "roo";
+  S.focus = "any";
   S.stepT = 0;
   said.textContent = "Shifting to the " + C.TEETH[S.gT] + "T cog";
   kick();

@@ -37,7 +37,9 @@ export function partsKit(K, P, C) {
     if (run.length > 1) (near ? front : back).push(K.pathOf(run));
     return { back: back.join(""), front: front.join("") };
   };
-  return { at, sub, unit, cross, polyY, discY, discA, bar3, stadium, teeth, coil };
+  // An offset s along axis a plus r out from it at angle t, for rings and hexes on a pin's face.
+  const ring = (a, r, t, s) => { const e1 = unit(cross(a, Math.abs(a[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0])), e2 = cross(a, e1); return a.map((v, j) => v * s + (e1[j] * Math.cos(t) + e2[j] * Math.sin(t)) * r); };
+  return { at, sub, unit, cross, polyY, discY, discA, bar3, stadium, teeth, coil, ring };
 }
 
 // The chain: one plate between each pair of rollers, inner and outer plates by turns, split into the run the
@@ -48,7 +50,6 @@ export function chainSvg(K, P, C, S, Q, G, loop) {
   const plates = [];
   for (let i = 0; i < n; i++) {
     const a = rollers[i], b = rollers[i + 1];
-    if (a.p[0] < -260 && b.p[0] < -260) continue;
     const outer = (i + Math.floor(S.s / C.PITCH)) % 2 === 0, h = outer ? 3.9 : 3.5, dy = outer ? 3 : 2;
     const d = [b.p[0] - a.p[0], b.p[2] - a.p[2]], l = Math.hypot(d[0], d[1]) || 1, u = [d[0] / l, d[1] / l], nn = [-u[1], u[0]];
     const pts = [];
