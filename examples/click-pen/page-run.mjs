@@ -3,7 +3,7 @@ export const RUN_SCRIPT = `
 const stage = document.querySelector(".pen-stage");
 const svg = stage.querySelector("svg");
 const part = (name) => svg.querySelector('[data-part="' + name + '"]');
-const HTML = ["tip", "springBack", "refill", "ink", "springFront", "lugBack", "finsBack", "rotor", "lugIn", "plunger", "shoulder", "lugFin", "fins", "button"];
+const HTML = ["tipIn", "tipOut", "springBack", "refill", "ink", "tube", "springFront", "lugBack", "finsBack", "rotor", "lugIn", "plunger", "shoulder", "lugFin", "fins", "button"];
 const CREWS = ["rocky", "roo"];
 const el = Object.fromEntries([...HTML, ...CREWS].map((n) => [n, part(n)]));
 const readout = document.querySelector("[data-readout]");

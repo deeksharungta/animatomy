@@ -1,6 +1,6 @@
 // Solids built from faces round the pen's axis: cylinder panels between two height curves, radial side
 // faces and flat rings. Serialized into the page, so it uses only its arguments: K (the kit and lathe), P,
-// and the pen's frame F (angle 0 faces the viewer).
+// and the pen's frame F (its axis F.a, angle 0 along F.u).
 export function facetKit(K, P, F) {
   const RAD = Math.PI / 180, cam = K.cameraOf(P), BANDS = [0, 0.2, 0.42, 0.62];
   const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], mul = (a, k) => a.map((v) => v * k);
@@ -9,7 +9,7 @@ export function facetKit(K, P, F) {
   const toneOf = (n) => { let t = 0; const s = dot(unit(n), light); while (t < 4 && s >= BANDS[t]) t++; return t; };
   const rad = (a) => { const c = Math.cos(a * RAD), n = Math.sin(a * RAD); return [0, 1, 2].map((i) => c * F.u[i] + n * F.v[i]); };
   const tan = (a) => { const c = Math.cos(a * RAD), n = Math.sin(a * RAD); return [0, 1, 2].map((i) => -n * F.u[i] + c * F.v[i]); };
-  const pt = (r, a, z) => { const d = rad(a); return [F.o[0] + d[0] * r, F.o[1] + d[1] * r, F.o[2] + z]; };
+  const pt = (r, a, z) => { const d = rad(a); return [0, 1, 2].map((i) => F.o[i] + d[i] * r + F.a[i] * z); };
   const nrm = (a, sign) => mul(rad(a), sign);
   const key = (p) => p.map((v) => Math.round(v * 1e4)).join(",");
   const orient = (s) => {
@@ -17,14 +17,15 @@ export function facetKit(K, P, F) {
     for (let i = 0; i < s.length; i++) { const p = s[i], q = s[(i + 1) % s.length]; A += p[0] * q[1] - q[0] * p[1]; }
     return A < 0 ? s.slice().reverse() : s;
   };
-  // Faces to SolidPaths: tone buckets by facing, the outline where a face meets no other, creases at folds.
+  // Faces to SolidPaths: tone buckets by facing (or by a face's own shading normal s), the outline where a face
+  // meets no other, creases at folds.
   function solid(faces, { crease = 26 } = {}) {
     const fill = [], shades = [[], [], [], [], []], edges = new Map();
     for (const f of faces) {
       if (dot(unit(f.n), view) <= 1e-4) continue;
       const s = orient(f.pts.map((p) => K.iso(p, P))), d = K.pathOf(s, true);
       fill.push(d);
-      shades[toneOf(f.n)].push(d);
+      shades[toneOf(f.s || f.n)].push(d);
       for (let i = 0; i < f.pts.length; i++) {
         const a = f.pts[i], b = f.pts[(i + 1) % f.pts.length], ka = key(a), kb = key(b);
         if (ka === kb) continue;
@@ -62,7 +63,7 @@ export function facetKit(K, P, F) {
     const faces = [];
     for (let i = 0; i + 1 < angles.length; i++) {
       const a = angles[i], b = angles[i + 1];
-      faces.push({ pts: [pt(r0, a, z), pt(r1, a, z), pt(r1, b, z), pt(r0, b, z)], n: [0, 0, sign] });
+      faces.push({ pts: [pt(r0, a, z), pt(r1, a, z), pt(r1, b, z), pt(r0, b, z)], n: mul(F.a, sign) });
     }
     return faces;
   }
@@ -73,6 +74,16 @@ export function facetKit(K, P, F) {
     for (let i = 1; i < n; i++) list.push(a0 + ((a1 - a0) * i) / n);
     return [...new Set(list.map((v) => Math.round(v * 1e6) / 1e6))].sort((x, y) => x - y);
   }
-  const facing = (a, sign = 1) => sign * dot(rad(a), view) > 0;
-  return { pt, rad, tan, solid, panel, side, flat, sweep, facing };
+  // The annular face between radii r0 and r1 at height zb(a), facing back down the axis toward the nose.
+  function under(r0, r1, angles, zb) {
+    const faces = [];
+    for (let i = 0; i + 1 < angles.length; i++) {
+      const a = angles[i], b = angles[i + 1], za = zb(a, 1), zbb = zb(b, -1), g = (zbb - za) / ((b - a) * RAD * (r0 + r1) / 2 || 1), t = tan((a + b) / 2);
+      faces.push({ pts: [pt(r0, a, za), pt(r1, a, za), pt(r1, b, zbb), pt(r0, b, zbb)], n: [0, 1, 2].map((j) => -F.a[j] + t[j] * g) });
+    }
+    return faces;
+  }
+  const depth = (a) => dot(rad(a), view);
+  const facing = (a, sign = 1) => sign * depth(a) > 0;
+  return { pt, rad, tan, solid, panel, side, flat, under, sweep, facing, depth };
 }

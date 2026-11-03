@@ -1,105 +1,59 @@
-import { C, K, P, PEN, KIT, S, Ln, D, at, ptA, zF, turned, angleOfU } from "./model.mjs";
-import { facetKit } from "./facets.mjs";
+import { C, K, P, KIT, S, Ln, D, at, ptA, zF, turned } from "./model.mjs";
+import { shell, thread, rings, F } from "./shell.mjs";
 import { ribEdge } from "./mech.mjs";
 
-const F = facetKit(KIT, P, PEN), B = C.BAR, [A0, A1] = C.WIN_A;
-const back = (step = 3, br = []) => F.sweep(90, 270, step, br);
-const uOf = (a) => a / 45 - 1;
-// The inside of a tube sits in its own shadow: tilt the bore's faces away from the light so they read deep.
-const shadowed = (faces, k = 1.1) => faces.map((f) => ({ ...f, n: [f.n[0], f.n[1], f.n[2] - k] }));
+const B = C.BAR, T = C.THREAD, [g0, g1, gr] = C.GRIP, [b0, b1, br] = C.BAND, CUT_TOP = C.WIN_A[1];
+const uOf = (a) => (a - C.ROT) / 45 - 1;
 const solid = (faces, style = {}) => S(F.solid(faces), { tone: "hi", crease: "faint", ...style });
+const coneR = (z) => C.CONE.nose + 0.145 + ((B.ro - C.CONE.nose - 0.145) * (z - 0.8)) / (B.joint - 0.8);
 
-// A plain stretch of the barrel tube between two heights, its top ring showing the bore.
-export function tube(z0, z1, r = B.ro, tone = "hi", bore = 0) {
-  const ring = bore ? Ln(KIT.circleOf(zF(z1), 0, bore, P), { tone: "faint" }) : "";
-  return S(turned([[0, r], [z1 - z0, r]], z0), { tone, crease: "none", inner: ring });
-}
+// The lower barrel, nose to spigot: the tip's bore, the spring's seat, the cone widening to the barrel, and the
+// male thread that screws into the upper barrel.
+const lower = shell(
+  [[0.8, C.CONE.bore], [C.SPRING.seat, C.CONE.bore], [C.SPRING.seat, C.CONE.seatR], [B.joint, B.ri], [T.z[1], B.ri]],
+  [[0.8, coneR(0.8)], [9, coneR(9)], [16, coneR(16)], [B.joint, B.ro], [b1, B.ro], [b1, T.r[1]], ...thread(b1 + 0.01, T.z[1], T.r, T.pitch, T.z[0])],
+);
+// The upper barrel over the spigot (its female thread), holding the ribs; the centre band sits on the lower barrel.
+const upper = shell([...thread(b1, T.z[1], T.r, T.pitch, T.z[0]), [T.z[1], B.ri], [CUT_TOP, B.ri]], [[b1, B.ro], [CUT_TOP, B.ro]]);
+const band = shell([[b0, B.ro], [b1, B.ro]], [[b0, B.ro], [b0 + 0.4, br], [b1 - 0.4, br], [b1, B.ro + 0.15]], { tone: "mid", step: 3 });
+// The rubber grip sleeve over the lower barrel, nine shallow rings round it.
+const gripRings = Array.from({ length: 9 }, (_, i) => g0 + 4 + i * 2.25);
+const grip = shell([[g0, B.ro], [g1, B.ro]], [[g0, B.ro], [g0 + 0.9, gr], [g1 - 0.9, gr], [g1, B.ro]], { tone: "mid", skin: Ln(rings(gripRings, gr), { tone: "faint" }) });
 
-// The dark bore seen down an open end: the hole the parts below pass through.
-export const boreAt = (z, r) => `<path class="iso-shade" data-shade="3" d="${KIT.pathOf(Array.from({ length: 64 }, (_, i) => at(ptA(r, (i / 64) * 360, z))), true)}"/>`;
+export const backs = () => upper.back + band.back + grip.back + lower.back;
+export const fronts = () => lower.front + upper.front + band.front + grip.front;
 
-// Window A, behind the cam: the bore's back half, the barrel wall cut through at ±90°.
-export function windowA() {
-  const inner = shadowed(F.panel(B.ri, back(), () => A0, () => A1, -1));
-  const cuts = [...F.side(90, B.ri, B.ro, A0, A1, A0, A1, -1), ...F.side(270, B.ri, B.ro, A0, A1, A0, A1, 1)];
-  return solid(inner, { tone: "mid" }) + solid(cuts, { tone: "hi" });
-}
-
-// One cam rib, between two long grooves, with a short notch in the middle of its lower end.
-function rib(k, a0, a1) {
-  const c = 90 * k, h = K.half * 45, s0 = c - 45 + h, s1 = c + 45 - h, lo = Math.max(a0, s0), hi = Math.min(a1, s1);
+// One cam rib on the upper barrel's far half, between two long grooves, with a short notch in the middle of its
+// lower end: the notch the held lug sits in.
+function rib(c) {
+  const h = K.half * 45, s0 = c - 45 + h, s1 = c + 45 - h;
   const zb = (a, dir) => C.Z0 + ribEdge(K, uOf(a + dir * 1e-3));
-  const angles = F.sweep(lo, hi, 2.5, [c - h, c + h]);
-  const faces = [...F.panel(C.RIB_R, angles, zb, () => C.RIB_TOP, -1), ...F.flat(C.RIB_TOP, C.RIB_R, B.ri, angles)];
+  const angles = F.sweep(s0, s1, 2.5, [c - h, c + h]);
+  const faces = [...F.panel(C.RIB_R, angles, zb, () => C.RIB_TOP, -1), ...F.under(C.RIB_R, B.ri, angles, zb)];
   const n0 = C.Z0 + K.m * (1 - 2 * K.half), nz = C.Z0 + K.notch;
-  if (c - h > lo) faces.push(...F.side(c - h, C.RIB_R, B.ri, n0, nz, n0, nz, 1));
-  if (c + h < hi) faces.push(...F.side(c + h, C.RIB_R, B.ri, C.Z0, nz, C.Z0, nz, -1));
-  if (s0 >= a0) faces.push(...F.side(s0, C.RIB_R, B.ri, C.Z0, C.RIB_TOP, C.Z0, C.RIB_TOP, -1));
-  if (s1 <= a1) faces.push(...F.side(s1, C.RIB_R, B.ri, n0, C.RIB_TOP, n0, C.RIB_TOP, 1));
-  // Cut through at the window's edge: the rib's section, its lower end at the notch's ceiling.
-  if (a0 > s0) faces.push(...F.side(a0, C.RIB_R, B.ri, nz, C.RIB_TOP, nz, C.RIB_TOP, -1));
-  if (a1 < s1) faces.push(...F.side(a1, C.RIB_R, B.ri, nz, C.RIB_TOP, nz, C.RIB_TOP, 1));
-  return solid(shadowed(faces, 0.55), { tone: "hi" });
+  faces.push(...F.side(c - h, C.RIB_R, B.ri, n0, nz, n0, nz, 1), ...F.side(c + h, C.RIB_R, B.ri, C.Z0, nz, C.Z0, nz, -1));
+  faces.push(...F.side(s0, C.RIB_R, B.ri, C.Z0, C.RIB_TOP, C.Z0, C.RIB_TOP, -1), ...F.side(s1, C.RIB_R, B.ri, n0, C.RIB_TOP, n0, C.RIB_TOP, 1));
+  return solid(faces.map((f) => ({ ...f, s: [f.n[0], f.n[1], f.n[2] - 0.55] })), { tone: "hi" });
 }
-export const ribBack = () => rib(2, 90, 270);
-export const ribSides = () => rib(1, 90, 270) + rib(3, 90, 270);
+export const ribs = () => rib(225) + rib(135);
 
-// Window B, round the nose: the cone's bore widening from the spring seat up to the barrel's.
-const [B0, B1] = C.WIN_B;
-export const coneR = (z) => (z >= B.joint ? B.ro : C.CONE.nose + ((B.ro - C.CONE.nose) * z) / B.joint);
-export const boreR = (z) => (z >= B.joint ? B.ri : C.CONE.seatR + ((B.ri - C.CONE.seatR) * (z - B0)) / (B.joint - B0));
-export function windowB() {
-  const zs = [B0, 9, 13, 17.5, B.joint, B1], inner = [], cut = [];
-  const angles = back(4);
-  for (let j = 0; j + 1 < zs.length; j++) {
-    const [z0, z1] = [zs[j], zs[j + 1]], dr = (boreR(z1) - boreR(z0)) / (z1 - z0);
-    for (let i = 0; i + 1 < angles.length; i++) {
-      const [a, b] = [angles[i], angles[i + 1]], m = (a + b) / 2, rad = KIT.radialOf(PEN, (m * Math.PI) / 180);
-      inner.push({ pts: [ptA(boreR(z0), a, z0), ptA(boreR(z0), b, z0), ptA(boreR(z1), b, z1), ptA(boreR(z1), a, z1)], n: [-rad[0], -rad[1], dr] });
-    }
-  }
-  for (const [a, sign] of [[90, -1], [270, 1]]) {
-    const pts = [...zs.map((z) => ptA(boreR(z), a, z)), ...zs.slice().reverse().map((z) => ptA(coneR(z), a, z))];
-    cut.push({ pts, n: KIT.mul3(KIT.tangentOf(PEN, (a * Math.PI) / 180), sign) });
-  }
-  return solid(shadowed(inner), { tone: "mid" }) + solid(cut, { tone: "hi" });
-}
+// The steel bushing at the very tip, the refill's ball passing through its bore.
+export const bushing = () => S(turned([[0, 1.25], [0.25, 1.6, 1], [0.8, 1.72]], 0), { tone: "mid", crease: "none" });
 
-// The nose below the window: a tapered cone with a steel bushing at its tip and the seat ring on top.
-export function nose() {
-  const r5 = coneR(B0);
-  const cone = S(turned([[0.8, C.CONE.nose + 0.13], [B0, r5]], 0), { tone: "hi", crease: "none", inner: Ln(KIT.circleOf(zF(B0), 0, C.CONE.bore + 0.6, P), { tone: "faint" }) });
-  const bush = S(turned([[0, 1.25], [0.25, 1.6, 1], [0.8, 1.72]], 0), { tone: "mid", crease: "none" });
-  return bush + cone + boreAt(B0, C.CONE.bore);
-}
-
-// The metal centre band where the upper and lower barrels screw together: a ledge round window A's floor.
-export function centreBand() {
-  const [z0, z1, r] = C.BAND, F2 = zF(z0);
-  return S(turned([[0, B.ro], [0.3, r, 1], [z1 - z0, r]], z0), { tone: "mid", crease: "none", inner: Ln(KIT.arcOf(F2, 0.9, r, P), { tone: "faint" }) }) + boreAt(z1, B.ri);
-}
-
-// The pocket clip down the back of the barrel: a sprung steel strip from the clip ring, a ball at its foot.
-export function clip() {
-  const a = -112, w = 7, angles = F.sweep(a - w, a + w, 2), [z0, z1] = [84, 116], r0 = B.ro + 0.5, r1 = r0 + 0.7;
-  const faces = [...F.panel(r1, angles, () => z0, () => z1, 1), ...F.side(a - w, r0, r1, z0, z1, z0, z1, -1), ...F.side(a + w, r0, r1, z0, z1, z0, z1, 1)];
-  return solid(faces, { tone: "mid" }) + S(KIT.sphereOf(ptA(r1 - 0.2, a, z0 + 0.6), 1.2, P), { tone: "hi" });
-}
-
-// The rubber grip: a sleeve with nine shallow rings, between two plain stretches of barrel.
-export function grip() {
-  const [g0, g1, r] = C.GRIP, F2 = zF(g0);
-  const rings = Array.from({ length: 9 }, (_, i) => KIT.arcOf(F2, 4 + i * 2.25, r, P)).join("");
-  return S(turned([[0, r - 0.35], [0.8, r, 1], [g1 - g0 - 0.8, r, 1], [g1 - g0, r - 0.35]], g0), { tone: "mid", crease: "none", inner: Ln(rings, { tone: "faint" }) });
-}
-
-// The top: a band, the clip ring and the lip the button's shoulder stops under, seen from above.
+// The clip ring: a band round the top of the barrel, two rolled edges, the barrel's bore dark inside it.
 export function topBand() {
-  const [c0, c1] = B.clip;
-  const ringBand = S(turned([[0, B.ro + 0.45], [c1 - c0, B.ro + 0.45]], c0), { tone: "mid", crease: "none", inner: Ln(KIT.arcOf(zF(c0), 1.4, B.ro + 0.45, P) + KIT.arcOf(zF(c0), c1 - c0 - 1.4, B.ro + 0.45, P), { tone: "faint" }) });
-  return ringBand + S(KIT.ringBand(0, 0.01, B.lip, B.ro + 0.45, zF(B.top), P), { tone: "hi", crease: "none" }) + boreAt(B.top, B.lip);
+  const [c0, c1] = B.clip, r = B.ro + 0.45;
+  const lines = KIT.arcOf(zF(c0), 1.4, r, P) + KIT.arcOf(zF(c0), c1 - c0 - 1.4, r, P);
+  return S(turned([[0, r], [c1 - c0, r]], c0), { tone: "mid", crease: "none", inner: Ln(lines, { tone: "faint" }) });
 }
 
-export const parts = { tube, windowA, ribBack, ribSides, windowB, nose, grip, topBand, boreAt };
-export const ANGLE_OF = angleOfU;
-export const DOTS = D;
+// The pocket clip down the near side: a sprung steel strip from under the clip ring, a ball at its foot, a rivet.
+export function clip() {
+  const a = 102, w = 8, angles = F.sweep(a - w, a + w, 2), [z0, z1] = [97, 116.5], r0 = B.ro + 0.5, r1 = r0 + 0.7;
+  const faces = [...F.panel(r1, angles, () => z0, () => z1, 1), ...F.side(a - w, r0, r1, z0, z1, z0, z1, -1), ...F.side(a + w, r0, r1, z0, z1, z0, z1, 1), ...F.flat(z0, r0, r1, angles, -1)];
+  const ridge = Ln(KIT.pathOf([at(ptA(r1, a, z0 + 2.4)), at(ptA(r1, a, z1 - 3))]), { tone: "faint" });
+  return solid(faces, { tone: "mid", inner: ridge }) + S(KIT.sphereOf(ptA(r1 - 0.1, a, z0 + 0.7), 1.25, P), { tone: "hi" }) + D([at(ptA(r1, a, 112.5))], { size: 0.55, tone: "lo" });
+}
+
+// The barrel's bore past the upper cut, dark where the plunger goes into the clip ring.
+export const boreAt = (z, r) => `<path class="iso-shade" data-shade="3" d="${KIT.pathOf(Array.from({ length: 64 }, (_, i) => at(ptA(r, (i / 64) * 360, z))), true)}"/>`;

@@ -10,6 +10,7 @@
 
 ### Fixed
 
+- Click pen reworked: a 6:1 cutaway model on a display stand in a furnished desk scene; Rocky pulls the cam's lug into its notch inside the barrel instead of sitting on top of the pen, and Roo shoves the refill's collar.
 - Wind-up car reworked: Roo treads the open barrel's drum from inside instead of standing on top of it, Pinch catches the arbor's recoil on the click, Rocky works the brake lever in view, and the car and its room are far denser.
 - The skill's time estimates match real builds (a Figure 15–45 min, a Hero 30–90 min, an Epic two hours or more), and a Hero that finishes in under 30 minutes is checked against 80 parts and the toaster before it is handed over.
 - Casting is tested with numbers: each critter's working space and part travel against its size (about 12 units to read), and a machine too small for that gets a warning before any building. `critter()` warns on a role outside the eight, and a cord or lever a person pulls is "you". `crew.md` names passengers, crew outside the cutaway and crews too small to read as anti-patterns.

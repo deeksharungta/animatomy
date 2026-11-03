@@ -1,69 +1,55 @@
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { C, P, at, S, Ln, D, ptA } from "./model.mjs";
-import { F } from "./story.mjs";
+import { C, P, at, S, Ln, D } from "./model.mjs";
 
-const Z = C.BENCH, WX = -34, WY = -66, E = 60, TOP = 160;
-const seg = (a, b) => k.segment(a, b, P);
-const vert = (x, y, z0, z1, r, tone = "hi") => S(L.solidOf([[0, r], [z1 - z0, r]], L.frameOf([x, y, z0], [0, 0, 1], [1, 0, 0], [0, 1, 0]), P), { tone, crease: "none" });
+// The room, at a sixth of its size like the desk's props: two panelled walls in a corner and the desk.
+const R = C.ROOM, T = 3, seg = (a, b) => k.segment(a, b, P);
 
-// Two walls in the corner behind the bench, tiled, every joint running edge to edge.
 export function walls() {
-  const out = [S(k.slabOf({ x: WX - 2, y: WY - 2, w: 2, d: E - WY + 2, r: 0 }, Z, TOP - Z, P), { tone: "lo" }), S(k.slabOf({ x: WX, y: WY - 2, w: E - WX, d: 2, r: 0 }, Z, TOP - Z, P), { tone: "lo" })];
-  const rows = [], cols = [];
-  for (let z = Z + 15; z < TOP; z += 15) rows.push(seg([WX, WY, z], [WX, E, z]), seg([WX, WY, z], [E, WY, z]));
-  for (let t = WY + 15; t < E; t += 15) cols.push(seg([WX, t, Z], [WX, t, TOP]));
-  for (let t = WX + 15; t < E; t += 15) cols.push(seg([t, WY, Z], [t, WY, TOP]));
-  return out.join("") + Ln(rows.join("") + cols.join(""), { tone: "faint" });
+  const back = { x: R.x0 - T, y: R.y0 - T, w: R.x1 - R.x0 + T, d: T, r: 0 }, wall = { x: R.x0 - T, y: R.y0, w: T, d: R.y1 - R.y0, r: 0 };
+  // Boards below the rail, square tiles above it, every joint running edge to edge.
+  const lines = [], rail = 15, side = R.top - 10, tile = 6.5;
+  for (let x = R.x0 + 3.5; x < R.x1 - 1; x += 3.5) lines.push(seg([x, R.y0, 0], [x, R.y0, rail]));
+  for (let y = R.y0 + 3.5; y < R.y1 - 1; y += 3.5) lines.push(seg([R.x0, y, 0], [R.x0, y, rail]));
+  for (let x = R.x0 + tile; x < R.x1 - 1; x += tile) lines.push(seg([x, R.y0, rail], [x, R.y0, R.top]));
+  for (let y = R.y0 + tile; y < R.y1 - 1; y += tile) lines.push(seg([R.x0, y, rail], [R.x0, y, side]));
+  for (let z = rail + tile; z < R.top - 0.5; z += tile) lines.push(seg([z < side ? R.x0 : R.x0 - T, R.y0, z], [R.x1, R.y0, z]), ...(z < side - 0.5 ? [seg([R.x0, R.y0, z], [R.x0, R.y1, z])] : []));
+  // The tiles' last joints at the walls' open ends.
+  lines.push(seg([R.x1 - 0.05, R.y0, rail], [R.x1 - 0.05, R.y0, R.top]), seg([R.x0, R.y1 - 0.05, rail], [R.x0, R.y1 - 0.05, side]));
+  // A dado rail along both walls.
+  const strip = S(k.slabOf({ x: R.x0, y: R.y0, w: R.x1 - R.x0, d: 1.2, r: 0 }, rail, 1.4, P, 2), { tone: "mid" }) + S(k.slabOf({ x: R.x0, y: R.y0 + 1.2, w: 1.2, d: R.y1 - R.y0 - 1.2, r: 0 }, rail, 1.4, P, 2), { tone: "mid" });
+  return S(k.slabOf(back, -R.desk, R.top + R.desk, P), { tone: "lo" }) + S(k.slabOf(wall, -R.desk, side + R.desk, P), { tone: "lo" }) + Ln(lines.join(""), { tone: "faint" }) + strip;
 }
 
-// The bench top, with a skirting strip along both walls.
-export function bench() {
-  const grain = [-48, -30, -12, 8, 26, 44].map((y) => seg([WX, y, Z], [E, y, Z])).join("");
-  return S(k.slabOf({ x: WX, y: WY, w: E - WX, d: E - WY, r: 0 }, Z - 6, 6, P), { tone: "mid", inner: Ln(grain, { tone: "faint" }) }) +
-    S(k.slabOf({ x: WX, y: WY, w: 1.4, d: E - WY, r: 0 }, Z, 5, P), { tone: "mid" }) + S(k.slabOf({ x: WX + 1.4, y: WY, w: E - WX - 1.4, d: 1.4, r: 0 }, Z, 5, P), { tone: "mid" });
+// The desk top, its grain running edge to edge, with a lip along its front.
+export function desk() {
+  const plan = { x: R.x0, y: R.y0, w: R.x1 - R.x0, d: R.y1 - R.y0, r: 0 };
+  const grain = [];
+  for (let y = R.y0 + 6; y < R.y1 - 3; y += 7) grain.push(k.lineOnTop([R.x0, y], [R.x1, y], 0, P));
+  return S(k.slabOf(plan, -R.desk, R.desk, P, 2), { tone: "mid", inner: Ln(grain.join(""), { tone: "faint" }) + Ln(k.segment([R.x0, R.y1, -2.4], [R.x1, R.y1, -2.4], P) + k.segment([R.x1, R.y0, -2.4], [R.x1, R.y1, -2.4], P), { tone: "faint" }) });
 }
 
-// The notepad under the nib: ruled lines across it, a spiral of wire rings along its top edge.
-export function notepad() {
-  const p = { x: -11, y: -12, w: 28, d: 34, r: 0.8 }, z1 = Z + 1.2;
-  const rules = Array.from({ length: 8 }, (_, i) => seg([p.x + 5 + i * 3.2, p.y, z1], [p.x + 5 + i * 3.2, p.y + p.d, z1])).join("");
-  const rings = Array.from({ length: 9 }, (_, i) => L.arcOf(L.frameOf([p.x + 1.6, p.y + 3 + i * 4, z1], [0, 1, 0], [1, 0, 0], [0, 0, 1]), 0, 1.3, P, { least: -1 })).join("");
-  return S(k.slabOf(p, Z, 1.2, P, 3), { tone: "hi", inner: Ln(rules, { tone: "faint" }) }) + Ln(rings, { tone: "mid" });
-}
-
-// What the pen wrote: a line of ink across the pad, the one thing on it in the ink's own colour.
-export function writing() {
-  const z = Z + 1.21, pts = Array.from({ length: 40 }, (_, i) => { const t = i / 39; return at([4 + t * 2, -10 + t * 24, z + 0 * t]).map((v, j) => v + (j ? Math.sin(t * 19) * 1.1 : 0)); });
-  return `<g class="pen-ink-line">${k.lineSvg(k.pathOf(pts), { tone: "hi", free: true })}</g>`;
-}
-
-// A steel rule on the bench, millimetre ticks hanging from its edge.
-export function ruler() {
-  const p = { x: 20, y: -34, w: 5, d: 40, r: 0.3 }, z1 = Z + 0.8;
-  const ticks = k.topTicks(p.y + 2, p.y + p.d - 2, 2, 5, p.x + p.w, z1, [-1, -2], P, "y");
-  return S(k.slabOf(p, Z, 0.8, P, 2), { tone: "hi", inner: Ln(ticks.minor, { tone: "lo" }) + Ln(ticks.major, { tone: "mid", free: true }) });
-}
-
-// The retort stand: a cast base on four feet, its rod, a boss head with a thumbscrew, and the clamp arm.
-const ROD = [-24, 0], ARM_Z = 44;
-export function stand() {
-  const base = { x: -32, y: -17, w: 18, d: 34, r: 2 };
-  const out = [`<path class="iso-halo" d="${k.haloOf(base, Z, 3, P)}"/>`, S(k.slabOf(base, Z, 3.4, P, 6, 0.8), { tone: "lo" })];
-  out.push(D(k.corners(base, 3).map(([x, y]) => at([x, y, Z + 3.4])), { size: 0.5, tone: "mid" }));
-  out.push(vert(ROD[0], ROD[1], Z + 3.4, Z + 5.2, 3.2, "mid"), vert(ROD[0], ROD[1], Z + 5.2, 146, 1.6));
-  out.push(S(k.slabOf({ x: ROD[0] - 3, y: ROD[1] - 3, w: 6, d: 6, r: 0.6 }, ARM_Z - 4, 8, P, 2, 0.4), { tone: "mid" }));
-  const fx = L.frameOf([ROD[0] + 3, ROD[1], ARM_Z + 2], [1, 0, 0], [0, 1, 0], [0, 0, 1]);
-  out.push(S(L.solidOf([[0, 0.9], [2.6, 0.9], [2.6, 2], [3.6, 2]], fx, P), { tone: "hi", crease: "none" }));
-  out.push(S(L.solidOf([[0, 1.2], [ROD[0] * -1 - 10.5, 1.2]], L.frameOf([ROD[0] + 3, ROD[1], ARM_Z - 1.5], [1, 0, 0], [0, 1, 0], [0, 0, 1]), P), { tone: "hi", crease: "none" }));
+// A cork board on the back wall: a framed board and four pinned, ruled notes.
+export function corkBoard() {
+  const y = R.y0, b = { x: -26, z: 20, w: 46, h: 22 };
+  const out = [S(k.slabOf({ x: b.x, y, w: b.w, d: 1.6, r: 0.3 }, b.z, b.h, P, 2), { tone: "mid" })];
+  out.push(S(k.slabOf({ x: b.x + 1.6, y: y + 1.6, w: b.w - 3.2, d: 0.3, r: 0 }, b.z + 1.6, b.h - 3.2, P, 2), { tone: "lo" }));
+  const notes = [[-22, 31, 9, 8.5], [-10, 25, 10, 13], [3, 32, 8, 7.5], [7, 23.5, 10, 7.5]];
+  for (const [x, z, w, h] of notes) {
+    const yy = y + 1.9;
+    const rules = [0.3, 0.5, 0.7].map((f) => seg([x + 1.6, yy + 0.3, z + h * f], [x + w - 1.6, yy + 0.3, z + h * f])).join("");
+    out.push(S(k.slabOf({ x, y: yy, w, d: 0.3, r: 0 }, z, h, P, 2), { tone: "hi", inner: Ln(rules, { tone: "faint", free: true }) }));
+    out.push(S(L.sphereOf([x + w / 2, yy + 0.9, z + h - 1.2], 0.6, P, { steps: 16 }), { tone: "hi" }));
+  }
   return out.join("");
 }
 
-// The clamp's two jaws round the grip, lined with cork; the back half before the pen, the front after.
-function jaw(a0, a1) {
-  const angles = F.sweep(a0, a1, 4), z0 = ARM_Z - 3.2, z1 = ARM_Z + 3.2, r0 = C.GRIP[2], r1 = r0 + 1.6;
-  const faces = [...F.panel(r1, angles, () => z0, () => z1, 1), ...F.flat(z1, r0, r1, angles), ...F.side(a0, r0, r1, z0, z1, z0, z1, -1), ...F.side(a1, r0, r1, z0, z1, z0, z1, 1)];
-  return S(F.solid(faces), { tone: "mid" });
+// A wall calendar on the side wall: a header band over a grid of days, hung from a pin.
+export function calendar() {
+  const x = R.x0, y0 = -18, w = 16, z0 = 17, h = 19, hd = 4.5;
+  const grid = [];
+  for (let i = 1; i < 7; i++) grid.push(seg([x + 0.08, y0 + (w * i) / 7, z0], [x + 0.08, y0 + (w * i) / 7, z0 + h - hd]));
+  for (let j = 1; j < 5; j++) grid.push(seg([x + 0.08, y0, z0 + ((h - hd) * j) / 5], [x + 0.08, y0 + w, z0 + ((h - hd) * j) / 5]));
+  return S(k.slabOf({ x, y: y0, w: 0.08, d: w, r: 0 }, z0, h - hd, P, 2), { tone: "hi", inner: Ln(grid.join(""), { tone: "faint" }) }) +
+    S(k.slabOf({ x, y: y0, w: 0.5, d: w, r: 0 }, z0 + h - hd, hd, P, 2), { tone: "mid" }) + S(L.sphereOf([x + 0.9, y0 + w / 2, z0 + h + 1], 0.6, P, { steps: 16 }), { tone: "hi" });
 }
-export const jawBack = () => jaw(100, 260) + S(k.slabOf({ x: -9.5, y: ROD[1] - 2, w: 3, d: 4, r: 0.4 }, ARM_Z - 3.2, 6.4, P, 2), { tone: "mid" });
-export const jawFront = () => jaw(-80, 80) + D([at(ptA(C.GRIP[2] + 1.6, 0, ARM_Z))], { size: 0.55, tone: "lo" });

@@ -5,7 +5,7 @@ import { drawn } from "./moving.mjs";
 import { poses } from "./poses.mjs";
 import { STEPS, views, rest, TARGET, FOCUS, ROCKY, ROO } from "./story.mjs";
 
-const fns = [M.ribEdge, M.crown, M.ceilingOf, M.restOf, M.advance, M.stepModel, facetKit, drawn, poses];
+const fns = [M.ribEdge, M.crown, M.cutDepth, M.cutAngle, M.ceilingOf, M.restOf, M.advance, M.stepModel, facetKit, drawn, poses];
 
 // The page script, part one: the numbers, the mechanism and the model's step with who is on duty.
 export const MODEL_SCRIPT = `

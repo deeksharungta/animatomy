@@ -63,3 +63,16 @@ export function stepModel(S, dt, K) {
   for (let i = 0; i < n; i++) advance(S, dt / n, K);
   S.stepT += dt;
 }
+
+// How far below the axis the section is cut at z: shallow round the tip's bore, deep over the lower barrel so the
+// spring and collar stand clear of it, and at the axis over the upper barrel's ribs and cam.
+export function cutDepth(C, z) {
+  const D = C.DEEP, ramp = (x, a, b) => Math.max(0, Math.min(1, (x - a) / (b - a)));
+  return D.tip + (D.d - D.tip) * ramp(z, D.ramp[0], D.ramp[1]) - D.d * ramp(z, D.back[0], D.back[1]);
+}
+
+// The angle (degrees from up, toward the viewer) where a cut d below the axis meets radius r, near or far side.
+export function cutAngle(d, r, far) {
+  const a = (Math.acos(Math.max(-1, Math.min(1, -d / r))) * 180) / Math.PI;
+  return far ? 360 - a : a;
+}
