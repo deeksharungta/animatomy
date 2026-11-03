@@ -115,7 +115,9 @@ async function main() {
     console.error(`capture: ${problem}`);
     process.exit(1);
   }
-  const url = /^https?:|^file:/.test(options.target) ? options.target : pathToFileURL(resolve(options.target)).href;
+  // A local path may carry a query (page.html?beat=3): resolve the file, then put the query back.
+  const [file, query = ""] = options.target.split(/(?=[?#])/);
+  const url = /^https?:|^file:/.test(options.target) ? options.target : pathToFileURL(resolve(file)).href + query;
   const out = resolve(options.out ?? "capture.png");
   const binary = chromePath();
   if (!binary) {
@@ -158,6 +160,9 @@ async function main() {
         pending.delete(data.id);
       } else if (data.method === "Runtime.consoleAPICalled" && (data.params.type === "error" || data.params.type === "warning")) {
         problems.push(`console.${data.params.type}: ${data.params.args.map((arg) => arg.value ?? arg.description ?? "").join(" ").slice(0, 400)}`);
+      } else if (data.method === "Log.entryAdded" && data.params.entry.level === "error" && !/favicon/.test(data.params.entry.url ?? "")) {
+        // The browser's own errors (a path with NaN in its d, a bad attribute) never reach console.*.
+        problems.push(`browser error: ${data.params.entry.text}`.slice(0, 600));
       } else if (data.method === "Runtime.exceptionThrown") {
         const detail = data.params.exceptionDetails;
         problems.push(`exception: ${detail.exception?.description ?? detail.text}`.slice(0, 600));
@@ -180,6 +185,7 @@ async function main() {
     const evaluate = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result?.result?.value;
     const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
     await send("Runtime.enable");
+    await send("Log.enable");
     await send("Page.enable");
     const features = [];
     if (options.reduced) features.push({ name: "prefers-reduced-motion", value: "reduce" });

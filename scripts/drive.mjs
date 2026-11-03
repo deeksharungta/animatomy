@@ -126,7 +126,9 @@ async function main() {
       if (!Number.isFinite(every) || every < 0 || !Number.isInteger(count) || count < 1) throw new Error(`sheet needs a non-negative every and a whole count of at least 1, got every ${every} and count ${count}`);
     }
   }
-  const url = /^https?:|^file:/.test(target) ? target : pathToFileURL(resolve(target)).href;
+  // A local path may carry a query (page.html?beat=3): resolve the file, then put the query back.
+  const [file, query = ""] = target.split(/(?=[?#])/);
+  const url = /^https?:|^file:/.test(target) ? target : pathToFileURL(resolve(file)).href + query;
   const binary = chromePath();
   if (!binary) {
     console.error("No Chrome found. Set CHROME_PATH to a Chrome or Chromium binary.");
@@ -157,6 +159,9 @@ async function main() {
         pending.delete(data.id);
       } else if (data.method === "Runtime.consoleAPICalled" && (data.params.type === "error" || data.params.type === "warning")) {
         problems.push(`console.${data.params.type}: ${data.params.args.map((arg) => arg.value ?? arg.description ?? "").join(" ").slice(0, 600)}`);
+      } else if (data.method === "Log.entryAdded" && data.params.entry.level === "error" && !/favicon/.test(data.params.entry.url ?? "")) {
+        // The browser's own errors (a path with NaN in its d, a bad attribute) never reach console.*.
+        problems.push(`browser error: ${data.params.entry.text}`.slice(0, 600));
       } else if (data.method === "Runtime.exceptionThrown") {
         const detail = data.params.exceptionDetails;
         problems.push(`exception: ${detail.exception?.description ?? detail.text}`.slice(0, 600));
@@ -185,6 +190,7 @@ async function main() {
     };
     const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
     await send("Runtime.enable");
+    await send("Log.enable");
     await send("Page.enable");
     const features = [];
     if (options.reduced) features.push({ name: "prefers-reduced-motion", value: "reduce" });

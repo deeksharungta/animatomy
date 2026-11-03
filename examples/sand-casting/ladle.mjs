@@ -100,7 +100,12 @@ export function ladle(K, P, C, S) {
   }
   const pts = (c) => [wx, wy + c[0], wz + c[1]];
   const sorted = spokes.slice().sort((p, q) => p[0] - q[0]);
-  for (const c of sorted) front.push(Sv(bar(pts([c[0] * 1.6, c[1] * 1.6]), pts([c[0] * (R - 0.6), c[1] * (R - 0.6)]), 1.1, 0.9), { tone: "hi" }));
+  // A spoke is a bar in the wheel's own (y-z) plane, w wide in that plane and d deep along the axle (x).
+  const spoke = (p0, p1, w, d) => {
+    const v = [p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]], len = Math.hypot(...v), u = v.map((a) => a / len);
+    return K.prismOf(K.frameOf(p0, u, [0, -u[2], u[1]], [1, 0, 0]), [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]], 0, len, P);
+  };
+  for (const c of sorted) front.push(Sv(spoke(pts([c[0] * 1.6, c[1] * 1.6]), pts([c[0] * (R - 0.6), c[1] * (R - 0.6)]), 1.1, 0.9), { tone: "hi" }));
   front.push(Sv(K.disc(-1.4, 1.4, 2.2, wf, P), { tone: "hi" }));
   const ring = (dx, r) => K.pathOf(Array.from({ length: 48 }, (_, i) => at([wx + dx, wy + r * Math.cos((i / 48) * Math.PI * 2), wz + r * Math.sin((i / 48) * Math.PI * 2)])), true);
   const annulus = (dx, cls) => '<path class="' + cls + '" fill-rule="evenodd" d="' + ring(dx, R + 0.4) + ring(dx, R - 1.1) + '"/>' + Ln(ring(dx, R + 0.4) + ring(dx, R - 1.1), { tone: "hi" });

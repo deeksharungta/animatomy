@@ -4,6 +4,10 @@
 
 ### Changed
 
+- The console checks in `capture.mjs`, `drive.mjs` and `turn-check.mjs` also report the browser's own errors (`Log.entryAdded`), which never reach `console.*`. The sand casting's handwheel spokes were drawn by a bar that ignored y, flattening them and putting NaN in a path; they are now true spokes in the wheel's plane, and every example is clean under the stricter check.
+- `lines.mjs` skips line ends outside the visible frame, so a zoomed beat (`?beat=n`) is checked on what its camera shows. `capture.mjs` and `drive.mjs` take a local path with a query (`page.html?beat=3`).
+- `beats.mjs` also warns when a beat's named actor is mostly hidden behind other parts (sampled on a grid), not only out of frame or too small.
+- `mountSteps`: `?beat=n` pages no longer show the "paused" tag, and `startOf(i)` returns the model as beat i began.
 - Dial indicator crew rebuilt as an Anatomy-grade cutaway with its crew inside: you lift the plunger and slide the blocks; Roo is the plunger's return spring, Mo the hairspring and Pinch the bezel lock. Pip no longer pushes the carriage (the person's job) and Mo no longer stands on the dial. The readings come from the gear train. Files of 150 lines or fewer.
 - Longcase clock rebuilt so its crew are the clock's forces: you wind it, Mo the sloth is the weight's pull, Pinch the crab is the anchor, Rocky the raccoon the strike train's locking lever and Knock the hammer. Rocky no longer winds it (the owner's job) and Mo no longer rides the pendulum. The movement gains real wheels, pinions, barrels, the strike train and a fuller case.
 - The inlined `CREW` namespace also exposes `lathe`, `arcOf`, `circleOf` and `dotsOf`, so a part rebuilt on the page can have rivet rows and seams.

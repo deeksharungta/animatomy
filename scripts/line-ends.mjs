@@ -7,6 +7,21 @@ function lineEnds({ select = null, tolerance = 1, root: rootSlack = 2, mark = 7,
   document.head.append(style);
   const skipClass = ["iso-edge", "iso-bevel", "iso-crease", "tb-edge"];
   const svgs = [...(plate.matches("svg") ? [plate] : []), ...plate.querySelectorAll("svg")];
+  // The visible frame of a drawing: its svg, cut by any ancestor that clips (the run's stage).
+  const frameOf = new Map();
+  const outside = (el, [x, y]) => {
+    const svg = el.ownerSVGElement;
+    if (!frameOf.has(svg)) {
+      let r = svg.getBoundingClientRect(), f = [r.left, r.top, r.right, r.bottom];
+      for (let a = svg.parentElement; a && a !== document.body; a = a.parentElement) {
+        if (getComputedStyle(a).overflow === "visible") continue;
+        r = a.getBoundingClientRect(); f = [Math.max(f[0], r.left), Math.max(f[1], r.top), Math.min(f[2], r.right), Math.min(f[3], r.bottom)];
+      }
+      frameOf.set(svg, f);
+    }
+    const f = frameOf.get(svg);
+    return x < f[0] - 1 || y < f[1] - 1 || x > f[2] + 1 || y > f[3] + 1;
+  };
   const shapes = svgs.flatMap((svg) => [...svg.querySelectorAll("path, line, polyline, polygon, circle, ellipse, rect")]).filter((el) => !el.closest("defs, clipPath, mask, pattern, marker, symbol"));
   const opacityOf = (el) => {
     let alpha = 1;
@@ -281,7 +296,8 @@ function lineEnds({ select = null, tolerance = 1, root: rootSlack = 2, mark = 7,
       if (length < 0.2 * scale) continue;
       const result = {};
       for (const [end, p] of [["start", first], ["end", last]]) {
-        if (line.free === "" || line.free === "both" || line.free === end) {
+        // An end outside the visible frame (a zoomed beat's camera crops the drawing) can't be seen in this view.
+        if (line.free === "" || line.free === "both" || line.free === end || outside(line.el, p)) {
           result[end] = 0;
           continue;
         }

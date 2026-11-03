@@ -28,7 +28,7 @@ export function mountSteps({ root, svg, stage, steps, views, enter, update, done
   };
   if (!new URLSearchParams(location.search).has("full")) box.setAttribute("data-bare", "");
   const full = [0, 0, size[0], size[1]];
-  let index = 0, playing = true, finished = false, held = 0, age = 0, frame = 0, last = 0, visible = false, swap = 0;
+  let frozen = false, index = 0, playing = true, finished = false, held = 0, age = 0, frame = 0, last = 0, visible = false, swap = 0;
   let cam = views[0] ? [...views[0]] : [...full];
   let aimed = null;
   // `svg` may be one element or several layered ones (a back and a front drawing round a canvas);
@@ -42,7 +42,7 @@ export function mountSteps({ root, svg, stage, steps, views, enter, update, done
     ui.who.innerHTML = s.who ? `<i></i>${esc(s.who)}` : "";
     root.style.setProperty("--crew-step", colors[index] || "var(--anatomy-hi)");
     ui.bars.forEach((bar, i) => { bar.toggleAttribute("data-now", i === index); bar.toggleAttribute("data-done", i < index); });
-    box.toggleAttribute("data-paused", !playing);
+    box.toggleAttribute("data-paused", !playing && !frozen);
   };
   const settle = (at = index, cap = 1800) => {
     let n = 0;
@@ -54,11 +54,14 @@ export function mountSteps({ root, svg, stage, steps, views, enter, update, done
   const readFor = (s) => Math.max(2.4, words(s) * 0.23);
   const pace = steps.map((s) => s.pace ?? 1);
   const flow = steps.map(() => false);
+  // The model as each beat begins, saved during the timing pass, so a figure the reader took over can restore one.
+  const starts = [];
   if (advance && save && load) {
     const saved = save();
     const run = (seconds) => { for (let t = 0; t < seconds; t += 1 / 30) advance(1 / 30); };
     steps.forEach((s, i) => {
       enter(i, i ? "next" : "start");
+      starts[i] = save();
       let t = 0;
       while (!done(i) && t < 40) { advance(1 / 30); t += 1 / 30; }
       if (s.pace == null) pace[i] = Math.max(slowest, Math.min(1, t / (readFor(s) * 0.9)));
@@ -129,6 +132,7 @@ export function mountSteps({ root, svg, stage, steps, views, enter, update, done
   seen.observe(stage);
   write();
   const only = Number(new URLSearchParams(location.search).get("beat"));
+  frozen = Number.isInteger(only) && only > 0 && only < steps.length;
   if (Number.isInteger(only) && only > 0 && only < steps.length) {
     for (let i = 0; i <= only; i++) { enter(i, i ? "next" : "start"); settle(i); }
     index = only;
@@ -141,5 +145,6 @@ export function mountSteps({ root, svg, stage, steps, views, enter, update, done
   }
   label();
   const destroy = () => { cancelAnimationFrame(frame); frame = 0; visible = false; seen.disconnect(); stage.removeEventListener("keydown", keys); };
-  return { go, toggle, aim, destroy, get index() { return index; }, get playing() { return playing; } };
+  const startOf = (i) => (starts[i] ? JSON.parse(JSON.stringify(starts[i])) : null);
+  return { go, toggle, aim, destroy, startOf, get index() { return index; }, get playing() { return playing; } };
 }

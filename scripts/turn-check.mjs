@@ -72,6 +72,7 @@ async function browser(target, { width, height, scale, throttle, noWebgl }) {
       pending.get(data.id)(data);
       pending.delete(data.id);
     } else if (data.method === "Runtime.consoleAPICalled" && (data.params.type === "error" || data.params.type === "warning")) problems.push(`console.${data.params.type}: ${data.params.args.map((arg) => arg.value ?? arg.description ?? "").join(" ").slice(0, 400)}`);
+    else if (data.method === "Log.entryAdded" && data.params.entry.level === "error" && !/favicon/.test(data.params.entry.url ?? "")) problems.push(`browser error: ${data.params.entry.text}`.slice(0, 400));
     else if (data.method === "Runtime.exceptionThrown") problems.push(`exception: ${data.params.exceptionDetails.exception?.description ?? data.params.exceptionDetails.text}`.slice(0, 400));
   };
   await new Promise((done) => (socket.onopen = done));
@@ -87,6 +88,7 @@ async function browser(target, { width, height, scale, throttle, noWebgl }) {
     return result.result?.result?.value;
   };
   await send("Runtime.enable");
+  await send("Log.enable");
   await send("Page.enable");
   const NO_GL = `(()=>{const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(kind,...rest){if(/webgl/.test(String(kind))&&!this.dataset.check)return null;return get.call(this,kind,...rest)}})();`;
   if (noWebgl) await send("Page.addScriptToEvaluateOnNewDocument", { source: NO_GL });
