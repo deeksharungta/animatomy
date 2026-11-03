@@ -1,12 +1,12 @@
 // The page script: the live model, the drawing and the run. Every function it needs is inlined as source.
-import { clamp, kin, turn, prismY, prismZ, notchRing, capTop, capOutline, capZ } from "./model.mjs";
+import { clamp, kin, turn, prismY, prismZ, notchRing, capTop, capOutline, capZ, rooPost } from "./model.mjs";
 import { tools } from "./tools.mjs";
 import { magazine } from "./mag.mjs";
 import { cap } from "./cap.mjs";
 import { dynamic, poses } from "./head.mjs";
 
 export function pageScript({ P, C, ROO, PIP, STEPS, views, FRESH, WIDTH, HEIGHT }) {
-  const fns = [clamp, kin, turn, prismY, prismZ, notchRing, capTop, capOutline, capZ, tools, magazine, cap, dynamic, poses].map((f) => f.toString()).join("\n");
+  const fns = [clamp, kin, turn, prismY, prismZ, notchRing, capTop, capOutline, capZ, rooPost, tools, magazine, cap, dynamic, poses].map((f) => f.toString()).join("\n");
   return `
 const P = ${JSON.stringify(P)};
 const C = ${JSON.stringify(C)};
@@ -42,10 +42,9 @@ function step(dt) {
   if (S.driven) S.dd = Math.max(S.dd, kk.d);
   const g0 = S.g;
   if (S.driven && kk.b > 6.4 && S.g < 1) S.g = Math.min(1, S.g + dt / 0.9);
-  S.hop = S.p < p0 - 1e-4 && S.p < C.GAP ? Math.min(1, (p0 - S.p) / Math.max(dt, 1e-3) / 18) : S.hop * Math.exp(-dt / 0.15);
-  if (S.hop < 0.01) S.hop = 0;
   const dp = Math.abs(S.p - p0) / Math.max(dt, 1e-3);
-  S.duty = S.g > g0 ? "pip" : dp > 0.3 ? "roo" : "";
+  // Roo is on duty while his spring is being squashed or is lifting the head: only in the blade's last 6.6 mm.
+  S.duty = S.g > g0 ? "pip" : dp > 0.3 && Math.max(S.p, p0) > C.GAP ? "roo" : "";
   if (S.swap >= 0) {
     S.swap += dt / 0.8;
     if (S.swap >= 0.5 && S.driven) { S.driven = false; S.dd = 0; }
@@ -86,7 +85,7 @@ const DONE = [
   () => kin(C, S).d >= 2.0,
   () => kin(C, S).d >= C.ZS - C.ZP - C.WIRE - 0.01,
   () => S.g >= 1 && S.stepT > 0.6,
-  () => S.p === 0 && S.hop === 0,
+  () => S.p === 0,
   () => S.paperO >= C.OUT - 0.01 && S.stepT > 1,
 ];
 const snap = () => JSON.parse(JSON.stringify(S));

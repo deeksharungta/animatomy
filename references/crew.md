@@ -31,6 +31,7 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
 2. **Colour by role, not by species.** Eight role colours, fixed for every figure (section 3). Many species share one role; a reader learns eight colours, never forty.
 3. **One operator per mechanism.** A part that moves on its own power gets exactly one operator. A part pushed by another part (a plunger riding a block, a gear driven by a gear) needs none. A swarm of one species (ants, hamsters) counts as one operator.
 4. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the live wire and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
+5. **Inside, never the operator.** A critter is a part inside the machine, never the person who uses it. What a person does to work the machine (pressing a stapler's head, pressing B3, turning a crane's wheel) is the reader's input, written as "you" in the caption ("You press the head"), and nobody is cast for it. If no internal part needs an operator where the person acts, the critter belongs on the part that answers them: the stapler's head spring, not the hand on the head.
 
 Write the crew list next to the parts list, one line each:
 

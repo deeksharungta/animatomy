@@ -23,6 +23,14 @@ export const C = {
   OUT: 30, // the notes slide 30 mm out
   CUTX: 82, // the near-front quarter (x > 82, y > 0) is cut away
   CUTX1: 96.5,
+  RX: -20, // Roo, the head's return spring, stands across the magazine here (x), on its top at z 27.8
+  RY: -2,
+  RH: 100,
+  RPZ: 4.5, // the cap's post for Roo's paws ends this far above his seat
+  RD: 2.5, // and stands this far in front of him, along his heading
+  WX0: -34, // the cap's top is cut away over Roo from x WX0 to WX1, back to y = WY
+  WX1: -6,
+  WY: -5,
 };
 
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -90,4 +98,10 @@ export function capZ(x) {
   const t = capTop();
   for (let i = 0; i < t.length - 1; i++) if (x >= t[i][0] && x <= t[i + 1][0]) { const u = (x - t[i][0]) / (t[i + 1][0] - t[i][0]); return t[i][1] + u * (t[i + 1][1] - t[i][1]); }
   return t[t.length - 1][1];
+}
+
+// Where the cap's post for Roo's paws stands (x, y): in front of him along his heading.
+export function rooPost(C) {
+  const a = (C.RH * Math.PI) / 180;
+  return [C.RX + C.RD * Math.cos(a), C.RY + C.RD * Math.sin(a)];
 }

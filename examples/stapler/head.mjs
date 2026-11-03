@@ -1,6 +1,6 @@
 // The moving parts, drawn from the model each frame. Inlined into the page, so these functions use only their
 // arguments, the functions in model.mjs and tools(), magazine() and cap().
-import { kin, turn, prismY, notchRing, capOutline, capZ } from "./model.mjs";
+import { kin, turn, prismY, notchRing, capOutline, capZ, rooPost } from "./model.mjs";
 import { tools } from "./tools.mjs";
 import { magazine } from "./mag.mjs";
 import { cap } from "./cap.mjs";
@@ -74,16 +74,20 @@ export function dynamic(K, P, C, S) {
 // Where the crew stand and what their paws hold, from the same state.
 export function poses(C, S, D) {
   const k = D.k;
-  const padZ = capZ(32) + 1.0;
+  // Roo is the head's return spring: he stands on his seat across the magazine with both paws up against the cap.
+  // The magazine and head swing down together, so he rides down; the head then drives on alone and squashes him,
+  // and when it is let go he straightens and lifts it back.
+  const comp = Math.max(0, Math.min(1, (S.p - C.GAP) / C.B0));
+  const [px, py] = rooPost(C), top = 27.8 + C.RPZ, a = (C.RH * Math.PI) / 180, sx = -Math.sin(a) * 0.8, sy = Math.cos(a) * 0.8;
   const roo = {
-    at: turn(C, k.thc, [32, 1.5, padZ]),
-    heading: 118,
+    at: turn(C, k.thm, [C.RX, C.RY, 27.8]),
+    heading: C.RH,
     stance: "up",
-    lean: S.pressing ? 12 : 3,
-    look: [0, S.pressing ? -14 : 4],
-    squash: S.pressing ? 0.36 : 0.04,
-    hop: S.hop || 0,
-    eyes: S.pressing ? "open" : S.hop > 0.4 ? "wide" : S.driven && S.p < 0.05 ? "happy" : "open",
+    lean: 2,
+    look: [0, -10],
+    squash: 0.8 * comp,
+    paws: { l: turn(C, k.thc, [px + sx, py + sy, top]), r: turn(C, k.thc, [px - sx, py - sy, top]) },
+    eyes: S.driven && S.p === 0 ? "happy" : "open",
   };
   // Pip stands on the rail behind the follower, where the feed spring would be, and leans on its push plate.
   const r = D.follower - 12, ext = k.thm / Math.asin(C.GAP / C.ARM);

@@ -19,7 +19,7 @@
   </tr>
   <tr>
     <td width="50%"><img src=".github/assets/token-bucket-crew.webp" alt="A token dispenser on a desk: a red squirrel pushes a slide under a tube of brass tokens, mid-burst, as envelopes drop onto a see-saw flap; a sloth in glasses turns the feeder crank above."><br><sub><code>examples/token-bucket</code>: an idea, not a machine. Pip spends a token per request.</sub></td>
-    <td width="50%"><img src=".github/assets/stapler-crew.webp" alt="A desk stapler cut away on an office desk: a kangaroo stands on the head's press pad and a red squirrel leans on the follower behind a strip of staples, over a stack of yellow notes on the anvil."><br><sub><code>examples/stapler</code>: built from its real parts. Roo presses, Pip feeds.</sub></td>
+    <td width="50%"><img src=".github/assets/stapler-crew.webp" alt="A desk stapler cut away on an office desk: through a window in the head, a small kangaroo stands across the magazine holding a bracket under the cap, the head's return spring, and a red squirrel leans on the follower behind a strip of staples, over a stack of yellow notes on the anvil."><br><sub><code>examples/stapler</code>: built from its real parts. Roo is the head's spring, Pip the feed spring.</sub></td>
   </tr>
 </table>
 

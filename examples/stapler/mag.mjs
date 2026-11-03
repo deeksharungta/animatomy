@@ -1,6 +1,6 @@
 // The magazine: far wall, floor, rail, the head spring, the strip and its follower, the blade and the nose.
 // Inlined into the page, so it uses only its arguments and model.mjs.
-import { prismY, prismZ, capZ } from "./model.mjs";
+import { prismY, prismZ } from "./model.mjs";
 
 export function magazine(K, P, C, S, k, t, staple, slotIn) {
   const { at, seg, Sv, Ln, Dt, tm, tc, box, rrect, circ } = t;
@@ -16,25 +16,8 @@ export function magazine(K, P, C, S, k, t, staple, slotIn) {
   m.push(Ln(ticks[0].join(""), { tone: "lo" }) + Ln(ticks[1].join(""), { tone: "mid" }));
   m.push(Sv(box(tmth, -60, 81.7, 13.8, 19.3, -5.6, 5.6), { tone: "mid" }));
   m.push(Dt([[-55, 0], [-38, 0]].map(([x, y]) => at(tm([x, y, 19.3]))), { size: 0.45 }));
-  // Spring seat across the magazine, and the head spring between it and the cap.
-  m.push(Sv(box(tmth, -56, -48, 27, 27.8, -8, 4), { tone: "mid" }) + Dt([at(tm([-54.5, -5, 27.8])), at(tm([-49.5, -5, 27.8]))], { size: 0.4 }));
-  const A = tm([-52, -2, 27.8]), B = tc([-52, -2, capZ(-52) - 0.9]);
-  const ax = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], al = Math.hypot(...ax), u = ax.map((v) => v / al);
-  const e1 = K.unit3(K.cross3(u, [0, 1, 0])), e2 = K.cross3(u, e1);
-  const turns = 5.5, R = 2.6, steps = 88;
-  const back = [], front = [];
-  let run = [], wasFront = null;
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps, a = t * turns * Math.PI * 2;
-    const off = [e1[0] * Math.cos(a) + e2[0] * Math.sin(a), e1[1] * Math.cos(a) + e2[1] * Math.sin(a), e1[2] * Math.cos(a) + e2[2] * Math.sin(a)];
-    const p = [A[0] + ax[0] * t + R * off[0], A[1] + ax[1] * t + R * off[1], A[2] + ax[2] * t + R * off[2]];
-    const isFront = K.depthOf(off, P) > 0;
-    if (wasFront !== null && isFront !== wasFront) { (wasFront ? front : back).push(K.pathOf(run)); run = [run[run.length - 1]]; }
-    run.push(at(p)); wasFront = isFront;
-  }
-  (wasFront ? front : back).push(K.pathOf(run));
-  const ends = [at([A[0] + R * e1[0], A[1] + R * e1[1], A[2] + R * e1[2]])];
-  m.push(Ln(back.join(""), { tone: "lo" }) + Ln(front.join(""), { tone: "mid" }) + Dt(ends, { size: 0.5 }));
+  // Roo's seat across the magazine: he is the head's return spring, standing here and holding the cap up.
+  m.push(Sv(box(tmth, C.RX - 7, C.RX + 7, 27, 27.8, -8, 6), { tone: "mid" }) + Dt([at(tm([C.RX - 5.5, -5, 27.8])), at(tm([C.RX + 5.5, -5, 27.8]))], { size: 0.4 }));
   // Strip and follower.
   const gE = S.g * S.g * (3 - 2 * S.g);
   const front0 = S.driven ? C.XS - C.WIRE / 2 + C.WIRE * gE : C.XS + C.WIRE / 2;

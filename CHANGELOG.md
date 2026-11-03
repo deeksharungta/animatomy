@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Stapler: Roo no longer stamps on the head, which is the job of the person using it ("You press the head"). He is the head's return spring inside it: he stands across the magazine, seen through a window cut in the cap, and holds a bracket under the cap at his chest, so the blade's drive squashes him and he lifts the head back. A new casting rule in `crew.md` and SKILL.md says the crew are parts inside the machine, never its operator.
 - `mountSteps` moves to `kit/steps-run.mjs` so both run files stay under 150 lines; `kit/steps.mjs` re-exports it and `stepsScript()` inlines both. Every drawing is identical.
 - Stapler: the "notes go in" beat frames Roo and Pip whole (Roo was cut off at the corner).
 - Toaster: snapping the browning knob onto its setting zeroes its speed, so Rocky's duty light and "setting the browning" end with his beat (under reduced motion and `?beat=1` they stayed on).

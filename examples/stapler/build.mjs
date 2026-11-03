@@ -23,7 +23,7 @@ const P = k.fitProjection(
 );
 const at = (p) => k.iso(p, P);
 
-const ROO = { species: "kangaroo", name: "Roo", size: 24, role: "spring", wear: ["sweatband"] };
+const ROO = { species: "kangaroo", name: "Roo", size: 11.5, role: "spring" };
 const PIP = { species: "squirrel", name: "Pip", size: 16, role: "moving" };
 const K = { ...k, ...L };
 
@@ -37,6 +37,10 @@ for (let p = 0; p <= C.GAP + C.B0 + 1e-9; p += 0.7) for (const fed of [0, 0.5, 1
   pipPoses.push([`of the follower at p ${p.toFixed(1)}`, poses(C, s, dynamic(K, P, C, s)).pip]);
 }
 checkReach(PIP, pipPoses, P);
+// Roo holds the cap's post through the whole press, from rest to the blade fully home.
+const rooPoses = [];
+for (let p = 0; p <= C.GAP + C.B0 + 1e-9; p += 0.6) { const s = { ...FRESH, p }; rooPoses.push([`of the cap's post at p ${p.toFixed(1)}`, poses(C, s, dynamic(K, P, C, s)).roo]); }
+checkReach(ROO, rooPoses, P);
 const D0 = dynamic(K, P, C, FRESH);
 const pose0 = poses(C, FRESH, D0);
 const sc = scene(P, C);
@@ -46,7 +50,7 @@ const g = (name, html) => `<g data-part="${name}">${html}</g>`;
 const svg = k.figureSvg({
   width: WIDTH,
   height: HEIGHT,
-  label: "A desk stapler on an office desk, its near side and the near front corner of its nose cut away, run by two animals. A wall calendar and a socket hang behind; a pencil cup, a box of staples and a staple remover sit on the desk. A stack of yellow notes lies on the anvil. Roo the kangaroo stands on the rubber press pad on top of the head and stamps it down: the head and the magazine swing down on the hinge pin until the magazine rests on the notes, then the blade drives the front staple through them, and the anvil's grooves fold its legs inward. Pip the squirrel stands on the magazine's rail behind the follower and pushes it that keeps the strip of staples against the nose.",
+  label: "A desk stapler on an office desk, its near side and the near front corner of its nose cut away, run by two animals. A wall calendar and a socket hang behind; a pencil cup, a box of staples and a staple remover sit on the desk. A stack of yellow notes lies on the anvil. Inside the head, Roo the kangaroo is its return spring: he stands across the magazine with both paws up against a post that hangs from the cap. Pressing the head swings it and the magazine down on the hinge pin until the magazine rests on the notes; then the head drives on alone, squashing Roo, and its blade drives the front staple through the notes while the anvil's grooves fold its legs inward. Let go, and Roo straightens and lifts the head back up. Pip the squirrel stands on the magazine's rail behind the follower and pushes it that keeps the strip of staples against the nose.",
   body: [
     sc.room, sc.desk, sc.propsBack,
     sc.base,
@@ -57,29 +61,29 @@ const svg = k.figureSvg({
     sc.earFar,
     g("mag", D0.mag),
     crew(PIP, pose0.pip, "pip"),
+    crew(ROO, pose0.roo, "roo"),
     sc.earNear,
     g("cap-front", D0.capFront),
     sc.pinHead,
-    crew(ROO, pose0.roo, "roo"),
     sc.propsFront,
   ],
 });
 
 const STEPS = [
-  { title: "Meet the crew", who: "Roo and Pip", color: "var(--anatomy-hi)", text: "Roo stands on the head's press pad. Pip stands on the magazine's rail with both paws on the follower behind the staples.", points: null, hold: 1.6 },
+  { title: "Meet the crew", who: "Roo and Pip", color: "var(--anatomy-hi)", text: "Inside the head, Roo is its return spring: he stands across the magazine and holds the cap up by a post. Pip stands on the magazine's rail with both paws on the follower behind the staples.", points: null, hold: 1.6 },
   { title: "The notes go in", who: "the notes", color: "var(--anatomy-hi)", text: "Twelve sheets slide over the anvil until their back edge meets the paper stop.", points: [[13, -18, 11], [120, 16, 13], [82, 0, 40], [26, 0, 66]] },
-  { title: "Roo stamps on the head", who: "Roo · spring", color: "#E93D82", text: "The head and the magazine swing down together on the hinge pin until the magazine's nose rests on the notes.", points: [[0, -11, 11], [96, 11, 11], [32, 0, 70], [-90, 0, 40]] },
-  { title: "The blade drives a staple", who: "Roo · spring", color: "#E93D82", text: "The magazine can go no lower, so the head goes on alone. Its blade shears the front staple off the strip and pushes the legs through.", points: [[70, -6, 10], [92, 12, 10], [82, 0, 34]], least: 0.2 },
+  { title: "You press the head", who: "the head", color: "var(--anatomy-hi)", text: "The head and the magazine swing down together on the hinge pin, Roo riding inside, until the magazine's nose rests on the notes.", points: [[0, -11, 11], [96, 11, 11], [32, 0, 70], [-90, 0, 40]] },
+  { title: "The blade drives a staple", who: "Roo · spring", color: "#E93D82", text: "The magazine can go no lower, so the head goes on alone and squashes Roo under its post. Its blade shears the front staple off the strip and pushes the legs through.", points: [[-28, -4, 26], [-14, 4, 42], [70, -6, 10], [92, 12, 10], [82, 0, 34]], least: 0.2 },
   { title: "The anvil folds the legs", who: "the anvil", color: "var(--anatomy-hi)", text: "Each 6 mm leg meets a curved groove in the anvil and is bent inward, flat under the notes.", points: [[80.5, 1, 11], [83.5, 7.5, 11], [82, 4, 15]], least: 0.09 },
-  { title: "Pip feeds the next staple", who: "Pip · moving", color: "#46A758", text: "Roo eases off and the blade lifts clear. Pip pushes the follower, and the whole strip moves up half a millimetre.", points: [[-4, 8, 10], [86, 8, 10], [40, 0, 34], [0, 16, 32]] },
-  { title: "Roo rides the head back up", who: "Roo · spring", color: "#E93D82", text: "The springs lift the magazine off the notes and the head back up, with Roo on top.", points: [[-90, -11, 0], [96, 18, 0], [32, 0, 76]] },
+  { title: "Pip feeds the next staple", who: "Pip · moving", color: "#46A758", text: "You ease off and Roo pushes the head up until the blade lifts clear. Pip pushes the follower, and the whole strip moves up half a millimetre.", points: [[-4, 8, 10], [86, 8, 10], [40, 0, 34], [0, 16, 32]] },
+  { title: "Roo lifts the head back up", who: "Roo · spring", color: "#E93D82", text: "Let go: the leaf spring lifts the magazine off the notes, and Roo straightens and lifts the head the last 6.6 mm.", points: [[-90, -11, 0], [96, 18, 0], [32, 0, 76]] },
   { title: "Stapled", who: "the notes", color: "var(--anatomy-hi)", text: "Out come the notes, held by one staple. 119 are left in the strip.", points: null, hold: 2 },
 ];
 const views = STEPS.map((s) => (s.points ? fitView(s.points.map(at), [WIDTH, HEIGHT], { pad: 22, least: s.least ?? 0.34 }) : [0, 0, WIDTH, HEIGHT]));
 const live = pageScript({ P, C, ROO, PIP, STEPS, views, FRESH, WIDTH, HEIGHT });
 const keys = [
   { mark: "lit", label: "On duty: whoever is doing the work right now" },
-  { mark: "raised", label: "Roo, kangaroo, spring: stamps the head down and rides it back up" },
+  { mark: "raised", label: "Roo, kangaroo, spring: the head's return spring, squashed as the blade drives and lifting the head back up" },
   { mark: "raised", label: "Pip, squirrel, moving: stands in for the feed spring, pushing the follower that feeds the strip" },
 ];
 const css = `${crewCss()}${STEPS_CSS}${subjectCss(".st-paper", "#F2D25C", "#F5D76E")}
@@ -92,7 +96,7 @@ const body = `<style>${css}</style>` + k.plateHtml({
   hint: "Plays on its own, on a loop",
   readout: `ready · head down 0.0 of ${(C.GAP + C.B0).toFixed(1)} mm · ${C.N0} staples`,
   keys,
-  caption: "A desk stapler with the near side of its head and the near front corner of its nose cut away. Pressing the head first swings the magazine down 11.6 mm onto the notes; the head then drives on 6.6 mm alone, its blade pushing a 26/6 staple (12.7 mm crown, 6 mm legs) through twelve sheets into the anvil, whose grooves fold the legs flat. When the blade lifts, the follower moves the strip up by one staple, half a millimetre.",
+  caption: "A desk stapler with the near side of its head and the near front corner of its nose cut away. Pressing the head first swings the magazine down 11.6 mm onto the notes; the head then drives on 6.6 mm alone, its blade pushing a 26/6 staple (12.7 mm crown, 6 mm legs) through twelve sheets into the anvil, whose grooves fold the legs flat. Roo, the head's return spring, takes that last 6.6 mm and lifts the head back when you let go. When the blade lifts, the follower moves the strip up by one staple, half a millimetre.",
   body: `<div class="iso-stage" tabindex="0" role="group" aria-label="Stapler, playing on a loop: Space pauses, Home starts again">${svg}</div>${stepsHtml(STEPS)}`,
 });
 const file = theme === "light" ? "stapler-light.html" : "stapler.html";
