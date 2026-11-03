@@ -28,6 +28,7 @@
 
 ### Added
 
+- `examples/sand-casting`: molten steel poured into a green-sand mould cut in half, the reference for a process inside a mould. You work the crane and the tilt handwheel; Pinch the crab is the flask clamp holding the 140 N the steel's lift exceeds the cope's weight by, and Ollie the otter is the riser's feed, pressing its liquid down into the shrinking casting. It fills, freezes from the sand inward and feeds 3% shrinkage from the riser; take over the tilt to pour too slow (it freezes short) or too fast (it overflows). Files of 150 lines or fewer.
 - `examples/power-grid`: a turbine-generator set and its switchgear bay, the reference for an interactive machine with an interlock. Five crew are its internal parts (governor lever, field current, synchroscope pointer, breaker spring mechanism, disconnector interlock); you work the controls. It runs up, synchronises, closes, takes 6 MW, trips, and shows why a disconnector must never break current; Shift+O defeats the interlock to show the arc. Files of 150 lines or fewer.
 - `kit/spring.mjs`: `springAlong(a, b, radius, turns, P)`, a coil spring between any two points with its back and front halves split. `coil()` runs along x or y only, so the stapler, the kettle and the pen each hand-wrote an upright one.
 - `scripts/beats.mjs`: a contact sheet of every beat of a run page at its end, from `?beat=n`, labelled with each readout (`--full` adds the captions). The test runs each built one by hand.

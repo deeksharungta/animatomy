@@ -21,6 +21,9 @@
     <td width="50%"><img src=".github/assets/token-bucket-crew.webp" alt="A token dispenser on a desk: a red squirrel pushes a slide under a tube of brass tokens, mid-burst, as envelopes drop onto a see-saw flap; a sloth in glasses turns the feeder crank above."><br><sub><code>examples/token-bucket</code>: an idea, not a machine. Pip spends a token per request.</sub></td>
     <td width="50%"><img src=".github/assets/power-grid-crew.webp" alt="A turbine hall cut away: a steam turbine with a flyball governor and a sloth on its lever, a generator with its hatch off, a breaker cubicle with a kangaroo in its spring mechanism, copper busbars to a disconnector with a crab at its interlock, and a mouse on the synchroscope desk."><br><sub><code>examples/power-grid</code>: a generator joins the grid, and why a disconnector never breaks current.</sub></td>
   </tr>
+  <tr>
+    <td width="50%"><img src=".github/assets/sand-casting-crew.webp" alt="A foundry corner: a teapot ladle on a hoist over a green-sand mould cut in half to show its pouring cup, sprue, runner, core and riser; an otter waits at the riser and a crab clamps the flask."><br><sub><code>examples/sand-casting</code>: pour the steel yourself; too slow and it freezes short.</sub></td>
+  </tr>
 </table>
 
 ---
@@ -49,7 +52,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 | Format | One interactive figure | A full scene played as one continuous story on a loop, with no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
 | Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: animals drawn as natural-history illustrations on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
-| Examples | 8 | 18: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/power-grid`, `examples/token-bucket` and `examples/dial-indicator-crew` |
+| Examples | 8 | 19: adds `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/power-grid`, `examples/sand-casting`, `examples/token-bucket` and `examples/dial-indicator-crew` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
 The subject keeps its real colours: the toaster's golden bread, the sharpener's yellow pencil, the vending machine's brass coin, the dial's steel gauge blocks. Heat and light (the toaster's ribbons, the seasons lamp) glow on a WebGL layer, only while they are on.
@@ -111,7 +114,7 @@ Then open Claude Code in your project and ask how anything works. Name the machi
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Eighteen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
+Nineteen complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
 
 Animatomy is a standard [Agent Skill](https://agentskills.io), so it also runs in OpenCode, Codex and Antigravity: put this folder in that agent's skills folder, as in `ANATOMY-README.md`. Builds need Node.js 20.10 or later and the checks need Chrome or Chromium. Nothing to `npm install`.
 
@@ -127,6 +130,7 @@ open examples/seasons/seasons-light.html
 open examples/espresso-machine/espresso-machine-light.html
 open examples/longcase-clock/longcase-clock-light.html
 open examples/power-grid/power-grid-light.html
+open examples/sand-casting/sand-casting-light.html
 open examples/token-bucket/token-bucket-light.html
 open examples/dial-indicator-crew/dial-indicator-crew-light.html
 node scripts/cast-sheet.mjs --light && open cast-sheet-light.html
