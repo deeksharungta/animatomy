@@ -5,7 +5,7 @@
 ### Changed
 
 - The on-duty rim is about half as thick (the `so-duty` filter dilates by 0.4 instead of 0.75): it read as a heavy black outline in light.
-- A casting rule in `crew.md` and SKILL.md: the crew are parts inside the machine, never its operator. What a person does to use it is "you" in the caption.
+- Two casting rules in `crew.md` and SKILL.md, tested before any geometry: the crew work the machine's insides, never its outside where a hand goes (what the person does is "you" in the caption), and each does visible work (moves about its own height, or visibly turns, strikes, carries or holds against something shown); a critter that only sits or rides is a passenger. `scripts/beats.mjs` warns when a beat's named actor is out of frame or under 32 px; every shipped example passes.
 - `mountSteps` moves to `kit/steps-run.mjs` so both run files stay under 150 lines; `kit/steps.mjs` re-exports it and `stepsScript()` inlines both. Every drawing is identical.
 - Toaster: snapping the browning knob onto its setting zeroes its speed, so Rocky's duty light and "setting the browning" end with his beat (under reduced motion and `?beat=1` they stayed on).
 - Volta's sparks are arcs that leave his body, run along it and curl back in, at irregular spacing. They stuck straight out at a fixed interval and read as legs at overview size.
