@@ -4,9 +4,8 @@
 
 ### Changed
 
-- Stapler: Roo no longer stamps on the head, which is the job of the person using it ("You press the head"). He is the head's return spring inside it: he stands across the magazine, seen through a window cut in the cap, and holds a bracket under the cap at his chest, so the blade's drive squashes him and he lifts the head back. A new casting rule in `crew.md` and SKILL.md says the crew are parts inside the machine, never its operator.
+- A casting rule in `crew.md` and SKILL.md: the crew are parts inside the machine, never its operator. What a person does to use it is "you" in the caption.
 - `mountSteps` moves to `kit/steps-run.mjs` so both run files stay under 150 lines; `kit/steps.mjs` re-exports it and `stepsScript()` inlines both. Every drawing is identical.
-- Stapler: the "notes go in" beat frames Roo and Pip whole (Roo was cut off at the corner).
 - Toaster: snapping the browning knob onto its setting zeroes its speed, so Rocky's duty light and "setting the browning" end with his beat (under reduced motion and `?beat=1` they stayed on).
 - Volta's sparks are arcs that leave his body, run along it and curl back in, at irregular spacing. They stuck straight out at a fixed interval and read as legs at overview size.
 - Docs from the test runs: which heading faces the viewer; the 0.35 × size placement is a first guess (a crab needs about 0.2); who can hang; zeroing a part's speed so a stale duty light goes out; mid-grey steam on paper; a short takeover hint; what the mount-time timing pass does to `enter`, `done` and a rest state sitting on a threshold; and that `kitScript()` makes every iso-kit export a page global.
@@ -28,7 +27,6 @@
 
 - `kit/spring.mjs`: `springAlong(a, b, radius, turns, P)`, a coil spring between any two points with its back and front halves split. `coil()` runs along x or y only, so the stapler, the kettle and the pen each hand-wrote an upright one.
 - `scripts/beats.mjs`: a contact sheet of every beat of a run page at its end, from `?beat=n`, labelled with each readout (`--full` adds the captions). The test runs each built one by hand.
-- `examples/stapler`: a desk stapler, the reference for the detail rules. Roo the kangaroo (spring) presses the head, the blade drives a 26/6 staple through twelve sheets and a section cut shows the anvil folding the legs; Pip the squirrel (moving) feeds the strip. It came from a rerun of the website's stapler prompt under the new rules, is written in files of 150 lines or fewer and checks reach with `kit/reach.mjs`.
 - `kit/reach.mjs`: `checkReach` prints the reach warnings every crew build wrote by hand, and `findPlace` searches sizes, headings and spots for a place where every paw lands (test runs brute-forced this with throwaway scripts).
 - `?beat=n` on a run page plays beats 0 to n to their ends and stops on n, for a screenshot of one beat. `mountSteps` also returns `destroy()` (stop the loop and its listeners, for a React unmount) and clips its stage when the page hasn't.
 - `scripts/bare.mjs` maps bare faces: it captures a figure at 1x and rings the largest empty square inside every flat area, for the 4× pass. It is advisory: on the shipped examples it finds plain walls, and a thin figure can have no bare face at all.
@@ -52,6 +50,7 @@
 
 ### Removed
 
+- `examples/stapler`, added and removed in this release: its crew had too little to do inside a stapler.
 - The "break it" flaw rule in `crew.md`, and the flaws in its crew-list example. Anatomy has no such mode, and no example used it.
 - `subjectDefs()`, `subjectSvg()` and the glow CSS (`.so-subject`, `--so-subject`) in `kit/critters.mjs`. Every subject is now drawn in its own colour with `subjectCss()`.
 
