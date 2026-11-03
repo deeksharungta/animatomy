@@ -5,33 +5,44 @@ import * as k from "../../kit/iso-kit.mjs";
 import { critter, critterSvg, crewCss, subjectCss } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml } from "../../kit/steps.mjs";
-import { WIDTH, HEIGHT, C, P, K, ROCKY, MO, KNOCK } from "./model.mjs";
+import { WIDTH, HEIGHT, C, P, PLUMB, PINCH, ROCKY, KNOCK } from "./model.mjs";
 import { room, floor, table } from "./scene.mjs";
-import { plinth, trunk, stile, hoodWalls, seatboard, cornice, column } from "./case.mjs";
-import { plate, pillars, wheels, click, dial, brackets, strike, bob, weight } from "./movement.mjs";
-import { dynamic, poses } from "./moving.mjs";
-import { STEPS, LABEL, keys, rest } from "./story.mjs";
+import { plinth, trunk, stile, door, waist, seatboard } from "./case-low.mjs";
+import { hoodWalls, backColumns, frontColumn, frieze, cornice, finials } from "./case-hood.mjs";
+import { movementItems, plate, pillarItems } from "./movement.mjs";
+import { backcock, bell, perches } from "./top.mjs";
+import { bob, weight } from "./hang.mjs";
+import { dial } from "./dial.mjs";
+import { hoodDoor } from "./hooddoor.mjs";
+import { poses } from "./poses.mjs";
+import { STEPS, LABEL, keys, rest, drawn, reach } from "./story.mjs";
 import { MODEL_SCRIPT } from "./page-model.mjs";
 import { RUN_SCRIPT } from "./page-run.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const theme = process.argv.includes("--light") ? "light" : "dark";
+reach();
 const S0 = rest();
-const D0 = dynamic(K, P, C, S0);
+const D0 = drawn(S0);
 const pose0 = poses(C, S0, D0);
-const crew = (spec, pose, part) => critterSvg(critter(spec, pose, P), { part });
-const mv = (name, html, extra = "") => `<g data-part="${name}"${extra}>${html}</g>`;
+const crew = (spec, key) => critterSvg(critter(spec, pose0[key], P), { part: key });
+const mv = (name, html = D0[name], extra = "") => `<g data-part="${name}"${extra}>${html}</g>`;
 
-// Back to front: the trunk and the pendulum behind everything, the weight in the trunk, then the movement on its seatboard.
+// The movement, painted from the back plate forward: every arbor piece, wheel and pinion by its depth along y,
+// with Pinch standing in front of the anchor he is.
+const items = [...movementItems((name) => mv(name)), ...pillarItems(), { key: pose0.pinch.at[1], html: crew(PINCH, "pinch") }];
+items.sort((a, b) => a.key - b.key);
+
+// Back to front: the room, the case's back and left walls, what hangs in the trunk, the hood, the movement, the dial,
+// the crew on the brackets, and last what stands in front of the cut: the front column, the stile and the open door.
 const body = [
-  room(), floor(), plinth(), trunk(), hoodWalls(),
-  mv("rod", D0.rod), mv("bob", bob(), ` transform="${D0.bob}"`), mv("crutch", D0.crutch), crew(MO, pose0.mo, "mo"),
-  mv("cord", D0.cord), mv("weight", weight(), ` transform="${D0.weight}"`), stile(), seatboard(),
-  plate(), pillars(false), brackets(), strike(), wheels(), click(),
-  mv("great", D0.great), mv("center", D0.center), mv("third", D0.third), mv("pins", D0.pins), mv("fly", D0.fly),
-  mv("esc", D0.esc), mv("anchor", D0.anchor), mv("cordUp", D0.cordUp),
-  pillars(true), dial(), mv("hands", D0.hands), mv("crank", D0.crank), crew(ROCKY, pose0.rocky, "rocky"),
-  mv("hammer", D0.hammer), crew(KNOCK, pose0.knock, "knock"), column(), cornice(), table(),
+  room(), floor(), plinth(), trunk(),
+  mv("rod"), mv("bob", bob(), ` transform="${D0.bob}"`),
+  mv("cord"), mv("weight", weight(-1), ` transform="${D0.weight}"`), mv("sweight", weight(1), ` transform="${D0.sweight}"`), crew(PLUMB, "plumb"),
+  waist(), hoodWalls(), frieze(), backColumns(), backcock(), seatboard(), mv("cordUp"),
+  plate(), bell(), perches(), ...items.map((it) => it.html),
+  dial(), mv("hands"), mv("key"), crew(ROCKY, "rocky"), crew(KNOCK, "knock"),
+  frontColumn(), cornice(), finials(false), finials(true), hoodDoor(), stile(), door(), table(),
 ];
 const svg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: LABEL, body });
 
@@ -43,9 +54,9 @@ const page = `<style>${css}</style>` + k.plateHtml({
   fig: "Fig 1",
   title: "Longcase clock, staffed",
   hint: "Plays on its own, on a loop",
-  readout: "stopped · 12:59:52 · weight 0 cm up",
+  readout: "stopped · 12:59:50 · weight 0 cm up",
   keys,
-  caption: "An eight-day longcase clock with the front and right side of its case cut away. Rocky winds the weight up with the crank, Mo swings with the pendulum while the anchor lets the escape wheel go half a tooth each second, and at one o'clock Knock, as the hammer, strikes the bell once. The pendulum is 99.4 cm long and takes two seconds to swing there and back.",
+  caption: "An eight-day striking longcase clock, its trunk door open and its case cut away on the front and right. You wind it; Mo is the going weight's pull on its cord, Pinch is the anchor whose pallets let the escape wheel go half a tooth each one-second swing of the 99.4 cm pendulum, and at one o'clock Rocky's locking lever lets the strike train run one blow, which Knock, the hammer's spring, strikes on the bell. The weights fall 68 cm in eight days.",
   body: `<div class="iso-stage lc-stage" tabindex="0" role="group" aria-label="Longcase clock, playing on a loop: Space pauses, Home starts again">${svg}</div>${stepsHtml(STEPS)}`,
 });
 

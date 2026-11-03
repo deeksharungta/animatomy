@@ -1,6 +1,6 @@
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { P, at, S, Ln, D, FLOOR, WALL_TOP, ringY, rod } from "./model.mjs";
+import { P, at, S, Ln, D, FLOOR, WALL_TOP, ringX, ringY, rod } from "./model.mjs";
 
 // The hall the clock stands in: panelled walls with a dado rail, floorboards, a framed picture and a side table.
 export function room() {
@@ -18,6 +18,11 @@ export function room() {
   out.push(Ln(ringY(-42.4, 19, 43, 139, 171, 0.8) + ringY(-42.4, 22, 40, 143, 167, 0.4), { tone: "faint" }));
   out.push(Ln(k.pathOf([[22, 150], [27, 157], [31, 152], [35, 159], [40, 151]].map(([x, z]) => at([x, -42.4, z]))), { tone: "mid", free: true }));
   out.push(k.wireSvg(at([21, -43, 174]), at([41, -43, 174]), { via: [at([31, -43.6, 182])], tone: "lo", size: 0.6 }));
+  // A second print on the left wall: a moulded frame, its mount, a church spire on the print, and its hanging wire.
+  out.push(S(k.slabOf({ x: -54, y: 2, w: 1.6, d: 26, r: 0.4 }, 150, 32, P, 2, 0.3), { tone: "hi" }));
+  out.push(Ln(ringX(-52.4, 4.5, 25.5, 152.5, 179.5, 0.8) + ringX(-52.4, 7, 23, 155, 177, 0.4), { tone: "faint" }));
+  out.push(Ln(k.pathOf([[7, 160], [11, 160], [11, 166], [13, 172], [15, 166], [15, 160], [23, 160]].map(([y, z]) => at([-52.4, y, z]))), { tone: "mid", free: true }));
+  out.push(k.wireSvg(at([-53, 6, 182]), at([-53, 24, 182]), { via: [at([-53.6, 15, 190])], tone: "lo", size: 0.6 }));
   return out.join("");
 }
 

@@ -1,90 +1,82 @@
 import * as k from "../../kit/iso-kit.mjs";
 import * as L from "../../kit/lathe.mjs";
-import { C, P, at, S, Ln, D, rod, pipe, disc } from "./model.mjs";
+import { C, P, at, S, Ln, D, rod, disc, ring, faceY, box } from "./model.mjs";
 
-// The movement: a back plate with its pillars, the going train's wheels and arbors, the dial's chapter ring,
-// the strike train's pin wheel, fly and bell, and the brackets the crew stand on. The front plate is left off.
-const Y = C.WHEEL_Y, PY = C.PLATE_Y + 1.2;
-const arbor = (x, z, y1, r = 0.55) => S(rod([x, PY, z], [0, 1, 0], r, 0, y1 - PY, 10), { tone: "hi" });
-const pinion = (x, z, r) => S(rod([x, Y + 0.7, z], [0, 1, 0], r, 0, 1.6, 14), { tone: "hi" });
+// The movement between its plates: the back plate with its pillars, and every arbor with what it carries
+// (barrels, ratchets, wheels, pinions, collets), cut into pieces at each wheel so they paint in depth along y.
+// The front plate is off. Each item is { key, html }; the build sorts them from the back plate forward.
+const PY = C.PLATE.y + 1.2, FY = C.FRONT_Y;
+const pinion = (x, z, r, y0, y1) => {
+  const F = faceY(x, y0, z);
+  return S(L.disc(0, y1 - y0, r, F, P), { tone: "hi", crease: "lo", inner: k.fadedSvg(L.ribsOf(F, 0, y1 - y0, r, Math.round(r * 6), P, { fade: [0.1, 0.55] }), { tone: "lo" }) });
+};
+const collet = (x, z, y) => S(L.solidOf([[0, 1.5], [0.3, 1.5], [0.3, 1.1], [0.8, 0.9]], faceY(x, y, z), P), { tone: "hi", crease: "lo" });
+const pivotEnd = (x, z, r) => S(L.solidOf([[0, r], [0.5, r * 0.6, 1], [0.7, r * 0.3]], faceY(x, FY - 0.7, z), P), { tone: "hi", crease: "none" });
 
-export function plate() {
-  const out = [S(k.slabOf({ x: -17, y: C.PLATE_Y, w: 34, d: 1.2, r: 0.6 }, 152.5, 48.5, P, 3, 0.3), { tone: "mid" })];
-  out.push(D([[-15, PY, 198.5], [15, PY, 198.5], [-15, PY, 154.5], [15, PY, 154.5]].map(at), { size: 0.5, tone: "mid" }));
-  out.push(S(k.slabOf({ x: -12, y: C.PLATE_Y, w: 24, d: 1.2, r: 0.4 }, 150, 2.6, P, 2), { tone: "mid" }));
-  return out.join("");
-}
-
-// The pillars that would hold the missing front plate, and the posts of the dial behind the chapter ring.
-export function pillars(front) {
-  const list = front ? [[15, 154.5], [15, 198.5]] : [[-15, 154.5], [-15, 198.5]];
-  return list.map(([x, z]) => S(rod([x, PY, z], [0, 1, 0], 0.8, 0, 8.6, 12), { tone: "hi" }) + S(rod([x, PY + 8.6, z], [0, 1, 0], 1.1, 0, 0.9, 12), { tone: "hi" })).join("");
-}
-
-export function wheels() {
-  const { GREAT: G, CENTER: Ce, THIRD: T, ESC: E, BARREL: B } = C;
-  const out = [];
-  out.push(arbor(T.x, T.z, Y + 3), S(disc(T.x, T.z, T.r, Y), { tone: "hi", crease: "lo" }), pinion(T.x, T.z, 1.8));
-  out.push(arbor(E.x, E.z, Y + 2.4), pinion(E.x, E.z, 1.4));
-  out.push(arbor(Ce.x, Ce.z, C.DIAL.y + 1.2, 0.7), S(disc(Ce.x, Ce.z, Ce.r, Y), { tone: "hi", crease: "lo" }), pinion(Ce.x, Ce.z, 2.4));
-  out.push(arbor(G.x, G.z, C.CRANK.y, 0.8), S(disc(G.x, G.z, G.r, Y), { tone: "hi", crease: "lo" }));
-  out.push(S(L.solidOf([[0, B.r + 0.8], [0.6, B.r + 0.8], [0.6, B.r], [B.y1 - B.y0 - 0.6, B.r], [B.y1 - B.y0 - 0.6, B.r + 0.8], [B.y1 - B.y0, B.r + 0.8]], L.frameAlong([G.x, B.y0, G.z], [0, 1, 0]), P), { tone: "hi", crease: "lo" }));
-  out.push(Ln([1.6, 2.6, 3.6, 4.6].map((s) => L.arcOf(L.frameAlong([G.x, B.y0, G.z], [0, 1, 0]), s, B.r + 0.05, P)).join(""), { tone: "lo" }));
-  return out.join("");
-}
-
-// The ratchet and click on the great wheel, which let Rocky wind one way only.
-export function click() {
-  const G = C.GREAT;
-  return S(disc(G.x, G.z, 4.4, Y + 0.7, 0.6), { tone: "mid" }) + S(rod([G.x - 5.4, Y + 1, G.z + 2.6], [0, 1, 0], 0.5, 0, 1, 8), { tone: "hi" });
-}
-
-// The chapter ring, standing on its posts in front of the wheels: twelve hour marks and sixty minute ticks.
-export function dial() {
-  const D0 = C.DIAL, Ce = C.CENTER, F = L.frameAlong([Ce.x, D0.y, Ce.z], [0, 1, 0]);
-  const out = [];
-  for (const a of [0.6, 2.55, 4.2]) out.push(S(rod([Ce.x + 10 * Math.cos(a), PY + 8.6, Ce.z + 10 * Math.sin(a)], [0, 1, 0], 0.5, 0, D0.y - PY - 8.6, 8), { tone: "mid" }));
-  out.push(S(L.ringBand(0, 0.6, D0.r0, D0.r1, F, P, { hole: [0.6, D0.r0] }), { tone: "hi", crease: "lo" }));
-  const y = D0.y + 0.62, ticks = [], hours = [];
-  for (let i = 0; i < 60; i++) {
-    const a = Math.PI / 2 - (i / 60) * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
-    if (i % 5) ticks.push(k.segment([Ce.x + (D0.r1 - 1) * c, y, Ce.z + (D0.r1 - 1) * s], [Ce.x + (D0.r1 - 0.2) * c, y, Ce.z + (D0.r1 - 0.2) * s], P));
-    else hours.push(k.segment([Ce.x + (D0.r0 + 0.4) * c, y, Ce.z + (D0.r0 + 0.4) * s], [Ce.x + (D0.r1 - 0.2) * c, y, Ce.z + (D0.r1 - 0.2) * s], P));
+// One arbor and its features, as depth items. feats: [y0, y1, html].
+function arbor(x, z, r, y1, feats, end = true) {
+  const items = [], list = [...feats].sort((a, b) => a[0] - b[0]);
+  let y = PY;
+  for (const [f0, f1, html] of list) {
+    if (f0 - y > 0.05) items.push({ key: (y + f0) / 2, html: S(rod([x, y, z], [0, 1, 0], r, 0, f0 - y, 10), { tone: "hi" }) });
+    items.push({ key: (f0 + f1) / 2, html });
+    y = Math.max(y, f1);
   }
-  out.push(Ln(ticks.join(""), { tone: "lo", free: true }) + Ln(hours.join(""), { tone: "hi", free: true }));
-  return out.join("");
+  if (y1 - y > 0.05) items.push({ key: (y + y1) / 2, html: S(rod([x, y, z], [0, 1, 0], r, 0, y1 - y - (end ? 0.7 : 0), 10), { tone: "hi" }) + (end ? pivotEnd(x, z, r) : "") });
+  return items;
 }
 
-// A bracket off the plate: the perch by the hammer for Knock.
-export const PERCH = { x: -26, y: -20, w: 5, d: 5, top: 194 };
-export function brackets() {
-  const out = [];
-  out.push(S(k.slabOf({ x: PERCH.x + 4, y: C.PLATE_Y, w: 4, d: PERCH.d + 1, r: 0.4 }, PERCH.top - 6, 3, P, 2), { tone: "mid" }));
-  out.push(S(k.slabOf({ x: PERCH.x, y: PERCH.y, w: PERCH.w, d: PERCH.d, r: 0.6 }, PERCH.top - 3, 3, P, 3, 0.3), { tone: "mid" }));
-  return out.join("");
+// A barrel with its flanges and its ratchet wheel, the click and click spring on the great wheel.
+const barrel = (x, z) => {
+  const B = C.BARREL, F = faceY(x, B.y0, z), len = B.y1 - B.y0 - 0.6;
+  return S(L.solidOf([[0, B.r + 0.9], [0.5, B.r + 0.9], [0.5, B.r], [len - 0.5, B.r], [len - 0.5, B.r + 0.9], [len, B.r + 0.9]], F, P), { tone: "hi", crease: "lo" });
+};
+const ratchet = (x, z) => {
+  const F = faceY(x, C.BARREL.y1 - 0.6, z);
+  return S(L.disc(0, 0.6, 4.4, F, P), { tone: "mid", crease: "lo", inner: k.fadedSvg(L.ribsOf(F, 0, 0.6, 4.4, 26, P, { fade: [0.05, 0.4] }), { tone: "lo" }) });
+};
+export function click(x, z, side) {
+  const y = C.GREAT.y + 0.6, px = x + side * 5.6, pz = z + 2.2;
+  return S(rod([px, y, pz], [0, 1, 0], 0.45, 0, 1, 8), { tone: "hi" }) +
+    S(L.prismOf(L.frameOf([px, y, pz], [0, 1, 0], [1, 0, 0], [0, 0, 1]), [[0, -0.35], [-side * 1.6, -1.9], [-side * 1.2, -2.3], [0, 0.35]], 0, 0.4, P), { tone: "hi" }) +
+    Ln(k.pathOf([[px + side * 0.3, y + 0.5, pz + 0.4], [px + side * 1.5, y + 0.5, pz - 1.2], [px - side * 0.4, y + 0.5, pz - 2.6]].map(at)), { tone: "mid" });
 }
 
-// The strike train: the pin wheel's disc, the fly's arbor, the hammer's cock, and the bell on its standard.
-export function strike() {
-  const { PINS: N, FLY: F, HAMMER: H, BELL: B } = C;
-  const out = [arbor(N.x, N.z, Y + 1.4), S(disc(N.x, N.z, N.r, Y), { tone: "hi", crease: "lo" })];
-  out.push(arbor(F.x, F.z, Y + 3.2, 0.45));
-  out.push(S(k.slabOf({ x: H.x - 1.4, y: C.PLATE_Y, w: 2.8, d: H.y - C.PLATE_Y - 0.6, r: 0.4 }, H.z - 1.6, 3.2, P, 2), { tone: "mid" }));
-  out.push(pipe([[B.x, PY - 0.6, 200.5], [B.x, PY - 0.6, 212], [B.x, B.y, 212], [B.x, B.y, B.z + 3.4]], 0.5, { tone: "mid", bend: 1.4 }));
-  out.push(S(L.solidOf([[0, B.r], [0.6, B.r - 0.2, 1], [3, B.r - 1, 1], [5.4, B.r - 3, 1], [6.6, 1.4, 1], [7, 0.6]], L.frameAlong([B.x, B.y, B.z - 3.6], [0, 0, 1]), P), { tone: "hi", crease: "none" }));
-  return out.join("");
+export function movementItems(dyn) {
+  const G = C.GREAT, SG = C.SGREAT, Ce = C.CENTER, T = C.THIRD, E = C.ESC, N = C.PINS, Lk = C.LOCK, W = C.WARN, Fl = C.FLY, H = C.HAMMER, Lv = C.LEVER;
+  const wheel = (w, name) => [w.y, w.y + 0.6, ring(w.x, w.z, w.r - 1.5, w.r, w.y) + dyn(name)];
+  const items = [];
+  const B = C.BARREL;
+  for (const [g, name, side] of [[G, "great", 1], [SG, "sgreat", -1]]) {
+    items.push(...arbor(g.x, g.z, 0.8, -14.6, [[B.y0, B.y1 - 0.6, barrel(g.x, g.z) + dyn(name + "Coils")], [B.y1 - 0.6, B.y1, ratchet(g.x, g.z)], wheel(g, name), [g.y + 0.6, g.y + 1.6, click(g.x, g.z, side) + collet(g.x, g.z, g.y + 0.6)]], false));
+    items.push({ key: -14.4, html: S(L.prismOf(L.frameOf([g.x, -15, g.z], [0, 1, 0], [1, 0, 0], [0, 0, 1]), [[-0.7, -0.7], [0.7, -0.7], [0.7, 0.7], [-0.7, 0.7]], 0, 1.4, P), { tone: "hi" }) });
+  }
+  items.push(...arbor(Ce.x, Ce.z, 0.7, -14.4, [wheel(Ce, "center"), [Ce.y + 0.6, Ce.y + 1.4, collet(Ce.x, Ce.z, Ce.y + 0.6)], [G.y - 0.5, G.y + 0.9, pinion(Ce.x, Ce.z, Ce.pin, G.y - 0.5, G.y + 0.9)], [-16.6, -15.4, pinion(Ce.x, Ce.z, 1.2, -16.6, -15.4)]], false));
+  items.push(...arbor(T.x, T.z, 0.55, FY, [wheel(T, "third"), [Ce.y - 0.5, Ce.y + 0.9, pinion(T.x, T.z, T.pin, Ce.y - 0.5, Ce.y + 0.9)]]));
+  items.push(...arbor(E.x, E.z, 0.5, FY, [[E.y, E.y + 0.5, dyn("esc")], [T.y - 0.5, T.y + 0.9, pinion(E.x, E.z, E.pin, T.y - 0.5, T.y + 0.9)]]));
+  items.push(...arbor(0, C.ANCHOR.z, 0.5, FY, [[C.ANCHOR.y - 0.7, C.ANCHOR.y, dyn("anchor")]]));
+  items.push(...arbor(N.x, N.z, 0.6, FY, [wheel(N, "pins"), [SG.y - 0.5, SG.y + 0.9, pinion(N.x, N.z, N.pin, SG.y - 0.5, SG.y + 0.9)]]));
+  items.push(...arbor(Lk.x, Lk.z, 0.5, FY, [wheel(Lk, "lock"), [N.y - 0.5, N.y + 0.5, pinion(Lk.x, Lk.z, Lk.pin, N.y - 0.5, N.y + 0.5)]]));
+  items.push(...arbor(W.x, W.z, 0.45, FY, [wheel(W, "warn"), [Lk.y - 0.5, Lk.y + 0.5, pinion(W.x, W.z, W.pin, Lk.y - 0.5, Lk.y + 0.5)]]));
+  items.push(...arbor(Fl.x, Fl.z, 0.4, FY, [[W.y - 0.5, W.y + 0.5, pinion(Fl.x, Fl.z, Fl.pin, W.y - 0.5, W.y + 0.5)], [-21.4, -18.6, dyn("fly")]]));
+  items.push(...arbor(H.x, H.z, 0.5, FY, [[-21.4, -20.6, dyn("tail")], [H.y - 0.3, H.y + 0.3, dyn("hammer")]]));
+  items.push(...arbor(Lv.x, Lv.z, 0.55, -18.8, [[-22.3, -21.8, dyn("lifting")], [Lv.y - 0.3, Lv.y + 0.3, dyn("lever")]]));
+  return items;
 }
 
-// The pendulum's brass bob, drawn at rest and moved by the page, and the weight drawn at the top of its travel.
-export function bob() {
-  const Pn = C.PEND, z = Pn.z - Pn.len;
-  return S(L.solidOf([[0, Pn.bob - 2.4], [0.9, Pn.bob, 1], [1.8, Pn.bob - 2.4]], L.frameAlong([C.ESC.x, Pn.y - 0.9, z], [0, 1, 0]), P), { tone: "hi", crease: "none" }) +
-    S(rod([C.ESC.x, Pn.y, z - Pn.bob - 0.4], [0, 0, 1], 0.9, 0, 1.6, 12), { tone: "mid" });
+// The back plate, with the pillars' latches, an oil sink round every pivot and the movement's screws.
+export function plate() {
+  const p = C.PLATE, pivots = [C.GREAT, C.SGREAT, C.CENTER, C.THIRD, C.ESC, C.PINS, C.LOCK, C.WARN, C.FLY, C.HAMMER, C.LEVER, { x: 0, z: C.ANCHOR.z }];
+  const sinks = pivots.map((w) => L.circleOf(faceY(w.x, PY, w.z), 0, 1.3, P)).join("");
+  return S(box(p.x0, p.y, p.z0, p.x1, PY, p.z1, 0.6, 0.3), { tone: "mid" }) + Ln(sinks, { tone: "faint" }) +
+    D(PILLARS.map(([x, z]) => at([x, PY, z])), { size: 0.5, tone: "mid" });
 }
-
-export function weight() {
-  const W = C.WEIGHT, x = C.GREAT.x + C.BARREL.r, y = (C.BARREL.y0 + C.BARREL.y1) / 2, z = W.high;
-  return S(L.solidOf([[0, W.r - 0.6], [0.8, W.r, 1], [W.h - 0.8, W.r, 1], [W.h, W.r - 0.6]], L.frameAlong([x, y, z], [0, 0, 1]), P), { tone: "hi", crease: "none" }) +
-    Ln([4, W.h - 4].map((s) => L.arcOf(L.frameAlong([x, y, z], [0, 0, 1]), s, W.r, P)).join(""), { tone: "faint" }) +
-    pipe([[x - 1, y, z + W.h], [x - 1, y, z + W.h + 1.4], [x + 1, y, z + W.h + 1.4], [x + 1, y, z + W.h]], 0.35, { tone: "mid", bend: 0.8, caps: false });
-}
+export const PILLARS = [[-15.5, 155.5], [15.5, 155.5], [-15.5, 197.5], [15.5, 197.5]];
+// The four pillars, in two pieces each: behind the wheels, and their turned front ends.
+export const pillarItems = () => PILLARS.flatMap(([x, z]) => {
+  const F = faceY(x, PY, z), len = FY - PY;
+  return [
+    { key: -24, html: S(L.solidOf([[0, 1.3], [0.6, 1.3], [0.6, 0.9], [len - 3, 0.9]], F, P), { tone: "hi", crease: "lo" }) },
+    { key: -18, html: S(L.solidOf([[len - 3, 0.9], [len - 1.6, 0.9], [len - 1.6, 1.15], [len - 0.9, 1.15], [len - 0.6, 0.6, 1], [len, 0.45]], F, P), { tone: "hi", crease: "lo" }) },
+  ];
+});

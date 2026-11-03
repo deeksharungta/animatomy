@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Longcase clock rebuilt so its crew are the clock's forces: you wind it, Mo the sloth is the weight's pull, Pinch the crab is the anchor, Rocky the raccoon the strike train's locking lever and Knock the hammer. Rocky no longer winds it (the owner's job) and Mo no longer rides the pendulum. The movement gains real wheels, pinions, barrels, the strike train and a fuller case.
+- The inlined `CREW` namespace also exposes `lathe`, `arcOf`, `circleOf` and `dotsOf`, so a part rebuilt on the page can have rivet rows and seams.
 - The on-duty rim is about half as thick (the `so-duty` filter dilates by 0.4 instead of 0.75): it read as a heavy black outline in light.
 - Two casting rules in `crew.md` and SKILL.md, tested before any geometry: the crew work the machine's insides, never its outside where a hand goes (what the person does is "you" in the caption), and each does visible work (moves about its own height, or visibly turns, strikes, carries or holds against something shown); a critter that only sits or rides is a passenger. `scripts/beats.mjs` warns when a beat's named actor is out of frame or under 32 px; every shipped example passes.
 - `mountSteps` moves to `kit/steps-run.mjs` so both run files stay under 150 lines; `kit/steps.mjs` re-exports it and `stepsScript()` inlines both. Every drawing is identical.
