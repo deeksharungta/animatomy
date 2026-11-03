@@ -1,7 +1,7 @@
 import { iso, depthOf } from "../iso-kit.mjs";
 import { RAD, n1, pt, sub, add, len, unit, rotp, curve, limb, reach2 } from "./draw.mjs";
 import { leg } from "./parts.mjs";
-import { ART } from "./cast.mjs";
+import { ART, ROLES } from "./cast.mjs";
 import { PROPS } from "./head.mjs";
 import { pieces, tr } from "./pieces.mjs";
 import { eelCritter } from "./eel.mjs";
@@ -11,6 +11,8 @@ export function critter(spec, pose = {}, P) {
   const sp = spec.species;
   const a = ART[sp];
   if (!a) throw new Error(`no species ${sp}`);
+  // A role outside the eight ("turning", "timing") warns once, which fails the clean-console check.
+  if (spec.role && !ROLES[spec.role] && !(critter.bad ??= new Set()).has(spec.role)) { critter.bad.add(spec.role); console.warn(`${spec.name ?? sp}: "${spec.role}" is not a role; use one of ${Object.keys(ROLES).join(", ")}`); }
   if (a.path) return eelCritter(spec, pose, P);
   const stance = pose.stance === "four" && a.four ? "four" : "up";
   const hang = pose.stance === "hang";

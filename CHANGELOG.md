@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- The skill's time estimates match real builds (a Figure 15–45 min, a Hero 30–90 min, an Epic two hours or more), and a Hero that finishes in under 30 minutes is checked against 80 parts and the toaster before it is handed over.
+- Casting is tested with numbers: each critter's working space and part travel against its size (about 12 units to read), and a machine too small for that gets a warning before any building. `critter()` warns on a role outside the eight, and a cord or lever a person pulls is "you". `crew.md` names passengers, crew outside the cutaway and crews too small to read as anti-patterns.
 - The click pen's rims blinked many times a second as a part's speed crossed its duty threshold back and forth.
 
 ### Changed
