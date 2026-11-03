@@ -39,13 +39,12 @@ The test rig is the quality bar for the drawing itself. The Raptor is the bar fo
 
 ## Words that change the figure
 
-As in Anatomy, three words in the request change what Claude builds, and it reaches for them only when they are written in the line:
+As in Anatomy, two words in the request change what Claude builds, and it reaches for them only when they are written in the line:
 
 - **`interactive`**: the reader can take over. Drag or keys set the model, the run pauses and the camera pulls back to what they now need to see, and Space plays on from there (`references/steps.md`, "Letting the reader take over"; `examples/seasons`, `examples/power-grid`, `examples/dial-indicator-crew`, `examples/sand-casting`). Without it the figure still plays its whole story on a loop; Space pauses it and Home starts it again.
 - **`WebGL`**: shaders inside the drawing, in the same isometric camera: fire, water, plasma, moving air, light, and the flows that make the idea, in colour (cool blue to hot orange), with an SVG fallback. Without it the figure is SVG, with at most one shader where heat or light is itself the subject (the toaster's ribbons). `references/webgl.md`.
-- **`3D`**: parts that really turn in depth, re-projected and re-sorted every frame (`references/3d.md`). Slow: hours to build. No crewed example uses it yet; the crew stay on their 2D rig, placed from the turned parts each frame.
 
-The theme (light by default, dark when asked), "one HTML file" and "Next.js" work as in Anatomy.
+The theme (light by default, dark when asked), "one HTML file" and "Next.js" work as in Anatomy. Anatomy's third word, `3D`, isn't offered: it hasn't been tested with a crew, so an Animatomy figure is never built in 3D, even when asked; say so and build it flat.
 
 ## The one idea that matters
 
@@ -208,6 +207,8 @@ Use a shader only for what lines can't draw: fire and exhaust, water and caustic
 Read `references/webgl.md` before writing any shader.
 
 ## 3D: figures that turn (beta)
+
+Not for Animatomy figures: this is Anatomy's mode, kept for its own example (`examples/turning-dial`) and untested with a crew. Never build a crewed figure in 3D.
 
 3D is an option like WebGL. Use it when a part moving in depth is the idea: a dial or turntable that turns, fingers that flex, a piece that breaks off and falls. The rest of the figure stays static kit art.
 

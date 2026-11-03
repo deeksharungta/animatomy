@@ -57,7 +57,7 @@ Take the crew away and the mechanism is still true. Leave it in and people remem
 
 The subject keeps its real colours: the toaster's golden bread, the sharpener's yellow pencil, the vending machine's brass coin, the dial's steel gauge blocks. Heat and light (the toaster's ribbons, the seasons lamp) glow on a WebGL layer, only while they are on.
 
-Everything else, from the craft rules to the audit, the line check, WebGL, the 3D mode and printable sheets, is Anatomy's, unchanged. `ANATOMY-README.md` is Anatomy's own README, kept for reference.
+Everything else, from the craft rules to the audit, the line check, WebGL, the 3D mode (not offered for crewed figures: it hasn't been tested with a crew) and printable sheets, is Anatomy's, unchanged. `ANATOMY-README.md` is Anatomy's own README, kept for reference.
 
 ## Two ways to open a figure
 
