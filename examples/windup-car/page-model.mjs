@@ -4,7 +4,7 @@ import { partsKit, drawn } from "./moving.mjs";
 import { poses } from "./poses.mjs";
 import { STEPS, views, rest, FOCUS, TARGET } from "./story.mjs";
 
-const fns = [M.driveOf, M.advance, M.stepModel, M.anglesOf, partsKit, drawn, poses];
+const fns = [M.driveOf, M.clickOf, M.advance, M.stepModel, M.anglesOf, partsKit, drawn, poses];
 
 // The page script, part one: the numbers, the mechanism and the model's step with who is on duty.
 export const MODEL_SCRIPT = () => `
@@ -18,13 +18,13 @@ const FOCUS = ${JSON.stringify(FOCUS)}, TARGET = ${JSON.stringify(TARGET)};
 const SIZE = [${WIDTH}, ${HEIGHT}];
 ${fns.map((f) => f.toString()).join("\n")}
 const K = { iso, pathOf, segment, solidSvg, lineSvg, dotsSvg, fadedSvg, depthOf, translateAlong, ...CREW };
-const M = { anglesOf };
+const M = { anglesOf, clickOf };
 const Q = partsKit(K, P);
 const REST = ${JSON.stringify(rest())};
 const S = { ...REST };
 function step(dt) {
   stepModel(S, dt, C);
-  const moving = { pinch: S.keyV > 0, rocky: Math.abs(S.brakeV) > 0.05, roo: S.v > 0.01 };
+  const moving = { pinch: S.keyV > 0 || S.backV > 0, rocky: Math.abs(S.brakeV) > 0.05, roo: S.v > 0.01 };
   S.duty = S.focus && moving[S.focus] ? S.focus : moving.roo ? "roo" : "";
   S.lit = S.duty ? "" : "barrel";
 }

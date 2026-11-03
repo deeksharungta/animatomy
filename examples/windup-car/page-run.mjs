@@ -3,8 +3,8 @@ export const RUN_SCRIPT = `
 const stage = document.querySelector(".wc-stage");
 const svg = stage.querySelector("svg");
 const part = (name) => svg.querySelector('[data-part="' + name + '"]');
-const HTML = ["spring", "interLeaves", "axleLeaves", "click", "key", "brake"];
-const SPUN = { barrelT: "barrelTeeth", ratchetT: "ratchetTeeth", interT: "interTeeth", rearT: "rearHub", frontT: "frontHub", worldT: "worldLines", worldT2: "worldProps" };
+const HTML = ["spring", "drumRibs", "interLeaves", "axleLeaves", "click", "key", "brake"];
+const SPUN = { barrelT: "barrelTeeth", coverT: "coverMarks", ratchetT: "ratchetTeeth", interT: "interTeeth", rearT: "rearHub", frontT: "frontHub", worldT: "worldLines", worldT2: "worldProps" };
 const CREWS = ["roo", "pinch", "rocky"];
 const el = Object.fromEntries([...HTML, ...Object.values(SPUN), ...CREWS].map((n) => [n, part(n)]));
 const drum = part("barrelWall").querySelector(".iso-solid");
@@ -29,7 +29,7 @@ function draw() {
 }
 const DONE = [
   () => S.stepT > 0.3 && S.brake <= 0,
-  () => S.windT < 0 && S.stepT > 0.3,
+  () => S.windT < 0 && S.back <= 0 && S.stepT > 0.3,
   () => S.brake >= 1 && S.stepT > 0.3,
   () => S.v > 0.3,
   () => S.D > 1.1,

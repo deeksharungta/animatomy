@@ -6,8 +6,9 @@ import { critter, critterSvg, crewCss } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml } from "../../kit/steps.mjs";
 import { WIDTH, HEIGHT, C, P, S, Ln, discY, circleY, ROO, PINCH, ROCKY } from "./model.mjs";
-import { floor, wall, worldLines, worldProps } from "./scene.mjs";
-import { farWheels, farWall, tray, rearPanel, frontLow, nearSill, bumpers, axles, wheel } from "./car.mjs";
+import { floor, wall, trim, worldLines, worldProps } from "./scene.mjs";
+import { farWheels, tray, rearPanel, frontLow, nearSill, bumpers, axles, wheel, exhaust } from "./car.mjs";
+import { farWall, dash, seat } from "./body.mjs";
 import * as Mo from "./motor.mjs";
 import { STEPS, LABEL, keys, rest, draw0, pose, reach, RUN } from "./story.mjs";
 import { MODEL_SCRIPT } from "./page-model.mjs";
@@ -28,15 +29,15 @@ const hub = (x) => {
 };
 const halo = `<path class="iso-halo" d="${k.haloOf({ x: -68, y: -46, w: 136, d: 92, r: 14 }, 0, 0.5, P)}"/>`;
 
-// Back to front: the room and the toys going by, the car's far wheels and far side, its floor and rear panel,
-// the motor's back plate, axles and train, the brake and the barrel with Roo on top and Rocky beside it,
-// then the strap, ratchet and click with Pinch, the near sill, near wheels, key and bumpers.
+// Back to front: room, far side, tray, train, brake, barrel with Roo, Rocky and the dash, strap and click with Pinch, near side.
 const body = [
-  wall(), floor(), spun("worldLines", worldLines(), D0.worldT), spun("worldProps", worldProps(), D0.worldT), halo,
-  farWheels(), farWall(), tray(), rearPanel(), Mo.backPlate(), axles(),
+  wall(), floor(), spun("worldLines", worldLines(), D0.worldT), trim(), spun("worldProps", worldProps(), D0.worldT), halo,
+  farWheels(), farWall(), exhaust(), tray(), rearPanel(), seat(), Mo.backPlate(), axles(),
   Mo.interStatic(), spun("interTeeth", Mo.interTeeth(), D0.interT), Mo.axlePinion(), mv("axleLeaves"), Mo.interPinion(), mv("interLeaves"),
-  Mo.barrelBack(), spun("barrelTeeth", Mo.barrelTeeth(), D0.barrelT),
-  Mo.brakeBracket(), mv("brake"), `<g data-part="barrelWall">${Mo.barrelWall(true)}</g>`, Mo.barrelMouth(), mv("spring", "wc-spring"), Mo.arborIn(), Mo.barrelRim(), crew(ROO, "roo"), crew(ROCKY, "rocky"),
+  Mo.barrelBack(), spun("barrelTeeth", Mo.barrelTeeth(), D0.barrelT), Mo.brakeBracket(), mv("brake"),
+  `<g data-part="barrelWall">${Mo.barrelWall(true)}</g>`, Mo.barrelMouth(),
+  `<g clip-path="url(#wc-mouth)">${spun("coverMarks", Mo.coverMarks(), D0.coverT)}${mv("drumRibs")}${Mo.arborCollar()}${mv("spring", "wc-spring")}</g>`,
+  Mo.arborBack(), crew(ROO, "roo"), Mo.barrelLip(), Mo.arborFront(), crew(ROCKY, "rocky"), dash(),
   Mo.strap(), S(discY(B.x, B.z, C.RATCHET.root - 0.5, C.RATCHET.y0, C.RATCHET.y1), { tone: "hi", crease: "lo" }),
   spun("ratchetTeeth", Mo.ratchetTeeth(), D0.ratchetT), mv("click"), Mo.arborKey(), crew(PINCH, "pinch"),
   frontLow(), nearSill(), Mo.sillBush(),
@@ -59,7 +60,7 @@ const page = `<style>${css}</style>` + k.plateHtml({
   hint: "Plays on its own, on a loop",
   readout: `resting · spring ${RUN.Wend.toFixed(1)} turns · 0.00 m · 0.00 m/s`,
   keys,
-  caption: `A tinplate wind-up car with its near side cut away. Turning the key winds the mainspring round its arbor, and a click on the arbor's ratchet stops it unwinding back through the key. With the brake off, the spring's outer end turns the barrel; its teeth drive a 16:1 train to the rear axle, so ${(C.PH.full - RUN.Wend).toFixed(1)} turns of the key carry the car ${RUN.D.toFixed(1)} m across the floor, until the spring's push no longer beats rolling friction.`,
+  caption: `A tinplate wind-up coupe with its near side cut away. Turning the key winds the mainspring round its arbor, and a click on the arbor's ratchet stops it unwinding back through the key. With the brake off, the spring's outer end turns the barrel (Roo, treading its floor); its teeth drive a 16:1 train to the rear axle, so ${(RUN.wound - RUN.Wend).toFixed(1)} turns of the key carry the car ${RUN.D.toFixed(1)} m across the floor, until the spring's push no longer beats rolling friction.`,
   body: `<div class="iso-stage wc-stage" tabindex="0" role="group" aria-label="Wind-up car, playing on a loop: Space pauses, Home starts again">${svg}</div>${stepsHtml(STEPS)}`,
 });
 

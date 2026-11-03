@@ -1,5 +1,4 @@
-// The car as pure functions of the model's numbers. They are serialized into the page too, so each one
-// uses only its arguments and the other functions in this file.
+// The car as pure functions of the model's numbers, serialized into the page too, so each uses only its arguments.
 
 // The push the wheels give on the floor (N) with the spring wound W turns: torque through a 16:1 train.
 export function driveOf(C, W) {
@@ -7,15 +6,23 @@ export function driveOf(C, W) {
   return (H.eta * (H.tau0 + H.k * W)) / (H.ratio * H.r);
 }
 
-// One small step. You wind the key toward windT; the brake lever eases on or off; with the brake off the
-// spring drives the car against rolling friction and drag, and the spring lets out as the wheels turn.
+// Where the click sits on the ratchet tooth under it: 0 at the root against the steep face, 0.96 at the tip.
+export function clickOf(C, aA) {
+  const s = (2 * Math.PI) / C.RATCHET.n;
+  return (((C.CLICK.psi - aA) / s) % 1 + 1) % 1;
+}
+
+// One small step: you wind toward windT, the arbor recoils onto the click, the brake eases, and the spring drives the car.
 export function advance(S, dt, C) {
   const H = C.PH;
-  S.keyV = 0;
+  S.keyV = 0; S.backV = 0;
   if (S.windT > S.W + 1e-9) {
     const d = Math.min(S.windT - S.W, H.windRate * dt);
     S.W += d; S.aA -= 2 * Math.PI * d; S.keyV = H.windRate;
-    if (S.W >= S.windT - 1e-9) S.windT = -1;
+    if (S.W >= S.windT - 1e-9) { S.windT = -1; S.back = clickOf(C, S.aA) * (2 * Math.PI) / C.RATCHET.n; }
+  } else if (S.back > 0) {
+    const d = Math.min(S.back, H.recoil * dt);
+    S.back -= d; S.aA += d; S.W -= d / (2 * Math.PI); S.backV = H.recoil;
   }
   const bT = S.brakeOff ? 1 : 0, b0 = S.brake;
   S.brake += Math.sign(bT - S.brake) * Math.min(Math.abs(bT - S.brake), dt / 0.45);
@@ -38,8 +45,7 @@ export function stepModel(S, dt, C) {
   S.stepT += dt;
 }
 
-// The angles of everything that turns: the arbor (and key and ratchet), the barrel, the intermediate arbor
-// and the axle, all from the arbor's angle and the turns wound into the spring.
+// The angles of the arbor (key, ratchet), the barrel, the intermediate arbor and the axle, from the arbor and the turns wound.
 export function anglesOf(S) {
   const barrel = S.aA + 2 * Math.PI * S.W;
   return { arbor: S.aA, barrel, inter: -4 * barrel, axle: 16 * barrel };

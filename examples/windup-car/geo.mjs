@@ -5,8 +5,7 @@ import { P, at, faceY } from "./model.mjs";
 const area2 = (pts) => pts.reduce((s, p, i) => { const q = pts[(i + 1) % pts.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0);
 const oriented = (pts) => (area2(pts) < 0 ? [...pts].reverse() : pts);
 
-// A thin panel of any outline (concave too) in the x-z plane, from y0 back to y1 toward the viewer:
-// the face at y1, and the edges that face the viewer, each shaded by its facing.
+// A thin panel of any outline (concave too) in the x-z plane from y0 to y1: its face at y1 and the edges facing the viewer.
 export function panelXZ(poly, y0, y1) {
   const n = poly.length, ccw = area2(poly) > 0, view = L.viewOf(P);
   const F = poly.map(([x, z]) => at([x, y1, z])), B = poly.map(([x, z]) => at([x, y0, z]));
