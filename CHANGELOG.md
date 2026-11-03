@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Dial indicator crew rebuilt as an Anatomy-grade cutaway with its crew inside: you lift the plunger and slide the blocks; Roo is the plunger's return spring, Mo the hairspring and Pinch the bezel lock. Pip no longer pushes the carriage (the person's job) and Mo no longer stands on the dial. The readings come from the gear train. Files of 150 lines or fewer.
 - Longcase clock rebuilt so its crew are the clock's forces: you wind it, Mo the sloth is the weight's pull, Pinch the crab is the anchor, Rocky the raccoon the strike train's locking lever and Knock the hammer. Rocky no longer winds it (the owner's job) and Mo no longer rides the pendulum. The movement gains real wheels, pinions, barrels, the strike train and a fuller case.
 - The inlined `CREW` namespace also exposes `lathe`, `arcOf`, `circleOf` and `dotsOf`, so a part rebuilt on the page can have rivet rows and seams.
 - The on-duty rim is about half as thick (the `so-duty` filter dilates by 0.4 instead of 0.75): it read as a heavy black outline in light.

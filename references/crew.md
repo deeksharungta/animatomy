@@ -37,8 +37,8 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
 Write the crew list next to the parts list, one line each:
 
 ```
-Pip · squirrel · moving  · pushes the carriage by its knob
-Mo  · sloth    · sensing · walks the needle round the dial
+Roo · kangaroo · spring  · the plunger's return spring, drives it down onto the block
+Mo  · sloth    · sensing · the hairspring, keeps every tooth on one flank
 ```
 
 ## 3. Roles and colours
@@ -110,7 +110,7 @@ svg.push(critterSvg(c, { part: "pip" })); // build time
 ```
 
 - **Wear** is an optional list of props (section 12).
-- **Size** is the critter's height in world units. Pick it against the part it operates: about half a carriage's length, a third of a dial's diameter. A squirrel at 25 and a sloth at 18 sit well in the dial example; the vending machine's hamsters are 10 in a wheel of radius 11.
+- **Size** is the critter's height in world units. Pick it against the part it operates: about half a carriage's length, a third of a dial's diameter. A kangaroo and a sloth inside an 80 mm dial work at about a third of its diameter; the vending machine's hamsters are 10 in a wheel of radius 11.
 - **Painted, not built from solids.** Each animal is drawn once, facing left and about 100 units tall, as a set of authored shapes: body, head, ears, markings, eyes, nose, whiskers, arms, paws, feet and tail. Fills are soft gradients lit from above; light markings (belly, muzzle, cheeks) fade into the fur; short fur strokes soften every edge and hair strands follow the coat. `critter()` places that drawing in the figure's camera: at the projection of `at`, scaled so `size` world units of height match the camera, mirrored to face its heading, and drawn from behind when its heading points away from the viewer (no belly, no far eye, the tail in front). The ground shadow stays on the floor when it hops.
 - **Drawn as illustrations.** The crew is drawn like a natural-history plate, to sit in the same line language as the machine: every tone is lighter and more muted than the animal's own colour (`toneVars`), each body part has a fine warm-grey ink contour, the fur strands become pen hatching and the edge tufts a sketched, furry outline, and the eyes are small with one glint. It is a style over the same rig, so all thirteen species, every pose and heading, and the reach checks work unchanged.
 - **A rig, not a puppet.** The upper body leans around the hips, the head tips around the neck, the arms are two bones from the shoulder to the paw target (projected into the drawing), the feet step with the stride, and the tail sways from its root. `stance: "four"` swaps to the side-on drawing on all fours, whose four legs run from `stride`. `stance: "hang"` uses the upright drawing with the shoulders set back, the arms up to the paws and the feet dangling, and drops the ground shadow.
@@ -140,7 +140,7 @@ Anatomy lights exactly one part: the one to watch. Animatomy lights exactly one 
 
 - Set `data-duty` on that critter's group (`critterSvg(c, { duty: true })` or `el.toggleAttribute("data-duty", …)`). A thin rim in `--crew-duty` (white in dark, black in light) appears round its silhouette; the fill is untouched.
 - Choose it from the motion itself: the fastest-moving part's operator, above a small threshold, so a stop hands the light back. Zero a part's speed when it reaches its target: the run stops calling `update` once a beat's action is done, so a speed left from the last frame keeps the old critter lit.
-- When nothing moves, nobody is on duty and the lit accent returns to the subject part, as in Anatomy. The dial example lights the plunger at rest and toggles the plunger's `data-lit` off while a critter is on duty.
+- When nothing moves, nobody is on duty and the lit accent returns to the subject part, as in Anatomy. The dial indicator lights its needle at rest and turns it off while a critter is on duty.
 - Never light two critters, and never light a critter and a part at the same time. A part is lit only in the gaps between duties (the dial's plunger, the toaster's strip, the sharpener's pencil); while a critter is on duty, turn every part's `data-lit` off, the parts that critter moves included.
 
 ## 8. Motion
@@ -157,7 +157,7 @@ Everything in `motion.md` applies; the machine stays calm and eased. The crew ri
 ## 9. Painter's order and performance
 
 - **Within a critter** the order is fixed by the drawing: tail, far arm and far foot behind the body, then the body, collar and head, then the near foot and near arm (the tail comes forward when it is seen from behind).
-- **In the figure** a critter is one item in the slot where it physically stands, like any moving part. In the dial example Pip is drawn after the carriage, plunger and dial (he stands in front of all three) and Mo after the needle he holds. If a critter can pass in front of and behind the same part during its travel, split that part or bound the travel, as `craft.md`, section 5 says for any moving part.
+- **In the figure** a critter is one item in the slot where it physically stands, like any moving part. In the dial indicator the crew are drawn inside the cut-open case, after the plate and wheels they stand on and before the needle and bezel in front of them. If a critter can pass in front of and behind the same part during its travel, split that part or bound the travel, as `craft.md`, section 5 says for any moving part.
 - **The audit doesn't record critters.** They are drawn in their slot and checked by eye at 4× (section 10). Keep them clear of pipes and cables, and don't route a line through where a critter stands.
 - **Cost.** Posing a critter is a few transforms, so five critters add well under a millisecond to a frame; the vending machine's busiest beat runs at about 3 ms a frame. A critter's markup is large (fur strokes), about 25–40 KB each, so a page with many critters grows; past seven, split the figure.
 

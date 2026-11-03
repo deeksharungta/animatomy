@@ -15,7 +15,7 @@
   </tr>
   <tr>
     <td width="50%"><img src=".github/assets/vending-crew.webp" alt="Inside a vending machine: a brass coin rolls down a rail past a mole, who checks it, under a keypad that reads CREDIT 1.00."><br><sub><code>examples/vending-machine</code>: Dig the mole checks the coin.</sub></td>
-    <td width="50%"><img src=".github/assets/dial-indicator-crew.webp" alt="A dial indicator on a surface plate: a squirrel pushes a carriage of steel gauge blocks under the plunger while a sloth rides the dial's needle."><br><sub><code>examples/dial-indicator-crew</code>: Pip slides the blocks, Mo turns with the needle.</sub></td>
+    <td width="50%"><img src=".github/assets/dial-indicator-crew.webp" alt="A dial indicator cut open on its stand over gauge blocks: inside the case a kangaroo is the plunger's return spring, a sloth in glasses holds the hairspring wheel and a crab locks the bezel, behind the needle and gear train."><br><sub><code>examples/dial-indicator-crew</code>: the crew are the gauge's springs and lock; you slide the blocks.</sub></td>
   </tr>
   <tr>
     <td width="50%"><img src=".github/assets/token-bucket-crew.webp" alt="A token dispenser on a desk: a red squirrel pushes a slide under a tube of brass tokens, mid-burst, as envelopes drop onto a see-saw flap; a sloth in glasses turns the feeder crank above."><br><sub><code>examples/token-bucket</code>: an idea, not a machine. Pip spends a token per request.</sub></td>
