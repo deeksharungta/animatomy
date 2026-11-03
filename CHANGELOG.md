@@ -10,6 +10,7 @@
 
 ### Fixed
 
+- Gyroscope reworked: a dense bench instrument with a bench supply and tachometer, crew about 1.7× larger, Mo climbing hand over hand along the arm's rail (which is what doubles the twist), Pinch gripping the latch pin, and beats that end with the arm across the picture so nobody is hidden.
 - Click pen reworked: a 6:1 cutaway model on a display stand in a furnished desk scene; Rocky pulls the cam's lug into its notch inside the barrel instead of sitting on top of the pen, and Roo shoves the refill's collar.
 - Wind-up car reworked: Roo treads the open barrel's drum from inside instead of standing on top of it, Pinch catches the arbor's recoil on the click, Rocky works the brake lever in view, and the car and its room are far denser.
 - The skill's time estimates match real builds (a Figure 15–45 min, a Hero 30–90 min, an Epic two hours or more), and a Hero that finishes in under 30 minutes is checked against 80 parts and the toaster before it is handed over.

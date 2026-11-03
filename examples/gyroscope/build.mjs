@@ -6,10 +6,13 @@ import { crewCss, subjectCss } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml } from "../../kit/steps.mjs";
 import { WIDTH, HEIGHT, C, K, P, PH } from "./model.mjs";
-import { room, bench, props, powerBox, base, cable, toggle, lamp } from "./scene.mjs";
-import { column, post } from "./stand.mjs";
-import { dynamic, poses } from "./moving.mjs";
-import { VOLTA, MO, PINCH, crew, STEPS, REST, PARK, readoutOf } from "./story.mjs";
+import { room, bench } from "./room.mjs";
+import { props } from "./scene.mjs";
+import { supply, cables, toggle, lamp, needleOf, METER } from "./supply.mjs";
+import { base, column } from "./stand.mjs";
+import { dynamic } from "./arm.mjs";
+import { poses } from "./crewpose.mjs";
+import { VOLTA, MO, PINCH, crew, STEPS, REST, readoutOf } from "./story.mjs";
 import { PAGE_SCRIPT } from "./page.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -18,21 +21,22 @@ const theme = process.argv.includes("--light") ? "light" : "dark";
 const D0 = dynamic(K, P, C, REST), p0 = poses(C, REST, D0, MO, PINCH);
 const pr = props();
 const slots = {
-  col: column(), post: post(PARK + Math.PI),
-  pinch: crew(PINCH, p0.pinch, "pinch"), mo: crew(MO, p0.mo, "mo"), volta: crew(VOLTA, p0.volta, "volta"),
+  col: column(),
   ...Object.fromEntries(Object.entries(D0.items).map(([n, it]) => [n, it.svg])),
+  pinch: crew(PINCH, p0.pinch, "pinch"), mo: crew(MO, p0.mo, "mo"), volta: crew(VOLTA, p0.volta, "volta"),
 };
 const sortSvg = `<g data-sort>${Object.entries(slots).map(([n, svg]) => `<g data-slot="${n}">${svg}</g>`).join("")}</g>`;
-const body = [room(), bench(), pr.back, powerBox(), `<g data-part="switch">${toggle(false)}</g><g data-part="lamp">${lamp(false)}</g>`, cable(), base(), sortSvg, pr.front];
+const live = `<g data-part="switch">${toggle(false)}</g><g data-part="lamp">${lamp(false)}</g><g data-part="needle">${needleOf(K, P, METER, 0)}</g>`;
+const body = [room(), bench(), pr.back, supply(), live, base(), cables(), sortSvg, pr.front];
 
-const LABEL = "A demonstration gyroscope on a lab bench, run by three animals. A round base carries a column with a swivel on top; in the swivel's fork a balance arm tips on a trunnion. On one end of the arm a brass flywheel runs on a motor in its hub; on the other a counterweight balances it. Volta the electric eel lies along the arm carrying the motor's current from slip rings at the swivel. Mo the sloth hangs from a rail under the rotor end: his weight is the one thing the arm is not balanced against. Pinch the crab, on a post beside the column, holds the arm level until it is let go. With the rotor spinning, Mo's pull does not tip the arm down: it swings the arm round the column instead.";
+const LABEL = "A demonstration gyroscope on a lab bench, run by three animals. A cast-iron plinth on four levelling feet carries a column with a swivel on top; in the swivel's fork a balance arm tips on a trunnion, read off a quadrant. On one end of the arm a brass flywheel runs on a motor; on the other a counterweight balances it. A bench supply with a tachometer feeds the motor through slip rings at the swivel. Volta the electric eel lies along the arm from the trunnion's terminal post to the motor's brush box: he is its current. Mo the sloth hangs from a graduated rail under the rotor end and climbs out along it: his weight is the one thing the arm is not balanced against. Pinch the crab, on a shelf on the fork, holds the arm's latch lug in his claws until he lets go. With the rotor spinning, Mo's pull does not tip the arm down: it swings the arm round the column instead";
 const svg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: LABEL, body });
 
 const keys = [
   { mark: "lit", label: "On duty: whoever is doing the work right now" },
-  { mark: "raised", label: "Volta, electric eel, power: the motor current into the rotor's hub" },
-  { mark: "raised", label: "Mo, sloth, moving: the unbalanced weight whose pull swings the arm round" },
-  { mark: "raised", label: "Pinch, crab, holding: the park clamp that holds the arm level" },
+  { mark: "raised", label: "Volta, electric eel, power: the current from the trunnion's terminal to the motor's brushes" },
+  { mark: "raised", label: "Mo, sloth, moving: the unbalanced weight, climbing out along the rail to twist harder" },
+  { mark: "raised", label: "Pinch, crab, holding: the latch whose claws hold the arm level" },
 ];
 const css = `${crewCss()}${STEPS_CSS}${subjectCss(".gy-brass", "#C49A3E", "#B88C34")}
 .gy-stage{position:relative;overflow:hidden}

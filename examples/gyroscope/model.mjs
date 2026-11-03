@@ -7,28 +7,32 @@ export const HEIGHT = 540;
 // A demonstration gyroscope on a lab bench. World units are 2 mm. A brass flywheel spins on the end of a
 // balance arm; a counterweight on the other end balances it, so the arm sits level on its trunnion. A swivel
 // at the top of the column lets the arm turn round, the trunnion lets it tip. Mo hangs under the arm as the
-// one weight it isn't balanced against.
+// one weight it isn't balanced against, and climbs out along a graduated rail to change his twist.
 export const C = {
-  BENCH: { x: -112, y: -106, w: 218, d: 212, r: 3 },
-  BASE: { r: 40, z0: 0, z1: 9 },
-  COL: { r: 4, z0: 9, z1: 96 },
-  HOUSING: { z0: 96, z1: 106, r: 9 },
+  BENCH: { x: -104, y: -100, w: 208, d: 204, r: 3 },
+  PLINTH: { x: -40, y: -40, w: 80, d: 80, r: 6, z0: 4, z1: 15 },
+  BASE: { r: 26, z0: 15, z1: 21 },
+  COL: { r: 4.4, z0: 21, z1: 96 },
+  HOUSING: { z0: 96, z1: 106, r: 12.5 },
   RINGS: { z0: 106, z1: 114, r: 6.4 },
-  FORK: { z0: 114, z1: 117, r: 8.5, cheek: 7.5, top: 132, w: 7, t: 1.8 },
+  FORK: { z0: 114, z1: 117, r: 13, cheek: 7.5, top: 132, w: 7, t: 1.8 },
   PIVOT_Z: 127,
   BAR: { from: -62, to: 72, w: 6, h: 4 },
-  RAIL: { from: 30, to: 74, drop: 5, r: 0.9 },
+  RAIL: { from: 26, to: 67.5, drop: 5, r: 0.9 },
   ROTOR: { at: 82, R: 25, w: 10, hub: 7.5 },
   CW: { at: -50, r: 12.5, len: 16 },
   STOP: 18,
-  POST: { r: 20, z1: 113, rad: 3, drop: 16 },
-  EYE: 8.6,
-  PARK: -30,
-  MO: { near: 36, far: 72 },
-  // Physics, SI. The trunnion holds the rotor 164 mm out; Mo is 0.8 kg on a rail 72 to 144 mm out.
+  // Pinch's shelf hangs off the fork under the counterweight half; the latch lug hangs from the bar beside it.
+  LUG: { s: -20, drop: 15, grip: 2.4 },
+  SHELF: { s: -30, side: -2, z: 101, feet: [-29, -2], turn: -90 },
+  PARK: -60,
+  MO: { near: 32, far: 64 },
+  // Physics, SI. The trunnion holds the rotor 164 mm out; Mo is 0.8 kg on a rail, 64 or 128 mm out.
   I_S: 3.0e-3,
   I_ARM: 0.06,
   MO_KG: 0.8,
+  // The rotor spins clockwise seen from its outer face, so the arm swings clockwise seen from above.
+  SPIN: -1,
   RPM: 2400,
   MOTOR_T: 6,
   FRIC_V: 150,
@@ -50,14 +54,14 @@ export function physics(C) {
   // which is what lets the arm sink as the spin runs down.
   function step(S, dt, warp) {
     const ws = warp || 1;
-    // The spin: Volta's motor drives it toward 2000 rpm, the bearings slow it (sped up by `warp`).
+    // The spin: Volta's motor drives it toward 2400 rpm, the bearings slow it (sped up by `warp`).
     const drive = S.motor ? (W - S.w) / C.MOTOR_T : 0;
     const fric = -S.w / C.FRIC_V - (S.w > 0 ? C.FRIC_C : 0);
     const wNew = Math.max(0, S.w + (drive + (S.motor ? 0 : fric)) * dt * ws);
-    const dL = (wNew - S.w) * C.I_S / dt;
+    const dL = (C.SPIN * (wNew - S.w) * C.I_S) / dt;
     S.w = wNew;
     if (S.lock || S.hand) { S.thd = 0; S.phd = 0; return S; }
-    const Ls = C.I_S * S.w, I = inertia(S), tq = torque(S);
+    const Ls = C.SPIN * C.I_S * S.w, I = inertia(S), tq = torque(S);
     const c = Math.cos(S.th), s = Math.sin(S.th);
     const thdd = (-I * S.phd * S.phd * s * c + Ls * S.phd * c - tq * c - C.TRUNNION * S.thd) / I;
     const phdd = (-C.SWIVEL * S.phd + 2 * I * S.phd * S.thd * c * s - Ls * S.thd * c - dL * s) / (I * c * c);
@@ -79,14 +83,24 @@ export function physics(C) {
 
 export const PH = physics(C);
 
-// The camera frames the machine; the bench runs on past the edges.
-const ring = (r, z, n = 24) => Array.from({ length: n }, (_, i) => [r * Math.cos((i / n) * 2 * Math.PI), r * Math.sin((i / n) * 2 * Math.PI), z]);
-const Bn = C.BENCH, TOP = 166;
+// The arm sweeps the whole card, so the camera frames the sweep and the stand (as the tellurion does): the
+// bench and the two walls run on past the edges of the figure.
+const TOP = 172, sweep = Array.from({ length: 48 }, (_, i) => [94 * Math.cos((i / 48) * 2 * Math.PI), 94 * Math.sin((i / 48) * 2 * Math.PI)]);
 export const ROOM_TOP = TOP;
-export const P = k.fitProjection([...k.boxCorners({ ...Bn, x: Bn.x - 6, y: Bn.y - 6, w: Bn.w + 6, d: Bn.d + 6 }, -14, 0), [Bn.x - 6, Bn.y - 6, TOP + 14], [Bn.x + Bn.w, Bn.y - 6, TOP + 14], [Bn.x - 6, Bn.y + Bn.d, TOP + 14]], WIDTH, HEIGHT, { pad: 10, azimuth: 45, elevation: 28 });
+export const P = k.fitProjection([...sweep.map(([x, y]) => [x, y, -4]), ...sweep.map(([x, y]) => [x, y, 154])], WIDTH, HEIGHT, { pad: 8, azimuth: 45, elevation: 28 });
 export const K = { ...k, ...L };
 export const at = (p) => k.iso(p, P);
 export const S_ = (paths, style) => k.solidSvg(paths, style);
 export const Ln = (d, style) => k.lineSvg(d, style);
 export const Dt = (points, style) => k.dotsSvg(points, style);
 export const UP = [0, 0, 1];
+// A round cord along a list of points, with a ball at every bend.
+export function cordOf(pts, r, tone = "lo") {
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p = pts[i], q = pts[i + 1], d = [q[0] - p[0], q[1] - p[1], q[2] - p[2]], l = Math.hypot(...d);
+    out.push(S_(L.solidOf([[0, r], [l, r]], L.frameAlong(p, d.map((x) => x / l)), P), { tone, crease: "none" }));
+    if (i) out.push(S_(L.sphereOf(p, r, P, { steps: 16 }), { tone }));
+  }
+  return out.join("");
+}
