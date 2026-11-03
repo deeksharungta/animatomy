@@ -19,7 +19,7 @@
   </tr>
   <tr>
     <td width="50%"><img src=".github/assets/token-bucket-crew.webp" alt="A token dispenser on a desk: a red squirrel pushes a slide under a tube of brass tokens, mid-burst, as envelopes drop onto a see-saw flap; a sloth in glasses turns the feeder crank above."><br><sub><code>examples/token-bucket</code>: an idea, not a machine. Pip spends a token per request.</sub></td>
-    <td width="50%"><img src=".github/assets/power-grid-crew.webp" alt="A turbine hall cut away: a steam turbine with a flyball governor and a sloth on its lever, a generator with its hatch off, a breaker cubicle with a kangaroo in its spring mechanism, copper busbars to a disconnector with a crab at its interlock, and a mouse on the synchroscope desk."><br><sub><code>examples/power-grid</code>: a generator joins the grid, and why a disconnector never breaks current.</sub></td>
+    <td width="50%"><img src=".github/assets/power-grid-crew.webp" alt="A power station on a concrete plinth: a steam turbine and a 660 MW generator on their deck, a step-up transformer with radiators, an oil pump wheel with two hamsters, a 400 kV breaker and disconnector, and a lattice gantry with copper conductors running out to the line."><br><sub><code>examples/power-grid</code>: a generator joins the grid, and why a disconnector never breaks current.</sub></td>
   </tr>
   <tr>
     <td width="50%"><img src=".github/assets/sand-casting-crew.webp" alt="A foundry corner: a teapot ladle on a hoist over a green-sand mould cut in half to show its pouring cup, sprue, runner, core and riser; an otter waits at the riser and a crab clamps the flask."><br><sub><code>examples/sand-casting</code>: pour the steel yourself; too slow and it freezes short.</sub></td>

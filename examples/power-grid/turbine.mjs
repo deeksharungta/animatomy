@@ -1,94 +1,91 @@
-import * as k from "../../kit/iso-kit.mjs";
-import * as L from "../../kit/lathe.mjs";
-import { C, P, at, S, Ln, D, box, rod, turned, circleY } from "./model.mjs";
+import { k, L, P, at, S, Ln, D, box, seg, rod, turned, circleX, ringY } from "./shapes.mjs";
+import { C } from "./model.mjs";
 
-// The steam turbine: a split casing (HP and LP sections) bolted at its horizontal joint, the control valve on top
-// fed by the steam pipe from the back wall, and the governor column on the front pedestal.
-const { AY, SH } = C;
-const X = [1, 0, 0];
-const half = (r, up, n = 24) => Array.from({ length: n + 1 }, (_, i) => { const t = (up ? -Math.PI / 2 : Math.PI / 2) + (i / n) * Math.PI; return [r * Math.cos(t), r * Math.sin(t)]; });
-const casing = (x0, x1, r, z, up) => L.prismOf(L.frameOf([x0, AY, z], X, [0, 0, 1], [0, -1, 0]), half(r, up), 0, x1 - x0, P);
-const SECT = [[-196, -172, 17], [-172, -142, C.TURB.r]];
-export const HP_TOP = SH + 3 + 17;
+// The low-pressure turbine: a double-flow casing whose hood is cut open over its last stages, the bearing
+// pedestal and coupling to the generator, and the governor valve chest on the deck in front of it.
+const { AY, SH } = C, LP = C.LP, Z = C.DECK_Z, X = [1, 0, 0];
+const on = (x, r, t) => [x, AY + r * Math.cos(t), SH + r * Math.sin(t)];
+export const LP_CUT = { x0: -252, x1: -210, t0: 0.1, t1: 1.5 };
 
-export function turbineLow() {
-  const out = [];
-  out.push(`<path class="iso-halo" d="${k.haloOf({ x: -228, y: AY - 30, w: 98, d: 60, r: 3 }, 0, 6, P)}"/>`);
-  out.push(S(box(-228, AY - 30, 0, -130, AY + 30, 6, 1, 0.6), { tone: "lo" }));
-  out.push(D([[-224, AY + 30, 4], [-180, AY + 30, 4], [-134, AY + 30, 4]].map(at), { size: 0.55 }));
-  // Holding-down bolts along the baseplate's top, and the oil drain from the pedestal along its front edge.
-  out.push(D([-194, -182, -170, -158, -146, -136].map((x) => at([x, AY + 26, 6])), { size: 0.6, tone: "mid" }));
-  out.push(S(rod([-198, AY + 17, 9], [1, 0, 0], 1.1, 0, 52, 12), { tone: "mid" }) + S(box(-147, AY + 15, 6, -143, AY + 19, 11, 0.3), { tone: "mid" }));
-  // The front pedestal carries the thrust bearing and the governor's drive.
-  out.push(S(box(-226, AY - 14, 6, -198, AY + 14, SH + 4, 1, 0.6), { tone: "mid", inner: Ln(k.sideSeam({ x: -226, y: AY - 14, w: 28, d: 28, r: 1 }, SH - 6, P, 2), { tone: "faint" }) }));
-  out.push(D([[-222, AY + 14, 12], [-202, AY + 14, 12], [-198, AY + 10, 12], [-198, AY - 10, 12]].map(at), { size: 0.5 }));
-  // On the pedestal's face: the oil sight glass, the speed pickup's box and its rating plate.
-  out.push(S(rod([-206, AY + 14, 28], [0, 1, 0], 2.6, 0, 1.2, 24), { tone: "mid" }) + Ln(circleY(-206, AY + 15.2, 28, 1.6, 24), { tone: "lo" }));
-  out.push(S(box(-221, AY + 14, 26, -213, AY + 17, 32, 0.4), { tone: "mid" }) + D([at([-217, AY + 17, 29])], { size: 0.6, tone: "hi" }));
-  out.push(S(box(-221, AY + 14, 14, -205, AY + 14.6, 20, 0.2), { tone: "hi" }));
-  out.push(Ln([[-219, -209], [-219, -213], [-219, -211]].map(([a, b], i) => k.segment([a, AY + 14.6, 18.6 - i * 1.3], [b, AY + 14.6, 18.6 - i * 1.3], P)).join(""), { tone: "lo", free: true }));
-  // Support paws under the joint flange, then the lower halves of both sections.
-  for (const x of [-190, -150]) out.push(S(box(x - 3, AY + 18, 6, x + 3, AY + 26, SH, 0.4), { tone: "mid" }));
-  for (const [x0, x1, r] of SECT) out.push(S(casing(x0, x1, r, SH, false), { tone: "mid" }));
+export function lpCasing() {
+  const out = [], { x0, x1, r } = LP;
+  out.push(S(box(x0 + 2, AY - r + 4, Z, x1 - 2, AY + r - 6, Z + 1.4, 0.4), { tone: "lo" }));
+  // The lower half: a box with stiffening ribs and a horizontal joint flange at the shaft line.
+  const ribs = [-248, -234, -220].map((x) => seg([x, AY + r - 4, Z + 1.4], [x, AY + r - 4, SH - 2]));
+  out.push(S(box(x0, AY - r + 2, Z + 1.4, x1, AY + r - 4, SH - 2, 0.8, 0.5), { tone: "mid", inner: Ln(ribs.join(""), { tone: "faint" }) }));
+  out.push(S(box(x0 - 1.5, AY - r, SH - 2, x1 + 1.5, AY + r - 2, SH, 0.5, 0.4), { tone: "mid" }));
+  out.push(D(Array.from({ length: 12 }, (_, i) => at([x0 + 2 + i * 5.2, AY + r - 2, SH - 1])), { size: 0.45, tone: "lo" }));
+  // The hood: a half cylinder with end walls, seams over each stage.
+  const F = L.frameOf([x0 + 2, AY, SH], X, [0, 1, 0], [0, 0, 1]);
+  const half = Array.from({ length: 41 }, (_, i) => [r * Math.cos((i / 40) * Math.PI), r * Math.sin((i / 40) * Math.PI)]);
+  const seams = [3, 53].map((s) => L.arcOf(F, s, r, P, { from: 0, to: Math.PI })).join("");
+  out.push(S(L.prismOf(F, half, 0, x1 - x0 - 4, P), { tone: "mid", inner: Ln(seams, { tone: "faint" }) }));
   return out.join("");
 }
-
-export function turbineHigh() {
-  const out = [];
-  const fl = { x: -197, y: AY - C.TURB.r - 4, w: 56, d: 2 * C.TURB.r + 8, r: 1 };
-  out.push(S(k.slabOf(fl, SH, 3, P, 2, 0.4), { tone: "mid" }));
-  const bolts = [];
-  for (let x = -193; x <= -144; x += 7) bolts.push([x, fl.y + fl.d - 1.6, SH + 3]);
-  for (let y = fl.y + 3; y < fl.y + fl.d - 2; y += 7) bolts.push([-144, y, SH + 3]);
-  out.push(D(bolts.map(at), { size: 0.6, tone: "mid" }));
-  for (const [x0, x1, r] of SECT) out.push(S(casing(x0, x1, r, SH + 3, true), { tone: "mid" }));
-  // Stiffening ribs round the upper halves, and the lifting lugs on top.
-  for (const [x, r] of [[-188, 17], [-180, 17], [-164, C.TURB.r], [-156, C.TURB.r], [-148, C.TURB.r]]) out.push(S(casing(x, x + 1.4, r + 0.8, SH + 3, true), { tone: "mid" }));
-  for (const x of [-168, -146]) out.push(S(box(x - 1, AY - 1.2, SH + 3 + C.TURB.r - 0.5, x + 1, AY + 1.2, SH + 3 + C.TURB.r + 4, 0.3), { tone: "hi" }));
-  // Thrust-bearing housing between pedestal and casing, and the shaft gland at the LP end.
-  out.push(S(turned([-204, AY, SH], X, [[0, 9], [8, 9]]), { tone: "mid" }));
-  out.push(S(turned([-142, AY, SH], X, [[0, 7], [3, 7], [3, 4.5], [16, 4.5]]), { tone: "hi" }));
-  out.push(S(turned([-137, AY, SH], X, [[0, 6], [0.6, 10], [2, 10], [2, 9.6], [2.4, 9.6], [2.4, 10], [3.8, 10], [4.4, 6]]), { tone: "mid" }));
-  // The control valve: body, bonnet with its studs, and the steam pipe from the back wall with its flanges.
-  const vx = C.VALVE.x;
-  out.push(S(box(vx - 9, C.FLOOR_Y, 62, vx + 9, C.FLOOR_Y + 2, 80, 0.4, 0.4), { tone: "mid" }));
-  out.push(D([[vx - 7, C.FLOOR_Y + 2, 64], [vx + 7, C.FLOOR_Y + 2, 64], [vx - 7, C.FLOOR_Y + 2, 78], [vx + 7, C.FLOOR_Y + 2, 78]].map(at), { size: 0.5 }));
-  out.push(S(rod([vx, C.FLOOR_Y + 2, 71], [0, 1, 0], 5.4, 0, 2, 24), { tone: "mid" }));
-  out.push(S(rod([vx, C.FLOOR_Y + 4, 71], [0, 1, 0], 3.2, 0, C.AY - 4 - C.FLOOR_Y - 4, 18), { tone: "mid", inner: Ln([-80, -40].map((y) => L.arcOf(L.frameAlong([vx, y, 71], [0, 1, 0]), 0, 3.2, P)).join(""), { tone: "faint" }) }));
-  out.push(S(rod([vx, AY - 12, 71], [0, 1, 0], 5, 0, 2, 20), { tone: "mid" }));
-  // The steam pressure gauge on its siphon, and the stop valve's handwheel.
-  out.push(S(k.cylinder(vx, -60, 0.8, 74, 8, P, 10), { tone: "mid", crease: "none" }));
-  out.push(S(rod([vx, -61.2, 86], [0, 1, 0], 4, 0, 2.2, 28), { tone: "mid" }));
-  out.push(Ln(circleY(vx, -59, 86, 3.2, 32), { tone: "lo" }) + Ln(k.segment([vx, -59, 86], [vx + 2.2, -59, 87.8], P), { tone: "hi", free: "end" }));
-  out.push(S(turned([vx, -96, 71], [0, 0, 1], [[0, 5.2], [1.6, 6, 1], [7, 6, 1], [8.6, 5.2]]), { tone: "mid" }));
-  out.push(S(k.cylinder(vx, -96, 1, 79.6, 6, P, 12), { tone: "mid" }));
-  out.push(S(turned([vx, -96, 85.6], [0, 0, 1], [[0, 0], [0, 6], [1.2, 6]]), { tone: "hi" }));
-  out.push(Ln(k.ring(vx, -96, 3, 86.8, P, 24), { tone: "lo" }));
-  out.push(S(turned([vx, AY, HP_TOP - 1], [0, 0, 1], [[0, 4.5], [2, 6, 1], [8, 7, 1], [13, 5.5, 1], [15, 4.5]]), { tone: "hi" }));
-  out.push(S(k.cylinder(vx, AY, 5.6, HP_TOP + 14, 2, P, 28, 0.4), { tone: "mid" }));
-  out.push(D(Array.from({ length: 6 }, (_, i) => { const a = (i / 6) * Math.PI * 2 + 0.3; return at([vx + 4.4 * Math.cos(a), AY + 4.4 * Math.sin(a), HP_TOP + 16]); }), { size: 0.5 }));
-  out.push(S(k.cylinder(vx, AY, 2.6, HP_TOP + 16, 4, P, 20), { tone: "mid" }));
-  out.push(Ln(k.sideArc(vx, AY, 2.6, HP_TOP + 18, P, 16), { tone: "faint" }));
+export function lpWindow(r = LP.r + 0.2) {
+  const W = LP_CUT, pts = [], n = 16;
+  for (let i = 0; i <= n; i++) pts.push(at(on(W.x0, r, W.t0 + ((W.t1 - W.t0) * i) / n)));
+  for (let i = 0; i <= n; i++) pts.push(at(on(W.x1, r, W.t1 - ((W.t1 - W.t0) * i) / n)));
+  return k.pathOf(pts, true);
+}
+// Inside the hood: the dark exhaust space, the cut wall at the near end, the inner casing and the shaft.
+export function lpInside() {
+  const W = LP_CUT, out = [`<path class="pg-void" d="${lpWindow()}"/>`];
+  const face = [];
+  for (let i = 0; i <= 12; i++) face.push(at(on(W.x1, LP.r, W.t0 + ((W.t1 - W.t0) * i) / 12)));
+  for (let i = 12; i >= 0; i--) face.push(at(on(W.x1, LP.r - 1.6, W.t0 + ((W.t1 - W.t0) * i) / 12)));
+  out.push(`<path class="iso-shade-2" d="${k.pathOf(face, true)}"/><path class="pg-rim" d="${k.pathOf(face, true)}"/>`);
+  out.push(S(turned([W.x0 - 2, AY, SH], X, [[0, 9], [6, 9], [8, 12, 1], [W.x1 - W.x0 - 4, 12], [W.x1 - W.x0 + 2, 9]], { smooth: false }), { tone: "lo" }));
   return out.join("");
 }
+export function lpRim() {
+  return `<path class="pg-rim" d="${lpWindow()}"/>` + D([0.3, 0.8, 1.3].flatMap((t) => [at(on(LP_CUT.x0 - 2, LP.r + 0.3, t)), at(on(LP_CUT.x1 + 2, LP.r + 0.3, t))]), { size: 0.6, tone: "mid" });
+}
 
-// The governor: a gear case on the pedestal, the tall spindle housing, and the fulcrum post whose
-// sliding block is the speed changer.
-export function governorBase() {
-  const { x, y } = C.GOV;
+// The bearing pedestal between turbine and generator, the shaft and the coupling guard.
+export function pedestal(xa, xb) {
   const out = [];
-  out.push(S(k.cylinder(x, y, 7, SH + 4, 3, P, 32, 0.4), { tone: "mid" }));
-  out.push(S(k.cylinder(x, y, 5, SH + 7, 9, P, 28, 0.4), { tone: "hi" }));
-  out.push(D(Array.from({ length: 6 }, (_, i) => { const a = (i / 6) * Math.PI * 2; return at([x + 6 * Math.cos(a), y + 6 * Math.sin(a), SH + 7]); }), { size: 0.45 }));
-  out.push(S(k.cylinder(x, y, 2.4, SH + 16, 66 - SH, P, 18), { tone: "mid", crease: "none" }));
-  // The fulcrum post rises from the thrust-bearing housing.
-  const fx = C.LEVER.pivot[0], fy = AY + 5.5;
-  out.push(S(box(fx - 3, fy - 3, SH + 9, fx + 3, fy + 3, SH + 12, 0.4), { tone: "mid" }));
-  out.push(S(k.cylinder(fx, fy, 1.5, SH + 12, 100 - SH - 12, P, 14), { tone: "mid", crease: "none" }));
-  out.push(D([[fx - 2, fy + 3, SH + 11], [fx + 2, fy + 3, SH + 11]].map(at), { size: 0.4 }));
+  out.push(S(box(xa, AY - 12, Z, xb, AY + 12, SH - 5, 0.6, 0.5), { tone: "mid", inner: Ln(k.sideSeam({ x: xa, y: AY - 12, w: xb - xa, d: 24, r: 0.6 }, SH - 12, P, 2), { tone: "faint" }) }));
+  out.push(S(turned([xa - 0.5, AY, SH], X, [[0, 8], [1.2, 9], [xb - xa - 0.2, 9], [xb - xa + 1, 8]], { smooth: false }), { tone: "mid" }));
+  out.push(D([[xa + 2, AY + 12, Z + 3], [xb - 2, AY + 12, Z + 3]].map(at), { size: 0.5 }));
+  out.push(S(k.cylinder((xa + xb) / 2, AY + 4, 1, SH + 8, 5, P, 12), { tone: "hi" }));
+  out.push(Ln(circleX(xb + 0.6, AY, SH, 4.6, 28), { tone: "lo" }));
   return out.join("");
 }
-export function governorCap() {
-  const { x, y } = C.GOV;
-  return S(k.cylinder(x, y, 3, C.GOV_TOP, 3, P, 20, 0.4), { tone: "mid" }) + S(k.cylinder(x, y, 1.6, C.GOV_TOP + 3, 4, P, 16), { tone: "hi" }) + Ln(k.knurl(x, y, 1.6, C.GOV_TOP + 3, C.GOV_TOP + 7, 12, P, 0.2), { tone: "lo" });
+export const shaft = (xa, xb, r = 4.4) => S(rod([xa, AY, SH], X, r, 0, xb - xa, 20), { tone: "hi", crease: "lo" });
+
+// The governor valve chest: a pedestal, the body with its outlet into the casing, the bonnet, the yoke whose
+// two pillars carry the crosshead guides, and the closing spring can on top. The steam main rises from below.
+const V = C.VALVE;
+export const YOKE = { z0: Z + 20, z1: Z + 46, dx: 7.5, rest: Z + 28 };
+export function valveBack() {
+  const out = [], { x, y } = V, z0 = Z;
+  out.push(S(k.cylinder(x, y, 5, 0, Z - 5, P, 24), { tone: "mid", crease: "none" }));
+  out.push(S(k.cylinder(x, y, 7, Z - 5.6, 1.2, P, 28), { tone: "mid" }));
+  out.push(S(box(x - 8, y - 7, z0, x + 8, y + 7, z0 + 2, 0.5), { tone: "lo" }));
+  // Outlet to the casing's front: a short pipe along -y with flanges.
+  out.push(S(rod([x, y - 6, z0 + 10], [0, -1, 0], 3.6, 0, 9, 18), { tone: "hi" }));
+  out.push(S(L.disc(8, 9.2, 5.4, L.frameAlong([x, y - 6, z0 + 10], [0, -1, 0]), P), { tone: "mid" }));
+  return out.join("");
+}
+export function valveBody() {
+  const out = [], { x, y, r } = V, z0 = Z + 2;
+  const prof = [[0, r - 1], [1.2, r], [10, r, 1], [12, r - 1.4, 1], [14, 4.6], [16, 4.6], [16, 6], [18, 6]];
+  out.push(S(turned([x, y, z0], [0, 0, 1], prof, { smooth: false }), { tone: "mid", inner: Ln(k.sideArc(x, y, r, z0 + 6, P, 24), { tone: "faint" }) }));
+  out.push(D(Array.from({ length: 6 }, (_, i) => { const t = (i / 6) * Math.PI * 2 + 0.3; return at([x + 5.2 * Math.cos(t), y + 5.2 * Math.sin(t), z0 + 18]); }), { size: 0.45 }));
+  return out.join("");
+}
+// The yoke's back pillar and guides (drawn before Ollie and the crosshead) and the spring can above.
+export function yokeBack() {
+  const { x, y } = V, out = [];
+  for (const dx of [-YOKE.dx, YOKE.dx]) out.push(S(box(x + dx - 1, y - 1.6, YOKE.z0, x + dx + 1, y + 1.6, YOKE.z1, 0.3), { tone: "mid", inner: Ln(seg([x + dx - 1, y + 1.6, YOKE.rest - 2], [x + dx - 1, y + 1.6, YOKE.rest + V.lift + 3]), { tone: "faint" }) }));
+  return out.join("");
+}
+export function springCan() {
+  const { x, y } = V, z = YOKE.z1, out = [];
+  out.push(S(box(x - YOKE.dx - 2, y - 2.6, z, x + YOKE.dx + 2, y + 2.6, z + 2, 0.4, 0.4), { tone: "mid" }));
+  out.push(S(k.cylinder(x, y, 5.6, z + 2, 12, P, 32), { tone: "mid", crease: "none", inner: Ln([z + 6, z + 10].map((zz) => k.sideArc(x, y, 5.6, zz, P, 24)).join(""), { tone: "faint" }) }));
+  out.push(S(k.cylinder(x, y, 6.2, z + 14, 1.4, P, 32), { tone: "mid" }) + D(Array.from({ length: 6 }, (_, i) => { const t = (i / 6) * Math.PI * 2; return at([x + 5.2 * Math.cos(t), y + 5.2 * Math.sin(t), z + 15.4]); }), { size: 0.45 }));
+  out.push(Ln(ringY(y + 5.6, x - 1.6, x + 1.6, z + 5, z + 11, 0.6, 2), { tone: "lo" }));
+  return out.join("");
 }
