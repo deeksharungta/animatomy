@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+- Eight new examples, built from the website's test prompts: a click pen, a debounce timer (an idea figure), a rear derailleur you shift with ← →, a twist doorbell, a gyroscope, a pin-tumbler lock with six crew, a soldering iron with a WebGL glow, and a wind-up car.
+- `CREW.setDuty(el, on)` (in `kit/critters.mjs` and on every page) lights the on-duty rim at once the first time, then shows a change only once it has lasted 320 ms, so every rim the reader sees stays at least 300 ms and a speed hovering at a threshold can't make it blink. Every example uses it.
+- `scripts/flicker.mjs` watches a run page for a loop and reports any rim that blinks (on or off for under 300 ms).
+
+### Fixed
+
+- The click pen's rims blinked many times a second as a part's speed crossed its duty threshold back and forth.
+
 ### Changed
 
 - The run never freezes the machine between beats. Where running on through the caption would reach the next beat's action early, the run now moves on to that beat as soon as the action is done, instead of waiting at the end of the action; the reader pauses with Space.

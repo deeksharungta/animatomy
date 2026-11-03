@@ -1,0 +1,9 @@
+// The words under the figure: the accessible label, the legend and the caption.
+export const LABEL = "A locksmith's cutaway demonstrator on a bench: a desk drawer's lock, cut through its keyway. A pin-tumbler cylinder sits in the drawer front; five pin stacks, each a key pin and a driver, cross the shear line between the plug and its housing. Five mice stand in the chambers as the pin springs, pressing each stack down. Behind the drawer front, a crank on the plug's tail lifts a lever whose other end pulls a bolt down out of a keep in the desk top; Roo the kangaroo stands on the lever and is the bolt's spring. A brass key goes in from the right.";
+export const KEYS = [
+  { mark: "lit", label: "On duty: whoever is doing the work right now" },
+  { mark: "raised", label: "Nib, Bit, Dot, Fig and Tam, mice, holding: the five pin springs, pressing each pin stack down across the shear line" },
+  { mark: "raised", label: "Roo, kangaroo, spring: the bolt spring, stamping the lever down so the bolt stays up in its keep" },
+  { mark: "flat", label: "The key, in brass: the one thing in its own colour" },
+];
+export const CAPTION = "A pin-tumbler lock: the plug turns inside its housing only along the shear line, the surface where the two meet. Each of the five chambers holds a key pin and a driver pressed down by a spring, so with no key every driver crosses the shear line and pins the plug. Key A's cuts (depths 3, 6, 2, 5, 1, each step 0.45 mm) lift every key pin until its top is exactly on the shear line; key B's third cut is three steps deeper, its driver stays 1.35 mm across the line, and the plug stops after 1.5° of play. Turned 90°, the plug's crank pin rises 6 mm and lifts the lever, whose other end pulls the bolt 5 mm down, clear of its 3.5 mm keep. Pins 3 mm across at a 5 mm pitch in a 13 mm plug; drawn at true size.";

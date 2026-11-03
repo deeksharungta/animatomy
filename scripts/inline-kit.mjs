@@ -31,7 +31,7 @@ const unmodule = (file) => readFileSync(join(KIT, file), "utf8").replace(/^impor
 const CREW_FILES = ["shapes", "draw", "parts", "art-hamster-mouse", "art-squirrel-beaver", "art-sloth-mole-crab", "art-kangaroo-fennec", "art-raccoon-eel", "art-otter-woodpecker", "cast", "colour", "paint", "head", "pieces", "eel", "rig", "svg"];
 
 export function crewScript() {
-  return `const CREW = (() => {\n${unmodule("lathe.mjs")}\nreturn (() => {\n${CREW_FILES.map((f) => unmodule(`crew/${f}.mjs`)).join("\n")}\nreturn { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, lathe, arcOf, circleOf, dotsOf, fadeOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };\n})();\n})();\n`;
+  return `const CREW = (() => {\n${unmodule("lathe.mjs")}\nreturn (() => {\n${CREW_FILES.map((f) => unmodule(`crew/${f}.mjs`)).join("\n")}\nreturn { critter, critterSvg, paintCritter, setDuty, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, lathe, arcOf, circleOf, dotsOf, fadeOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };\n})();\n})();\n`;
 }
 
 export function stepsScript() {

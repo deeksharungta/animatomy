@@ -8,4 +8,4 @@ export { ROLES, SPECIES } from "./crew/cast.mjs";
 export { subjectCss, paletteOf, crewCss } from "./crew/colour.mjs";
 export { PROPS } from "./crew/head.mjs";
 export { critter } from "./crew/rig.mjs";
-export { critterSvg, paintCritter, critterBox } from "./crew/svg.mjs";
+export { critterSvg, paintCritter, critterBox, setDuty } from "./crew/svg.mjs";

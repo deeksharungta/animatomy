@@ -3940,7 +3940,19 @@ function critterBox(c) {
   return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
 }
 
-return { critter, critterSvg, paintCritter, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, lathe, arcOf, circleOf, dotsOf, fadeOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };
+// The on-duty rim, held steady: the first call lights it at once, and after that a change shows only once it has
+// lasted `hold` ms, so a part whose speed hovers at a threshold can't make the rim blink. A timer applies the change,
+// so a frozen frame (a beat shot, reduced motion) still ends up right. Figures call this, never toggle data-duty.
+function setDuty(el, on, hold = 320) {
+  const s = el.__duty;
+  if (!s) { el.__duty = { want: on, timer: 0 }; el.toggleAttribute("data-duty", on); return; }
+  if (on === s.want) return;
+  s.want = on;
+  clearTimeout(s.timer);
+  s.timer = setTimeout(() => el.toggleAttribute("data-duty", s.want), hold);
+}
+
+return { critter, critterSvg, paintCritter, setDuty, SPECIES, ROLES, ellipsoidOf, sphereOf, solidOf, lathe, arcOf, circleOf, dotsOf, fadeOf, ringBand, disc, prismOf, ribsOf, spokesOf, frameAlong, frameOf, pointOf, add3, sub3, mul3, unit3, len3, cross3, dot3 };
 })();
 })();
 const STEPS = (() => {
@@ -4468,7 +4480,7 @@ function paintCrew(name, node, spec, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(node, CREW.critter(spec, pose, P));
-  node.toggleAttribute("data-duty", duty);
+  CREW.setDuty(node, duty);
 }
 // The glow and the spark, in the same camera as the drawing, following the run's zoom.
 const glow = glLayer({ canvas: stage.querySelector(".tz-gl"), fragment: FRAG, view: [600, 520], camera: CAMERA, uniforms: ["uGlow", "uBreadZ", "uLight", "uBox"], maxRatio: 1.25 });

@@ -967,7 +967,7 @@ function paintCrew(name, node, spec, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(node, CREW.critter(spec, pose, P));
-  node.toggleAttribute("data-duty", duty);
+  CREW.setDuty(node, duty);
 }
 // The glow and the spark, in the same camera as the drawing, following the run's zoom.
 const glow = glLayer({ canvas: stage.querySelector(".tz-gl"), fragment: FRAG, view: [${WIDTH}, ${HEIGHT}], camera: CAMERA, uniforms: ["uGlow", "uBreadZ", "uLight", "uBox"], maxRatio: 1.25 });

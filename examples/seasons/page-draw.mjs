@@ -55,7 +55,7 @@ function paintCrew(name, node, spec, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(node, CREW.critter(spec, pose, P));
-  node.toggleAttribute("data-duty", duty);
+  CREW.setDuty(node, duty);
 }
 const glow = glLayer({ canvas: stage.querySelector(".sn-gl"), fragment: GLOW, view: [${WIDTH}, ${HEIGHT}], camera: CAMERA, uniforms: ["uLamp", "uLampP", "uLight"], maxRatio: 1.25 });
 let view = VIEWS[0] ? [...VIEWS[0]] : [0, 0, ${WIDTH}, ${HEIGHT}];

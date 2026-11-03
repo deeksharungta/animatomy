@@ -38,7 +38,7 @@ function paintCrew(name, spec, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(node, CREW.critter(spec, pose, P));
-  node.toggleAttribute("data-duty", duty);
+  CREW.setDuty(node, duty);
 }
 // Only what changed reaches the DOM.
 const shown = new Map();

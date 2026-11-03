@@ -33,7 +33,7 @@ function paintCrew(name, node, spec, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(node, CREW.critter(spec, pose, P));
-  node.toggleAttribute("data-duty", duty);
+  CREW.setDuty(node, duty);
 }
 const write = (name, html) => { if (last[name] !== html) { el[name].innerHTML = html; last[name] = html; } };
 function draw() {

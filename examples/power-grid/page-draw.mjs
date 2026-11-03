@@ -17,7 +17,7 @@ function paintCrew(name, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(crewEl[name], CREW.critter(CREW_SPEC[name], pose, P));
-  crewEl[name].toggleAttribute("data-duty", duty);
+  CREW.setDuty(crewEl[name], duty);
 }
 const UNI = ["uLamp", "uSF", "uAir", "uHeat", "uOpen", "uGapX", "uGap", "uLight", "uCur", "uCurPh"];
 const glow = glLayer({ canvas: stage.querySelector(".pg-arcs"), fragment: GLOW, view: SIZE, camera: CAMERA, uniforms: UNI, maxRatio: 1.5 });

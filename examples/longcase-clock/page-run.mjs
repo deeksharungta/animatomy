@@ -20,7 +20,7 @@ function draw() {
   const p = poses(C, S, D);
   for (const n of CREWS) write(n + ":c", JSON.stringify(p[n]) + (S.duty === n), () => {
     CREW.paintCritter(el[n], CREW.critter(SPEC[n], p[n], P));
-    el[n].toggleAttribute("data-duty", S.duty === n);
+    CREW.setDuty(el[n], S.duty === n);
   });
   const word = S.swap >= 0 ? "eight days on" : S.winding ? "winding" : S.sp >= 0 && S.sp < 1 ? "striking one" : S.ring > 0.3 ? "one" : S.amp > 0.6 ? (Math.floor(S.ph / Math.PI) % 2 ? "tock" : "tick") : S.amp > 0.05 ? "starting" : S.wt > C.WEIGHT.low + 1 ? "wound" : "stopped";
   const text = word + " · " + hms(S.t) + " · weight " + Math.round(S.wt - C.WEIGHT.low) + " cm up";

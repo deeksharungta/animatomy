@@ -70,3 +70,15 @@ export function critterBox(c) {
   const xs = [m[0] + x0 * m[2], m[0] + x1 * m[2]], ys = [m[1] + y0 * m[3], m[1] + y1 * m[3]];
   return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
 }
+
+// The on-duty rim, held steady: the first call lights it at once, and after that a change shows only once it has
+// lasted `hold` ms, so a part whose speed hovers at a threshold can't make the rim blink. A timer applies the change,
+// so a frozen frame (a beat shot, reduced motion) still ends up right. Figures call this, never toggle data-duty.
+export function setDuty(el, on, hold = 320) {
+  const s = el.__duty;
+  if (!s) { el.__duty = { want: on, timer: 0 }; el.toggleAttribute("data-duty", on); return; }
+  if (on === s.want) return;
+  s.want = on;
+  clearTimeout(s.timer);
+  s.timer = setTimeout(() => el.toggleAttribute("data-duty", s.want), hold);
+}

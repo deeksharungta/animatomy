@@ -12,7 +12,7 @@ function paintCrew(name, node, spec, pose, duty) {
   if (lastPose[name] === key) return;
   lastPose[name] = key;
   CREW.paintCritter(node, CREW.critter(spec, pose, P));
-  node.toggleAttribute("data-duty", duty);
+  CREW.setDuty(node, duty);
 }
 const heat = glLayer({ canvas: stage.querySelector(".es-heat"), fragment: HEAT, view: SIZE, camera: CAMERA, uniforms: ["uHeat", "uLight", "uBox"], maxRatio: 1.25 });
 const steam = glLayer({ canvas: stage.querySelector(".es-steam"), fragment: STEAM, view: SIZE, camera: CAMERA, uniforms: ["uSteam", "uPuff", "uLight", "uCup", "uVent"], maxRatio: 1.25 });
