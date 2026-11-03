@@ -59,7 +59,7 @@ The figure keeps Anatomy's single model; the run decides what it is asked to do:
 - **`enter(i, how)`** sets that beat's targets: beat 3 pushes the lever down (`hand = true`), the last one turns the knob back. `how` is `"start"`, `"next"` or `"loop"`. On `"loop"` reset what should start fresh (a new slice of bread) and keep what should persist.
 - **`update(dt)`** advances the model and draws, exactly as a normal tick would.
 - **`done(i)`** says when the beat's action has finished: the knob at its setting, the hook over the pin, the strip at the trip temperature. The run moves on once the action is done and the caption has had time to be read.
-- **The machine never stops.** Between the end of one beat's action and the start of the next, the model keeps running (the strip keeps heating, the spring keeps settling) unless that would carry it into the next beat's action before its caption is up; then it waits at the end of the action (section 6).
+- **The machine never stops.** Between the end of one beat's action and the start of the next, the model keeps running (the strip keeps heating, the spring keeps settling) unless that would carry it into the next beat's action before its caption is up; then the run moves on to the next beat as soon as the action is done (section 6). It never freezes the machine: a reader who wants to read pauses it with Space.
 - **Physics doesn't wait for the camera.** If the heaters come on the moment the contacts close, they come on during the contacts beat; the next beat shows them glowing. Never fake the order.
 - **Slow processes run fast.** A toast takes four minutes; a beat should take seconds. Give the model a time warp per beat (the toaster's `WARP` runs the heating beats at 30× and the cool-down at 60×) and show the real clock in the readout.
 
@@ -69,7 +69,7 @@ Give `mountSteps` the model step without drawing (`advance`) and a way to copy a
 
 - **Reading time.** A beat never ends before its caption can be read: about 0.23 s a word, 2.4 s at least, plus its `hold`.
 - **Slow quick actions down.** A beat whose action is much shorter than its caption plays at a slower speed, so the motion fills the caption instead of finishing and sitting still (never below `slowest`, 0.35 by default). A beat's `pace` overrides this.
-- **Flow or wait.** For each beat the timing run checks whether letting the machine run on through the caption would finish the next beat's action before it starts. If not, the machine flows on; if so, it waits at the end of the action.
+- **Flow or wait.** For each beat the timing run checks whether letting the machine run on through the caption would finish the next beat's action before it starts. If not, the machine flows on through the caption; if so, the run moves straight on to the next beat when the action is done, so the caption is shorter but nothing stops.
 - Without `advance`, `save` and `load` every beat plays at full speed and the machine waits after each action.
 - **Reduced motion.** Pass `draw` (the drawing without a model step) as well, and each beat is run to its end on the model alone and drawn once. Without it the run calls `update` for every step of the beat, which redraws hundreds of times in one go and freezes the page at each beat change.
 
@@ -107,6 +107,6 @@ It returns `{ go(i), toggle(), aim(viewBox), index, playing }`.
 - **Zooming into empty space.** Points that miss the actor, or a view so tight the part it acts on is cut off.
 - **Captions that repeat the legend.** Say what happens in this beat, not who the crew are again.
 - **Long captions.** Each word adds a quarter of a second to the run. Two short sentences.
-- **Stop-and-go.** Freezing the machine at the end of every beat. The run flows; it only waits when running on would spoil the next beat.
+- **Stop-and-go.** Freezing the machine at the end of every beat. The run never freezes it; only the reader's Space does.
 - **Coloured machines.** Any tint on a housing, prop or wall competes with the crew. The machine and the scene stay in the kit's tones; only light and heat glow.
 - **Words in the drawing.** Titles and captions live under the picture, never on it.

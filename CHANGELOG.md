@@ -4,6 +4,7 @@
 
 ### Changed
 
+- The run never freezes the machine between beats. Where running on through the caption would reach the next beat's action early, the run now moves on to that beat as soon as the action is done, instead of waiting at the end of the action; the reader pauses with Space.
 - Power station: Anatomy-style coloured WebGL flows, each driven by the model: steam through the turbine (orange to pale blue), hydrogen in the generator (blue), transformer oil (amber to blue) and the fans' air, current along the copper (pale yellow with load) and blue-white arcs. The isolated-phase bus window moves out from under the deck so its conductor shows.
 - `beats.mjs`: the hidden-actor test no longer counts a layered drawing's own `<svg>` box as covering the critter.
 - In a WebGL figure the flows that carry the idea (air, water, steam, oil, gas, current, an arc) may be drawn in colour on the shader layer; the machine itself stays monochrome and the crew carry the only solid colour.

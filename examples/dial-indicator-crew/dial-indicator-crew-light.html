@@ -3818,8 +3818,8 @@ function fitView(points, [W, H], { pad = 24, least = 0.38 } = {}) {
 // unseen, when it mounts, to time each beat's action; a quick action is then slowed so it fills
 // its caption (never below `slowest`, 0.35 = 35% speed). A beat's own `pace` overrides that.
 // After a beat's action is done the machine keeps running while the caption is read, unless the
-// timing run found that this would carry it into the next beat's action; then it waits, so the
-// story never runs ahead of its caption.
+// timing run found that this would carry it into the next beat's action; then the run moves on to
+// that beat at once. It never freezes the machine: the reader pauses it with Space.
 // `hold` keeps a beat on screen a little longer, for the opening overview and the closing shot.
 // Give `draw` too and reduced motion runs each beat to its end on the model alone and draws it once.
 // Space pauses and resumes; Home starts again. aim(viewBox) points the camera somewhere else until the
@@ -3915,7 +3915,8 @@ function mountSteps({ root, svg, stage, steps, views, enter, update, done, size,
         const s = steps[index];
         if (!finished || flow[index]) update(dt * pace[index]);
         if (!finished && (finished = done(index))) box.dataset.actionTook = age.toFixed(1);
-        if (finished && age >= readFor(s) && (held += dt) >= (s.hold ?? 0)) go(index + 1);
+        // A flowing beat runs on while its caption is read; any other moves straight on instead of freezing.
+        if (finished && age >= (flow[index] ? readFor(s) : 0) && (held += dt) >= (s.hold ?? 0)) go(index + 1);
       }
       const fill = Math.min(1, age / (readFor(steps[index]) + (steps[index].hold ?? 0)));
       root.style.setProperty("--so-beat", fill.toFixed(3));
