@@ -19,7 +19,7 @@ function paintCrew(name, pose, duty) {
   CREW.paintCritter(crewEl[name], CREW.critter(CREW_SPEC[name], pose, P));
   crewEl[name].toggleAttribute("data-duty", duty);
 }
-const UNI = ["uLamp", "uSF", "uAir", "uHeat", "uOpen", "uGapX", "uGap", "uLight"];
+const UNI = ["uLamp", "uSF", "uAir", "uHeat", "uOpen", "uGapX", "uGap", "uLight", "uCur", "uCurPh"];
 const glow = glLayer({ canvas: stage.querySelector(".pg-arcs"), fragment: GLOW, view: SIZE, camera: CAMERA, uniforms: UNI, maxRatio: 1.5 });
 const lamps = glLayer({ canvas: stage.querySelector(".pg-lamps"), fragment: GLOW, view: SIZE, camera: CAMERA, uniforms: UNI, maxRatio: 1.5 });
 if (glow) stage.setAttribute("data-gl", "");
@@ -42,9 +42,9 @@ function paintGL() {
   const light = stage.closest("[data-theme]")?.getAttribute("data-theme") === "light" ? 1 : 0;
   const t = still.matches ? 0.8 : now / 1000;
   const cam = { uView: [view[2], view[3]], uOrigin: [CAMERA.origin[0] - view[0], CAMERA.origin[1] - view[1]], uOpen: S.ds * C.OPEN, uGapX: gapX, uGap: Math.max(0.2, gapW), uLight: light };
-  if (glow) env.sf + env.air + env.heat > 0.002 ? glow.draw({ ...cam, uLamp: 0, uSF: env.sf, uAir: env.air, uHeat: env.heat }, t) : glow.clear();
-  if (lamps) env.lamp > 0.002 ? lamps.draw({ ...cam, uLamp: env.lamp, uSF: 0, uAir: 0, uHeat: 0 }, t) : lamps.clear();
-  return env.lamp + env.sf + env.air + env.heat > 0.002;
+  paintFlows(dt, cam, t);
+  if (glow) env.sf + env.air + env.heat + fenv.cur > 0.002 ? glow.draw({ ...cam, uLamp: 0, uSF: env.sf, uAir: env.air, uHeat: env.heat, uCur: fenv.cur, uCurPh: ph.cur }, t) : glow.clear();
+  if (lamps) env.lamp > 0.002 ? lamps.draw({ ...cam, uLamp: env.lamp, uSF: 0, uAir: 0, uHeat: 0, uCur: 0, uCurPh: 0 }, t) : lamps.clear();
 }
 const ampsHV = () => (S.synced || S.sfOn ? (Math.hypot(S.P, S.Q) * 1e6) / (Math.sqrt(3) * C.HV_KV * 1e3) : 0);
 function words() {

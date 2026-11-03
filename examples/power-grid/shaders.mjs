@@ -1,14 +1,16 @@
 import { C } from "./model.mjs";
 import { LAMPS } from "./panel.mjs";
 import { CWIN, AXZ } from "./breaker.mjs";
+import { currentGlsl } from "./flows-geo.mjs";
 
 // Light and heat the machine gives off, in the drawing's own camera: the synchronising lamps, the SF6 arc in the
 // near breaker chamber (seen only through its window), the air arcs that follow the disconnector's blades with
-// copper sparks flying off, and the blades' tips and jaws glowing as they cool after an arc.
+// copper sparks flying off, and the blades' tips and jaws glowing as they cool after an arc. The arcs are
+// blue-white, and the current on the 400 kV conductors is a pale yellow glow with the amps, pulses running out.
 const f = (v) => (Number.isInteger(v) ? v.toFixed(1) : String(+v.toFixed(3)));
-const DS = C.DS, Y = C.PH[2];
+const DS = C.DS, Y = C.PH[2], CUR = currentGlsl();
 export const GLOW = `
-uniform float uLamp, uSF, uAir, uHeat, uOpen, uGapX, uGap, uLight;
+uniform float uLamp, uSF, uAir, uHeat, uOpen, uGapX, uGap, uLight, uCur, uCurPh;${CUR.fn}
 float segDist(vec3 o, vec3 d, vec3 a, vec3 b) {
   vec3 u = b - a, w = o - a;
   float bb = dot(d, u), cc = dot(u, u), dd = dot(d, w), ee = dot(u, w);
@@ -64,18 +66,27 @@ void main() {
     }
     if (uHeat > 0.002) heat += exp(-pow(ptDist(o, d, j) / 1.4, 2.0)) + exp(-pow(ptDist(o, d, t) / 1.2, 2.0));
   }
+  // The current: every conductor from the bushings to the line, and each blade while it carries it.
+  float cur = 0.0;
+  if (uCur > 0.002) {
+    ${CUR.calls}
+    for (int i = 0; i < 3; i++) { float y = ${f(C.PH[0])} + float(i) * ${f(C.PH[1] - C.PH[0])}; cur = max(cur, curSeg(vb, vec3(${f(DS.hinge)}, y, ${f(DS.z)}), bladeTip(y), 0.0)); }
+    vec2 e = min(vb, uView - vb) / (uView.x / uCanvas.x);
+    cur *= uCur * smoothstep(2.0, 14.0, min(e.x, e.y));
+  }
   air *= uAir; core *= uAir; spark *= smoothstep(0.0, 0.3, uAir); heat *= uHeat;
   // Dark: light adds. Light: one ink per kind of light, stacked; the hot metal follows one blackbody ramp.
-  vec3 warm = vec3(1.0, 0.62, 0.22), violet = vec3(0.55, 0.5, 1.0), copper = vec3(1.0, 0.5, 0.12), glowC = mix(vec3(0.7, 0.08, 0.0), vec3(1.0, 0.55, 0.12), clamp(heat, 0.0, 1.0));
-  vec3 add = tonemap(warm * lamp * 1.4 + vec3(1.0, 0.95, 0.85) * smoothstep(0.6, 1.0, lamp) + violet * (sf + air) * 1.2 + vec3(1.0) * (core * 1.2 + smoothstep(0.5, 1.2, sf)) + copper * spark + glowC * heat * 1.3, 1.2);
+  vec3 warm = vec3(1.0, 0.62, 0.22), violet = vec3(0.5, 0.74, 1.0), copper = vec3(1.0, 0.5, 0.12), glowC = mix(vec3(0.7, 0.08, 0.0), vec3(1.0, 0.55, 0.12), clamp(heat, 0.0, 1.0));
+  vec3 add = tonemap(warm * lamp * 1.4 + vec3(1.0, 0.95, 0.85) * smoothstep(0.6, 1.0, lamp) + violet * (sf + air) * 1.2 + vec3(1.0) * (core * 1.2 + smoothstep(0.5, 1.2, sf)) + copper * spark + glowC * heat * 1.3 + vec3(1.0, 0.86, 0.45) * cur * 0.85, 1.2);
   vec4 dark = vec4(add, max(add.r, max(add.g, add.b)));
   float el = 1.0 - exp(-2.2 * lamp), ea = 1.0 - exp(-1.8 * (air + sf)), ec = 1.0 - exp(-2.0 * (core + smoothstep(0.6, 1.4, sf))), eh = 1.0 - exp(-2.0 * heat);
   vec4 lampInk = inkFor(mix(vec3(1.0), mix(vec3(0.98, 0.62, 0.16), vec3(1.0, 0.95, 0.8), smoothstep(0.7, 0.98, el)), smoothstep(0.02, 0.5, el)), 0.9 * smoothstep(0.6, 0.95, el)) * smoothstep(0.0, 0.08, el);
-  vec4 arcInk = inkFor(mix(vec3(1.0), vec3(0.42, 0.34, 0.95), smoothstep(0.02, 0.6, ea)), 0.0) * smoothstep(0.0, 0.06, ea);
-  vec4 coreInk = inkFor(vec3(0.94, 0.95, 1.0), 0.92) * ec;
+  vec4 arcInk = inkFor(mix(vec3(1.0), vec3(0.24, 0.52, 1.0), smoothstep(0.02, 0.6, ea)), 0.0) * smoothstep(0.0, 0.06, ea);
+  vec4 coreInk = inkFor(vec3(0.93, 0.97, 1.0), 0.92) * ec;
+  vec4 curInk = vec4(vec3(1.0, 0.93, 0.6), 1.0) * 0.6 * (1.0 - exp(-2.0 * cur));
   vec4 heatInk = inkFor(mix(vec3(1.0), mix(vec3(0.75, 0.12, 0.02), vec3(1.0, 0.6, 0.15), smoothstep(0.4, 0.9, eh)), smoothstep(0.02, 0.5, eh)), 0.0) * smoothstep(0.0, 0.08, eh);
   vec4 sparkInk = vec4(vec3(1.0, 0.48, 0.08), 1.0) * min(0.8, spark);
-  vec4 light = over(sparkInk, over(coreInk, over(arcInk, over(heatInk, lampInk))));
+  vec4 light = over(sparkInk, over(coreInk, over(arcInk, over(heatInk, over(curInk, lampInk)))));
   light.rgb = min(light.rgb, vec3(light.a));
   vec4 col = mix(dark, light, uLight);
   float n = (hash12(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) / 255.0 * smoothstep(0.0, 1.5 / 255.0, col.a);

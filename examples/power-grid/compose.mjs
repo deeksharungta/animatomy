@@ -27,23 +27,23 @@ export function backItems(crew) {
     site(), yard(), trench(), firewall(), wallParts(),
     // Under the deck: the back columns, the terminal box and the isolated-phase bus to the transformer's turret.
     deckUnder(colsBack), terminalBox(), portals(), turret(), phase(0), phase(1), phase(2),
-    `<g class="pg-cavity" clip-path="url(#pg-ipb)">${windowInside()}</g>`,
+    `<g class="pg-cavity" clip-path="url(#pg-ipb)">${windowInside()}</g>`, "@flow:bus",
     deckUnder(colsFront), deckSlab(),
     // On the deck: lube oil, the LP turbine with its hood open, the coupling, the generator cut open.
     soleplates([[-262, -200, -44, 8], [-170, -96, -36, 0]]), lubeOil(),
-    lpCasing(), `<g class="pg-cavity" clip-path="url(#pg-lp)">${lpInside()}${g("lp")}</g>`, lpRim(), hoodTop(),
+    lpCasing(), `<g class="pg-cavity" clip-path="url(#pg-lp)">${lpInside()}${g("lp")}</g>`, "@flow:lp", lpRim(), hoodTop(),
     pedestal(-200, -186), shaft(-186, -178), coupling(), g("cpl"),
-    genFrame(), `<g class="pg-cavity" clip-path="url(#pg-gen)">${genInside()}${endWindings()}</g>`, `<g clip-path="url(#pg-gen)">${rotor()}${g("rotor")}</g>`, genRim(), coolers(), statorWater(), excitation(),
+    genFrame(), `<g class="pg-cavity" clip-path="url(#pg-gen)">${genInside()}${endWindings()}</g>`, `<g clip-path="url(#pg-gen)">${rotor()}${g("rotor")}</g>`, "@flow:gen", genRim(), coolers(), statorWater(), excitation(),
     pedestal(-88, -76), housingBack(), slipRings(), brushGear(), trunking(), crew("volta"), housingFront(),
     // The governor valve in front of the turbine: Ollie inside its yoke under the crosshead.
     valveBack(), valveBody(), yokeBack(), g("spindle"), g("cross"), crew("ollie"), springCan(),
     deckRail(),
     // The transformer: foundation, tank with its window, conservator and bushings, the cooler and the pump.
-    foundation(), tank(), `<g class="pg-cavity" clip-path="url(#pg-xw)">${xInside()}</g>`, xRim(), coolerCabinet(), headerValves(), coverParts(), neutral(), conservator(),
+    foundation(), tank(), `<g class="pg-cavity" clip-path="url(#pg-xw)">${xInside()}</g>`, "@flow:xw", xRim(), coolerCabinet(), headerValves(), coverParts(), neutral(), conservator(),
     ...C.HVB.ys.map((y) => bushing(y)), oltc(),
-    fanBack(), g("fans"), fanHub(), manifolds(false), panels(), manifolds(true),
+    fanBack(), g("fans"), fanHub(), manifolds(false), panels(), manifolds(true), "@flow:cool",
     pumpBack(), g("wheel"), crew("mochi"), crew("bun"), pumpFront(),
-    ...yardBack(crew, g),
+    ...yardBack(crew, g), "@flow:arcs",
   ];
 }
 export function frontItems(crew) {

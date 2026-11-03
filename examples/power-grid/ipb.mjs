@@ -6,7 +6,7 @@ import { TBOX } from "./generator.mjs";
 // the transformer's LV turret, on steel portals, with bolted joint bands, an expansion bellows near the
 // transformer and an inspection window on the near phase that shows the conductor on its post insulators.
 export const IPB = { x0: TBOX.x1, x1: 2, ys: [-52, -44, -36], z: 19, r: 3.2, cond: 1.7 };
-export const WIN = { x0: -64, x1: -36, half: 1.05 };
+export const WIN = { x0: -24, x1: -6, half: 1.05 };
 const X = [1, 0, 0], bands = [-78, -56, -14], bellows = [-6, -2];
 const nearAngle = Math.atan2(...(() => { const v = L.viewOf(P); return [v[2], v[1]]; })());
 

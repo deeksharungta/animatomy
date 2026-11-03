@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Power station: Anatomy-style coloured WebGL flows, each driven by the model: steam through the turbine (orange to pale blue), hydrogen in the generator (blue), transformer oil (amber to blue) and the fans' air, current along the copper (pale yellow with load) and blue-white arcs. The isolated-phase bus window moves out from under the deck so its conductor shows.
+- `beats.mjs`: the hidden-actor test no longer counts a layered drawing's own `<svg>` box as covering the critter.
 - In a WebGL figure the flows that carry the idea (air, water, steam, oil, gas, current, an arc) may be drawn in colour on the shader layer; the machine itself stays monochrome and the crew carry the only solid colour.
 - `findPlace` tries only headings that show the critter's face by default and takes `clear(place)` to reject spots inside parts. The sweatband is slimmer and left off critters under 15 units. Pages get `fadeOf` too.
 - SKILL.md notes from the example builds: numbers into GLSL, a cooling body's colour versus its glow, concave outlines with `extrude`, turning a flat part with a screen transform, `--zoom` on a beat page, and (in `crew.md`) arms that can't reach down to the feet.
