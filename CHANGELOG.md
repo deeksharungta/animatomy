@@ -26,6 +26,7 @@
 
 ### Added
 
+- `examples/power-grid`: a turbine-generator set and its switchgear bay, the reference for an interactive machine with an interlock. Five crew are its internal parts (governor lever, field current, synchroscope pointer, breaker spring mechanism, disconnector interlock); you work the controls. It runs up, synchronises, closes, takes 6 MW, trips, and shows why a disconnector must never break current; Shift+O defeats the interlock to show the arc. Files of 150 lines or fewer.
 - `kit/spring.mjs`: `springAlong(a, b, radius, turns, P)`, a coil spring between any two points with its back and front halves split. `coil()` runs along x or y only, so the stapler, the kettle and the pen each hand-wrote an upright one.
 - `scripts/beats.mjs`: a contact sheet of every beat of a run page at its end, from `?beat=n`, labelled with each readout (`--full` adds the captions). The test runs each built one by hand.
 - `kit/reach.mjs`: `checkReach` prints the reach warnings every crew build wrote by hand, and `findPlace` searches sizes, headings and spots for a place where every paw lands (test runs brute-forced this with throwaway scripts).

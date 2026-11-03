@@ -1,0 +1,17 @@
+import { C } from "./model.mjs";
+import { N, F_IDLE } from "./story.mjs";
+
+// The words under the card. Every number comes from the model (story.mjs, N).
+export const LABEL = `A turbine hall cut away, run by five animals. On the left a steam turbine with a flyball governor on its front pedestal drives a four-pole generator, whose inspection hatch is off so the rotor shows; at its far end two slip rings take the field current. Mo the sloth hangs from the governor's floating lever and rides it as the flyballs and the steam valve move. Volta the electric eel lies in the field cable's tray with his snout on the brush gear's terminal. Behind, a bus duct carries the generator's output to a metal-clad breaker cubicle with its doors off: three vacuum interrupters, one cut open, stand over the spring mechanism, where Roo the kangaroo stands on the main lever's footplate. Copper bars run on to a three-pole disconnector whose blades hinge up off post insulators, and through wall bushings out to the grid. Pinch the crab sits on the disconnector's interlock and holds its bolt. In front, Crumb the mouse stands on the synchroscope of the synchronising desk and turns with its pointer.`;
+
+export const KEYS = [
+  { mark: "lit", label: "On duty: whoever is doing the work right now" },
+  { mark: "raised", label: "Mo, sloth, sensing: rides the governor's floating lever, which sets the steam valve" },
+  { mark: "raised", label: "Volta, electric eel, power: is the field current, through the slip rings into the rotor" },
+  { mark: "raised", label: "Crumb, mouse, sensing: turns with the synchroscope's pointer, the phase between generator and grid" },
+  { mark: "raised", label: "Roo, kangaroo, spring: the breaker's spring mechanism, stamping the contacts shut and thrown up when they open" },
+  { mark: "raised", label: "Pinch, crab, holding: the interlock bolt that locks the disconnector while the breaker is closed" },
+  { mark: "raised", label: "You: set the governor and voltage, press close and trip, turn the disconnector's crank" },
+];
+
+export const CAPTION = `A ${C.MVA} MVA, ${C.GRID_KV} kV, four-pole generator turns at ${(F_IDLE * 30).toFixed(0)} rpm for ${C.GRID_HZ} Hz. Before its breaker may close, three things must match the grid: voltage within ${C.DV_MAX * 100} %, frequency within ${C.SLIP_MAX} Hz and phase within ${C.ANGLE_MAX}° (the synchroscope's twelve o'clock); a synchro-check relay refuses anything else. Once closed, the grid holds the speed, so opening the steam valve pushes the rotor ahead instead: at ${N.mw} MW it leads by ${Math.round(N.delta)}° and ${Math.round(N.amps)} A flows. Only the breaker may interrupt that current: it parts its contacts ${C.GAP_VAC} mm in vacuum, where the arc cannot restrike after the next current zero (within ${N.halfCycle} ms). A disconnector has no such chamber. Opened under load, ${Math.round(N.amps)} A would draw an arc in open air that needs only about ${Math.round(N.arcV)} V across a 10 cm gap, against ${(N.phaseV / 1000).toFixed(2)} kV per phase, at around ${C.ARC_K.toLocaleString("en-GB")} K: it re-strikes every half cycle, burns the copper and can flash over to the next phase. So its interlock holds it shut until the breaker is open, and it only ever opens dead, to give a gap you can see. Take over with the arrow keys (speed and voltage), B (breaker), O (disconnector) or Shift+O (with the interlock defeated, to see the arc and the protection trip). Speeds are drawn at a fiftieth of true; slow steps run fast and fast ones slowly, and the readout says by how much.`;
