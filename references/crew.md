@@ -21,7 +21,7 @@ Every Animatomy figure is an Anatomy figure with a crew inside. This page is eve
 
 The machine is real; the workforce is fake. Every machine is secretly run by a small crew of real-looking animals, and each crew member's job is a real part. A beaver chewing round the pencil *is* the cutter; hamsters on a wheel *are* the motor; a crab holding on *is* the latch.
 
-The rule that makes it work: **a crew member's motion is the part's real motion.** Take the crew away and the mechanism is still true. If a critter isn't doing a part's job, cut it. The reader learns how the thing works, and laughs while they do.
+The rule that makes it work: **a crew member's motion is the part's real motion.** The critter replaces the part it is: the hamsters' wheel is the motor, so no motor is drawn beside them. If a critter isn't doing a part's job, cut it. The reader learns how the thing works, and laughs while they do.
 
 The tone is "you were never meant to see this": a peek behind a door marked Staff Only. Keep it in the drawing, not in words.
 

@@ -56,7 +56,7 @@ The theme (light by default, dark when asked), "one HTML file" and "Next.js" wor
 
 ## The one idea that matters
 
-**The object is the explanation, and the crew is how it moves.** Build the real machine exactly as Anatomy would, then staff it: every part that moves on its own gets an operator whose body does that motion. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade. If you took the crew away the mechanism would still be true; if a critter isn't doing a part's job, cut it. The reader learns how the thing works and laughs while they do. `references/crew.md` has the casting rules, the role colours and the cast.
+**The object is the explanation, and the crew is how it moves.** Build the real machine exactly as Anatomy would, then staff it: every part that moves on its own gets an operator whose body does that motion. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade. The critter replaces the part it is, so no copy of that part is drawn beside it; if a critter isn't doing a part's job, cut it. The reader learns how the thing works and laughs while they do. `references/crew.md` has the casting rules, the role colours and the cast.
 
 **The machine underneath is still the explanation.** Don't draw boxes, arrows and labels. Invent a real, well-made physical thing whose working *is* the concept. Here is how earlier figures mapped:
 
