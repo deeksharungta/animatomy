@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- Rule 3 is firmer: a magnet is never a critter, even one that lets go at the end (a flame-failure valve, a Curie-point switch), and a holding critter's claws must visibly close and open on a moving part through most of its duty. A fresh gas stove built from the skill had cast a crab as a flame-failure magnet.
 - Wind-up car recast: Roo no longer treads the barrel's drum (a hamster's job); he is the mainspring, braced between the barrel wall's hook and the arbor, crouching as you wind and turning with the barrel as it unwinds. Pinch's claws catch each ratchet tooth, Rocky presses the brake shoe, and `checkWork` runs over every duty frame.
 - Soldering iron recast: Ember (heat) presses the contacts shut against Roo's spring, and Pinch, who stood in for the magnet's invisible grip, is gone. The heat row of the casting table now says a heat critter works what makes or controls the heat (a switch, valve or bellows); standing on the hot part is a passenger.
 - Casting follows the sharpener, where every critter does the machine's work. The part's motion decides the species (a wheel or drum is hamsters running, a spring is Roo and Roo is only ever a spring, a cutter is Chomp's teeth, a catch is Pinch's claws, a flame is Ember); the headline event gets the first critter; and a force nobody can see move (a magnet's pull, a key held still) gets none.
