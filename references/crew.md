@@ -35,7 +35,7 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
    | springs: pushes back, snaps shut, throws, returns | kangaroo (Roo), and a kangaroo is only ever a spring | feet and paws braced between the two ends |
    | cuts, gnaws, grinds or cracks | beaver (Chomp) | teeth at the cut (`pose.bite`) |
    | catches and lets go: a latch, sear, click or pawl | crab (Pinch) | claws closing and opening on the pin |
-   | heats, burns or glows: a flame, element or filament | fennec (Ember) | paws on the hot part, at the flame |
+   | heats, burns or glows: a flame, element or filament | fennec (Ember), doing what makes or controls the heat: holding the heater switch down, working the gas valve, pumping the bellows | paws on that switch, valve or handle; standing on the hot part is a passenger |
    | carries current, sparks, closes a circuit | eel (Volta), along the conductor | snout on the terminal or spark gap |
    | strikes again and again: a hammer, striker, contacts | woodpecker (Knock) | beak at the strike |
    | pulls by weight, times, senses slowly | sloth (Mo), hanging | paws on the bar its weight pulls |

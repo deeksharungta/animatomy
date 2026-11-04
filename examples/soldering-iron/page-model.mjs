@@ -1,4 +1,4 @@
-import { WIDTH, HEIGHT, C, P, VOLTA, PINCH, ROO } from "./model.mjs";
+import { WIDTH, HEIGHT, C, P, VOLTA, EMBER, ROO } from "./model.mjs";
 import { NODES, heatStep, heatRun } from "./thermal.mjs";
 import { dynamic, poses } from "./moving.mjs";
 import { STEPS, views, rest } from "./story.mjs";
@@ -10,7 +10,7 @@ export const MODEL_SCRIPT = `
 const P = ${JSON.stringify(P)};
 const C = ${JSON.stringify(C)};
 const N = ${JSON.stringify(NODES)};
-const VOLTA = ${JSON.stringify(VOLTA)}, PINCH = ${JSON.stringify(PINCH)}, ROO = ${JSON.stringify(ROO)};
+const VOLTA = ${JSON.stringify(VOLTA)}, EMBER = ${JSON.stringify(EMBER)}, ROO = ${JSON.stringify(ROO)};
 const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, hold, pace }) => ({ title, text, who, hold, pace })))};
 const VIEWS = ${JSON.stringify(views.map((v) => v.map((n) => +n.toFixed(2))))};
 const COLORS = ${JSON.stringify(STEPS.map((s) => s.color))};
@@ -44,10 +44,10 @@ function step(dt) {
   S.rodV = (S.u - u0) / Math.max(dt, 1e-3);
   S.cur = ease(S.cur, S.power && S.held && S.u > -0.3 ? 1 : 0, 0.12, dt);
   if (S.cur < 0.03) S.cur = 0;
-  // The critter whose part last snapped keeps the light for a moment, so the eye can find it.
-  // Roo is on duty while his spring holds the switch open; Pinch keeps the light a moment after he grabs.
+  // Roo is on duty while his spring holds the switch open; Ember as she presses it shut, and while she holds it
+  // shut with the coil hot. With the coil still cold, the current is Volta's.
   if (S.rodV > 1.5) S.grabT = 0.7;
   S.grabT = Math.max(0, (S.grabT || 0) - dt);
-  S.duty = !S.held || S.u < -0.3 ? "roo" : S.grabT > 0 ? "pinch" : S.cur > 0.5 ? "volta" : "";
+  S.duty = !S.held ? "roo" : S.u < -0.3 || S.grabT > 0 ? "ember" : S.cur > 0.5 ? (S.TH > 60 ? "ember" : "volta") : "";
 }
 `;
