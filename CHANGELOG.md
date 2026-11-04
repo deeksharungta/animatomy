@@ -4,6 +4,7 @@
 
 ### Added
 
+- The can opener example, from the new-user test after the "critter replaces its part" rule: Chomp is the cutter with no wheel blade beside him, Bun and Mochi the motor, Roo the lever's spring. Twenty-seven examples ship, 18 crewed; it isn't on the website.
 - Two examples from the new-user test: an interactive mousetrap (Pinch the catch, Roo the springs, a 12.3 ms snap) and a hot glue gun with WebGL melt (Volta on self-regulating PTC stones, Pinch the feed claw, Roo the carriage spring). The skill ships twenty-six examples, 17 crewed; neither is on the website.
 - The pepper grinder example, built from the skill alone under the new casting rules: Chomp's teeth crack each corn at the burr's lip, Roo is the spring under the cone, and the fixed ring has no critter. The skill ships it among its examples.
 - A crewed figure works in Next.js, tested: the crewed dial indicator in a Next.js 16 app matches its standalone page pixel for pixel, with a clean build, console and hydration and 0 blinks. The kit gains `kit/react/steps.tsx` (`<Steps>`, `beatsOf`), `kit/react/run.tsx` (`useRun`) and `kit/steps-run.d.mts`, `references/steps.md` gains section 10, "A crewed figure in Next.js", and `flicker.mjs` takes a URL.
