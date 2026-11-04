@@ -4,6 +4,7 @@
 
 ### Added
 
+- The pepper grinder example, built from the skill alone under the new casting rules: Chomp's teeth crack each corn at the burr's lip, Roo is the spring under the cone, and the fixed ring has no critter. The skill now ships twenty-seven examples.
 - A crewed figure works in Next.js, tested: the crewed dial indicator in a Next.js 16 app matches its standalone page pixel for pixel, with a clean build, console and hydration and 0 blinks. The kit gains `kit/react/steps.tsx` (`<Steps>`, `beatsOf`), `kit/react/run.tsx` (`useRun`) and `kit/steps-run.d.mts`, `references/steps.md` gains section 10, "A crewed figure in Next.js", and `flicker.mjs` takes a URL.
 - Seven new examples, built from the website's test prompts: a debounce timer (an idea figure), a rear derailleur you shift with ← →, a twist doorbell, a gyroscope, a pin-tumbler lock with six crew, a soldering iron with a WebGL glow, and a wind-up car.
 - `CREW.setDuty(el, on)` (in `kit/critters.mjs` and on every page) lights the on-duty rim at once the first time, then shows a change only once it has lasted 320 ms, so every rim the reader sees stays at least 300 ms and a speed hovering at a threshold can't make it blink. Every example uses it.
