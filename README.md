@@ -3,7 +3,7 @@
 <p align="center"><b>A Claude skill that explains how a machine works by showing the crew of animals who secretly run it.</b><br>Animals + anatomy: a fork of <a href="https://github.com/wheresryan22/anatomy">Anatomy</a> where every moving part has an animal on shift.</p>
 
 <p align="center">
-  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole holds the latch hook, an electric eel lies along the live wire, crackling, a kangaroo in a sweatband rides the lever, and a raccoon lifts the browning knob's lever.">
+  <img src=".github/assets/toaster-crew.webp" width="640" alt="An isometric pop-up toaster, cut away, its heating ribbons glowing orange. Inside, a sloth in glasses hangs from the bimetal strip, a mole holds the latch hook, an electric eel lies along the live wire, crackling, a kangaroo in a sweatband stamps the lever down, and a raccoon lifts the browning knob's lever.">
 </p>
 
 <p align="center"><sub><code>examples/toaster</code>, light theme, mid-toast. Mo feels the heat while Dig, Volta, Roo and Rocky hold their posts. Whoever is working is lit.</sub></p>
@@ -30,28 +30,28 @@
 
 ## The idea
 
-Anatomy explains an idea by inventing a real machine whose working *is* the idea, then building it from dozens of small, solid, shaded parts. Animatomy keeps all of that and adds one thing: **the machine is real, the workforce is fake.** Every part that moves on its own has an operator, and the operator's motion is the part's motion. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade.
+Anatomy explains an idea by inventing a real machine whose working *is* the idea, then building it from dozens of small, solid, shaded parts. Animatomy keeps all of that and adds one thing: **the machine is real, the workforce is fake.** Every animal is a machine part: it does the job of one real part and moves the way that part moves. The hamsters' wheel is the motor, the crab's grip is the latch, the beaver's teeth are the blade. An animal that isn't doing a part's job gets cut.
 
-Take the crew away and the mechanism is still true. Leave it in and people remember how the thing works.
+The mechanism stays true to the real thing, and the crew is why people remember how it works.
 
 ## How it works
 
 1. **You ask:** `/animatomy how a pop-up toaster knows when the toast is done`.
-2. **Claude plans:** it sizes the figure, finds the real numbers, picks a machine whose working *is* the idea, lists 40 to 150 parts, casts an animal for every part that moves on its own, and writes the beats: "Meet the crew", one beat per step of the mechanism, then back to rest.
+2. **Claude plans:** it sizes the figure, finds the real numbers, picks a machine whose working *is* the idea, lists 40 to 150 parts, casts an animal for every part that moves on its own (the headline event first, the animal that fits the motion, each at the spot where its part does its work), and writes the beats: "Meet the crew", one beat per step of the mechanism, then back to rest.
 3. **Claude builds:** one model moves both the parts and the crew, so every paw stays on its handle. The machine and scene are drawn in Anatomy's monochrome; colour goes only on the animals, the thing being worked on and any heat or light.
-4. **Claude checks:** paws reach their handles across the whole motion, no line ends float, and every beat is screenshotted in both themes and at phone width.
-5. **You get one HTML file** that plays the whole story on a loop, with the camera easing onto whoever is working.
+4. **Claude checks:** every paw and tooth reaches its handle and its point of work across the whole motion, no line ends float, no on-duty outline blinks, and every beat is screenshotted in both themes and at phone width. Before handing over, it puts its figure beside the toaster and the sharpener and zooms in to 4× to add what's missing.
+5. **You get one HTML file** that plays the whole story on a loop, with the camera easing onto whoever is working, and never pauses until you press Space. Ask for Next.js and you get a React figure instead.
 
 ## What's different from Anatomy
 
 | | Anatomy | Animatomy |
 |---|---|---|
 | The one idea | The object is the explanation | The object is the explanation, and the crew is how it moves |
-| Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks to verify |
+| Workflow | Size, truth, object, parts, world, geometry, order, frame, live, verify | Adds **cast the crew** after the parts list, and crew checks (reach, point of work, blinks, a side-by-side with the toaster and sharpener) to verify |
 | Colour | Monochrome, one lit accent | Monochrome machine; colour only on the animals, the thing being worked on, and any heat or light |
 | Format | One interactive figure | A full scene played as one continuous story on a loop, with no buttons and no stops |
 | Lit accent | One part | One critter: the one whose part is moving (the part again when nothing moves) |
-| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: animals drawn as natural-history illustrations on a 2D rig, with their fur and role colours), `kit/steps.mjs` (the run) and `scripts/cast-sheet.mjs` |
+| Kit | `kit/` | `kit/` plus `kit/critters.mjs` (the crew: animals drawn as natural-history illustrations on a 2D rig, with their fur and role colours), `kit/reach.mjs` (reach and the point of work), `kit/steps.mjs` (the run), `kit/react/run.tsx` (the crew and run in Next.js), `scripts/cast-sheet.mjs` and `scripts/flicker.mjs` |
 | Examples | 9 | 27: adds 18 crewed machines, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/power-grid`, `examples/sand-casting`, `examples/token-bucket`, `examples/dial-indicator-crew`, `examples/debounce`, `examples/can-opener`, `examples/mousetrap`, `examples/glue-gun`, `examples/pepper-grinder`, `examples/gyroscope`, `examples/pin-lock` and `examples/soldering-iron` |
 | Gallery | Publishes to the Anatomy community gallery | Doesn't publish there |
 
@@ -66,7 +66,7 @@ Everything else, from the craft rules to the audit, the line check, WebGL, the 3
 | `toaster.html` | The figure alone, playing on its loop, in the theme it was built in (`toaster-light.html` for light). Made for embedding. The captions stay in the page for screen readers. |
 | `toaster.html?full` | The full page: a caption and progress bar under the figure, one beat at a time. |
 
-Light is the default: Claude hands you the `-light` page unless you ask for dark, and builds both. Space pauses and resumes, Home starts again. The seasons figure also takes a drag on the globe, or ← and →, to set any date.
+Light is the default: Claude hands you the `-light` page unless you ask for dark, and builds both. Space pauses and resumes, Home starts again. Interactive figures also let you take over: drag the globe in seasons, the blocks in the dial indicator, the ladle in sand casting, the steam valve in the power station, the key in the pin lock, or the cheese and hammer in the mousetrap; Space hands back to the story.
 
 ## The crew
 
@@ -85,9 +85,15 @@ Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, 
 | fluid | aqua | pumps, hoses, valves |
 | spring | pink | springs, launchers |
 
-Casting rule: the species' trait is the job. Claws grip, teeth cut, wheels run. One crew member per mechanism, so a detailed machine gets a bigger crew (up to seven).
+Casting rules, in short:
 
-Props are rare and only where they read cleanly: glasses on Mo, who times things, and sweatbands on the runners. `references/crew.md` has the full rules and how to add a species.
+- **The right animal for the job.** Wheels are hamsters, springs are Roo (and Roo is only ever a spring), cutters are Chomp, catches are Pinch.
+- **Headline first.** The event the explainer is about gets the first animal.
+- **At the point of work.** Each animal's teeth, paws or claws are where its part does its work; riding a part doesn't count.
+- **The animal is the part.** The part it stands for isn't drawn again beside it.
+- **One per mechanism,** so a detailed machine gets a bigger crew (up to seven).
+
+Props are rare and only where they read cleanly: glasses on Mo, who times things, and sweatbands on the runners and jumpers (Bun, Mochi and Roo). `references/crew.md` has the full rules and how to add a species.
 
 ## Install
 
@@ -97,7 +103,7 @@ Add the skill to Claude Code with one command:
 npx skills add deeksharungta/animatomy -g -a claude-code
 ```
 
-The installer needs Node.js 22.20 or later; the builds need 20.10 or later. Leave out `-g` to add it to the current project only.
+It needs Node.js 20 or later (the builds need 20.10 or later). Leave out `-g` to add it to the current project only.
 
 Or [download the skill](https://github.com/deeksharungta/animatomy/archive/refs/heads/main.zip) and unzip it into your skills folder:
 
@@ -114,7 +120,7 @@ Then open Claude Code in your project and ask how anything works. Name the machi
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Twenty-seven complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
+Twenty-seven complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, Next.js, an A4 PDF) in the same line.
 
 Animatomy is a standard [Agent Skill](https://agentskills.io), so it also runs in OpenCode, Codex and Antigravity: put this folder in that agent's skills folder, as in `ANATOMY-README.md`. Builds need Node.js 20.10 or later and the checks need Chrome or Chromium. Nothing to `npm install`.
 
@@ -148,4 +154,4 @@ To see the captions, open a page in a browser with `?full` on the end of its add
 
 ## Credits and license
 
-Animatomy is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/steps.mjs`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `scripts/flicker.mjs` and the 18 crewed examples, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/power-grid`, `examples/sand-casting`, `examples/token-bucket`, `examples/dial-indicator-crew`, `examples/debounce`, `examples/can-opener`, `examples/mousetrap`, `examples/glue-gun`, `examples/pepper-grinder`, `examples/gyroscope`, `examples/pin-lock` and `examples/soldering-iron`) and the changes to `SKILL.md` are Animatomy's. See [LICENSE](LICENSE).
+Animatomy is built on [Anatomy](https://github.com/wheresryan22/anatomy) by Ryan ([skills.wheresryan.sh/anatomy](https://skills.wheresryan.sh/anatomy)), used under the MIT license. Anatomy's kit, examples, references and scripts are his work; the crew and the run (`kit/critters.mjs`, `kit/crew/`, `kit/reach.mjs`, `kit/steps.mjs`, `kit/react/run.tsx`, `kit/react/steps.tsx`, `scripts/cast-sheet.mjs`, `references/crew.md`, `references/steps.md`, `scripts/flicker.mjs` and the 18 crewed examples, `examples/toaster`, `examples/pencil-sharpener`, `examples/vending-machine`, `examples/seasons`, `examples/espresso-machine`, `examples/longcase-clock`, `examples/power-grid`, `examples/sand-casting`, `examples/token-bucket`, `examples/dial-indicator-crew`, `examples/debounce`, `examples/can-opener`, `examples/mousetrap`, `examples/glue-gun`, `examples/pepper-grinder`, `examples/gyroscope`, `examples/pin-lock` and `examples/soldering-iron`) and the changes to `SKILL.md` are Animatomy's. See [LICENSE](LICENSE).
