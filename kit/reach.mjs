@@ -46,3 +46,22 @@ export function findPlace(spec, posesAt, P, { at, radius = 6, step = 1, sizes = 
 
 // Headings that show a critter's face: the camera's azimuth faces the viewer, so every 15° within 75° of it.
 export const facing = (P) => Array.from({ length: 11 }, (_, i) => (((P.azimuth ?? 45) - 75 + i * 15) % 360 + 360) % 360);
+
+// The point of work: where a critter's part does its work (the corn cracks, the hammer strikes, the latch catches).
+// For every [label, pose] of the critter's duty, the end doing the work ("paws", "l", "r", "bite", "beak" or "feet")
+// must be aimed within `near` world units of work(label) and land there (reach short by no more than 0.3). A critter
+// that only rides a part while the work happens somewhere else fails this, however far it moves. Returns the count.
+export function checkWork(spec, poses, P, { end, work, near = 2, name = spec.name ?? spec.species }) {
+  const at = typeof work === "function" ? work : () => work;
+  const gap = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], (a[2] ?? 0) - (b[2] ?? 0));
+  let n = 0;
+  for (const [label, pose] of poses) {
+    const w = at(label, pose), c = critter(spec, pose, P);
+    const ends = end === "paws" ? ["l", "r"] : [end];
+    const aimed = ends.map((e) => (e === "feet" ? pose.at ?? spec.at : e === "bite" || e === "beak" ? pose[e] : pose.paws?.[e]));
+    const off = Math.min(...aimed.map((t) => (t ? gap(t, w) : Infinity)));
+    const short = Math.max(...ends.map((e) => c.reach?.[e] ?? 0));
+    if (off > near || short > 0.3) { n++; console.warn(`${name}'s ${end} ${off > near ? (off === Infinity ? "is not aimed at the point of work" : `is ${off.toFixed(1)} from the point of work`) : `falls ${short.toFixed(1)} short of the point of work`} ${label}`); }
+  }
+  return n;
+}

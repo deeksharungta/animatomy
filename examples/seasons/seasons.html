@@ -3787,14 +3787,17 @@ function critter(spec, pose = {}, P) {
   let pitch = Math.max(-30, Math.min(34, look[1] * 0.75)) + (R.head.pitch ?? 0);
   const reach = {};
   let neckOff = [0, 0];
-  if (pose.beak && R.head.beakTip) {
-    // Lean the body a little, tip the head and stretch the neck until the beak tip lands on the target.
+  // The mouth's working tip: a bird's beak, or the front of any other animal's mouth (where a beaver's teeth bite).
+  const biteTip = R.head.beakTip ?? (R.head.mouth ? R.head.mouth.match(/-?[\d.]+/g).slice(0, 2).map(Number) : null);
+  const aim = pose.beak ?? pose.bite;
+  if (aim && biteTip) {
+    // Lean the body a little, tip the head and stretch the neck until the beak or mouth lands on the target.
     // For each lean and tip the neck takes up what is left, up to its length; the search prefers a short
     // neck and a small lean, so a bird pecks with its neck and only leans into a long reach.
-    const T = toLocal(pose.beak), maxNeck = R.neck?.max ?? 0;
+    const T = toLocal(aim), maxNeck = R.neck?.max ?? 0;
     const fit = (ln, pc) => {
       const Tb = rotp(T, ln * RAD, R.pivot);
-      const tip = rotp(R.head.beakTip, pc * RAD, R.head.pivot);
+      const tip = rotp(biteTip, pc * RAD, R.head.pivot);
       let o = sub(Tb, tip);
       if (len(o) > maxNeck) o = [(o[0] * maxNeck) / len(o), (o[1] * maxNeck) / len(o)];
       const miss = len(sub(Tb, add(tip, o)));
@@ -3807,7 +3810,7 @@ function critter(spec, pose = {}, P) {
     lean = best.a * RAD;
     pitch = best.b;
     neckOff = best.o;
-    reach.beak = (best.miss * size) / 100;
+    reach[pose.beak ? "beak" : "bite"] = (best.miss * size) / 100;
   }
   const dyn = {};
   dyn.root = `${tr(base[0], base[1])} scale(${Math.round(sx * 1000) / 1000} ${Math.round(sy * 1000) / 1000})`;

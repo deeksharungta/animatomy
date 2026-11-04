@@ -27,18 +27,39 @@ The tone is "you were never meant to see this": a peek behind a door marked Staf
 
 ## 2. Casting rules
 
-1. **The species' trait is the job.** Claws grip, teeth cut, wheels run, a slow animal times things. If you can't say why that animal does that job in three words, it's the wrong animal.
-2. **Colour by role, not by species.** Eight role colours, fixed for every figure (section 3). Many species share one role; a reader learns eight colours, never forty.
-3. **One operator per mechanism.** A part that moves on its own power gets exactly one operator. A part pushed by another part (a plunger riding a block, a gear driven by a gear) needs none. A swarm of one species (ants, hamsters) counts as one operator.
-4. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the live wire and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
-5. **Inside the machine.** A critter works the machine's insides, in the cutaway: a lever arm, a spring, a wheel, a valve, a bolt. It never stands on the outside where a hand goes, doing what the person using the machine does (stamping on a stapler's head). What the person does is "you" in the caption ("You press B3"); a cord, lever, key or button a person pulls or presses is always "you", never a critter.
-6. **Visible work.** Before any geometry, check each critter: its job moves it or its part by about its own height or more, or visibly turns, strikes or carries. A hold counts when the story shows what it holds against (the crank that won't turn, the spring that wants to pop). A critter that only sits on a part or rides a float is a passenger: give it a real job or cut it. If the machine's moving insides are too small for a critter to read at overview size (a stapler's head is 12 mm inside), say so before building and suggest a bigger machine or no crew.
+1. **Cast by the motion.** What the part does decides the species, the way the pencil sharpener does it: Mo's weight closes the switch, the hamsters' running is the motor, Chomp's teeth are the cutter.
 
-Write the crew list next to the parts list, one line each:
+   | The part… | Cast | Its working end |
+   |---|---|---|
+   | turns a wheel, drum or rotor round | hamsters (Bun and Mochi), running inside it | feet on the rungs |
+   | springs: pushes back, snaps shut, throws, returns | kangaroo (Roo), and a kangaroo is only ever a spring | feet and paws braced between the two ends |
+   | cuts, gnaws, grinds or cracks | beaver (Chomp) | teeth at the cut (`pose.bite`) |
+   | catches and lets go: a latch, sear, click or pawl | crab (Pinch) | claws closing and opening on the pin |
+   | heats, burns or glows: a flame, element or filament | fennec (Ember) | paws on the hot part, at the flame |
+   | carries current, sparks, closes a circuit | eel (Volta), along the conductor | snout on the terminal or spark gap |
+   | strikes again and again: a hammer, striker, contacts | woodpecker (Knock) | beak at the strike |
+   | pulls by weight, times, senses slowly | sloth (Mo), hanging | paws on the bar its weight pulls |
+   | pumps, valves or moves a fluid | otter (Ollie) | paws on the pump or valve |
+   | carries or pushes a thing along | squirrel (Pip) | paws on the thing |
+   | turns a knob, dial or small handle | raccoon (Rocky) | paws on the handle |
+   | feels, digs or pushes through | mole (Dig) | spade hands on it |
+   | sorts or does small precise work | mouse | paws on the small part |
+
+   The table is the first choice; another species needs a reason the reader can see (the toaster's mole feels for its latch). Two rules have no exceptions: a wheel, drum or rotor turned by running is always hamsters, and a kangaroo is only ever a spring, never treading, riding or holding.
+2. **Cast the headline first.** The event the explainer is about (the flame lighting on a gas stove, the corn cracking in a pepper mill, the coin dropping in a vending machine) gets the first critter, at its point of work. A figure whose main event happens with no critter in it is cast backwards.
+3. **No critter for a still or invisible force.** A magnet's pull, a key that never moves, a ring held fixed: no critter. A holder earns its place only when the reader sees it catch, strain and let go on screen; a crab that only stands holding something still looks useless. If a mechanism's work can't be seen, draw the part and leave it unstaffed.
+4. **Colour by role, not by species.** Eight role colours, fixed for every figure (section 3). Many species share one role; a reader learns eight colours, never forty.
+5. **One operator per mechanism.** A part that moves on its own power gets exactly one operator. A part pushed by another part (a plunger riding a block, a gear driven by a gear) needs none. A swarm of one species (ants, hamsters) counts as one operator.
+6. **One per mechanism, up to seven per figure.** A detailed machine gets an operator for every mechanism that moves on its own: the toaster has five (the browning knob, the lever, the latch hook, the live wire and the bimetal strip). Past seven, the picture stops reading; split the machine into two figures.
+7. **Inside the machine.** A critter works the machine's insides, in the cutaway: a lever arm, a spring, a wheel, a valve, a bolt. It never stands on the outside where a hand goes, doing what the person using the machine does (stamping on a stapler's head). What the person does is "you" in the caption ("You press B3"); a cord, lever, key or button a person pulls or presses is always "you", never a critter.
+8. **The critter is the part, at its point of work.** Every mechanism has a point of work: the one place where its work visibly happens (the corn cracks, the hammer meets the string, the hook catches the pin, the wheel's rim is pushed round). The critter's working end (teeth, beak, paws, claws or feet) is at that point during its duty, and the work happens there because of its motion: the corn cracks in the beaver's jaws as it bites, the latch holds because the crab's claws close on the pin, the drum turns because the kangaroo treads it. Test it: take the critter away, and the work at that point should stop. A critter that rides a part while the work happens somewhere else is a passenger, however far it moves: standing on a turning cone while the corns crack in the gap below, sitting on a hammer's shank while the felt strikes, perched beside the spring it is meant to be. A hold counts when the story shows what pushes against it (the ring jolting at each crack, the spring that wants to pop), and the claws are on the thing that pushes. Name each point of work in the crew list and check it in the build with `checkWork` (section 6). If the machine's moving insides are too small for a critter to read at overview size (a stapler's head is 12 mm inside), say so before building and suggest a bigger machine or no crew.
+
+Write the crew list next to the parts list, one line each, ending with the point of work and the end that works it:
 
 ```
-Roo · kangaroo · spring  · the plunger's return spring, drives it down onto the block
-Mo  · sloth    · sensing · the hairspring, keeps every tooth on one flank
+Roo   · kangaroo · spring  · the plunger's return spring, drives it down onto the block · work: the plunger's foot · paws
+Chomp · beaver   · cutting · the outer burr's tooth, cracks each corn the cone brings round · work: the burr gap · bite
+Pinch · crab     · holding · the ring's key, takes each crack's kick                    · work: the ring's lug · paws
 ```
 
 ## 3. Roles and colours
@@ -129,6 +150,8 @@ A paw that works is a contact, like a pipe end on its port (`craft.md`, section 
 - **Targets come from the part.** Compute each paw target from the same numbers that place the handle: the knob's centre plus its radius, the coin's rim, the lever's end. Never from the critter.
 - **The nearer paw takes the nearer target.** `critter()` works out which side of the animal faces the viewer and gives that arm the matching paw (`l` or `r`). Both arms reach in the drawing's plane, so a target far behind or in front of the animal reads as reached when it is on screen. Pick targets that read from the camera: the top or the near rim of a coin, not two points on opposite faces. Reaching straight at the camera is the rig's weak spot: a target in front of a critter that faces the viewer lands low on its body, so turn the critter a little side-on to its handle.
 - **Place the critter from the handle.** Stand it where both paws reach: `at` = handle − about 0.35 × size along its heading, as a first guess only (a crab's short claws need it much closer, about 0.2 × size); `findPlace` in `kit/reach.mjs` finds the real spot. Arms don't stretch; `critter(…).reach.l` / `.r` report how far each paw falls short, in world units. A hanging sloth's `at` is about one body height below the bar.
+- **Bite and peck.** `pose.bite` aims any animal's mouth at a world point, as `pose.beak` aims a bird's beak: the body leans and the head tips until the front of the mouth lands there, and `reach.bite` reports how far it falls short. A cutter that bites stands so its mouth is at the cut.
+- **Check the point of work in the build** for every frame of each critter's duty: `checkWork(spec, poses, P, { end, work })` from `kit/reach.mjs`, with `end` one of `"paws"`, `"l"`, `"r"`, `"bite"`, `"beak"` or `"feet"` and `work` the world point (or a function of the frame's label) where the part does its work. It warns when that end isn't aimed within 2 units of the point or doesn't land there. Ship at zero warnings, next to `checkReach`.
 - **Check reach in the build** at both ends of travel and at every stop, and print a warning for any paw short by more than 0.3: `checkReach(spec, poses, P)` from `kit/reach.mjs` does it from a list of `[label, pose]` pairs. Ship at zero warnings. To find a spot, `findPlace(spec, posesAt, P, { at, radius, sizes, headings })` tries every size, heading and spot on a grid round `at` and returns the one whose worst paw is shortest (`worst` 0 means every paw lands); `posesAt(place)` builds the pose list for a candidate place. Give it headings within about 60° of the handle's direction, or it may find a pose that reaches with the critter's back to its work.
 - **A handle that goes all the way round is checked all the way round.** The arms are drawn in the picture's plane, so the same grip can be in reach facing one way and short facing another. The seasons build walks Pip's knob round the whole year and Mo's crank round the whole day, and the spot that passed was found by looping the build over distance, knob height, lean and the critter's size. Put a push knob at the critter's chest height on the side it pushes from, not on top of a bar it can't reach over.
 - **Give a small control a handle.** A knob a fraction of the critter's size can't be gripped on its rim from the viewer's side: the critter stands in front of it and hides the hand. Give the part a real handle that reaches toward the critter, and slide the paws along it to the point nearest the shoulder. The toaster's browning knob has a pointer lever that Rocky lifts.
@@ -229,7 +252,7 @@ Most of the crew wear nothing but their collar. A prop goes on only where it rea
 - **Speech bubbles and name tags.** Words stay in the legend.
 - **Floating paws.** A paw a few units short of its handle reads like a pipe ending in the air. The reach check catches it; a 4× close-up confirms it.
 - **Crowds.** More critters than mechanisms, or more than seven on one machine. One per mechanism, one on duty at a time.
-- **Passengers.** A critter that rides a part instead of moving it: standing on top of a spring barrel while it turns (a wind-up car), sitting on a chain or a cage as it swings (a derailleur), perched on a ledge beside the spring it is meant to be. Its body must do the part's work: the paws on the barrel's rim treading it round, the body stretched as the spring between two pins.
+- **Passengers.** A critter that rides a part instead of being it: standing on a pepper mill's turning cone while the corns crack in the gap below, sitting on a piano hammer's shank while the felt strikes, standing on top of a spring barrel while it turns, sitting on a derailleur's chain, perched beside the spring it is meant to be. Moving a lot doesn't make it work. Put its working end at the point of work (the beaver's teeth at the burr gap, the paws on the barrel's rim treading it round, the body stretched as the spring between two pins), and `checkWork` confirms it.
 - **Outside the cutaway.** A critter sitting on top of the casing, where a hand goes (a click pen's button), while the mechanism it stands for is inside. Put it where the part is, in the cutaway.
 - **Too small to read.** Critters of a few units in a large scene, or a sparse scene with a tiny crew. Frame the beats close enough that every on-duty critter is at least 32 px tall at 1440 wide (`beats.mjs` warns), and give the scene the parts and props of a Hero, not a few slabs.
 - **A crew that hides the mechanism.** A body parked over the part it explains. Put the critter beside its handle on the viewer's side, and make the part visible around it.
