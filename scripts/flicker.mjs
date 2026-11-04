@@ -6,7 +6,7 @@ const argv = process.argv.slice(2);
 if (!argv.length || argv.includes("--help") || argv.includes("-h")) {
   console.log(`Watch a run page play and report any on-duty rim that blinks.
 
-  node flicker.mjs <page.html> [--seconds 60] [--min 300] [drive.mjs flags]
+  node flicker.mjs <page.html | http://…> [--seconds 60] [--min 300] [drive.mjs flags]
 
 Records every change of data-duty on the crew for --seconds (60, about one loop) and warns when a critter's rim
 stays on, or goes off and back on, for less than --min ms (300). A blinking rim means the figure toggles duty
@@ -16,7 +16,7 @@ the duty from the beat or a state the model holds, not from a speed. Exits 1 whe
 }
 const take = (flag, fallback) => { const at = argv.indexOf(flag); if (at < 0) return fallback; const v = argv[at + 1]; argv.splice(at, 2); return v; };
 const seconds = Number(take("--seconds", 60)), min = Number(take("--min", 300));
-const page = resolve(argv.shift());
+const arg = argv.shift(), page = /^https?:/.test(arg) ? arg : pathToFileURL(resolve(arg)).href;
 
 // In the page: log every rim change with its time, then list the runs of on or off shorter than `min`.
 const WATCH = `new Promise((done) => {
@@ -34,7 +34,7 @@ const WATCH = `new Promise((done) => {
   }, ${seconds * 1000});
 })`;
 const drive = join(dirname(fileURLToPath(import.meta.url)), "drive.mjs");
-const run = spawnSync(process.execPath, [drive, pathToFileURL(page).href, JSON.stringify([["wait", 500], ["eval", WATCH, (seconds + 30) * 1000]]), ...argv], { encoding: "utf8" });
+const run = spawnSync(process.execPath, [drive, page, JSON.stringify([["wait", 500], ["eval", WATCH, (seconds + 30) * 1000]]), ...argv], { encoding: "utf8" });
 const [changes, short] = (JSON.parse(run.stdout.match(/eval: (.*)/)?.[1] ?? '""') || "|").split("|");
 if (!changes) { console.error(run.stdout + run.stderr); process.exit(1); }
 const blinks = short ? short.split(";") : [];

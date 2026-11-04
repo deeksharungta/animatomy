@@ -51,7 +51,7 @@ As in Anatomy, two words in the request change what Claude builds, and it reache
 - **`interactive`**: the reader can take over. Drag or keys set the model, the run pauses and the camera pulls back to what they now need to see, and Space plays on from there (`references/steps.md`, "Letting the reader take over"; `examples/seasons`, `examples/power-grid`, `examples/dial-indicator-crew`, `examples/sand-casting`). Without it the figure still plays its whole story on a loop; Space pauses it and Home starts it again.
 - **`WebGL`**: shaders inside the drawing, in the same isometric camera: fire, water, plasma, moving air, light, and the flows that make the idea, in colour (cool blue to hot orange), with an SVG fallback. Without it the figure is SVG, with at most one shader where heat or light is itself the subject (the toaster's ribbons). `references/webgl.md`.
 
-The theme (light by default, dark when asked), "one HTML file" and "Next.js" work as in Anatomy. Anatomy's third word, `3D`, isn't offered: it hasn't been tested with a crew, so an Animatomy figure is never built in 3D, even when asked; say so and build it flat.
+The theme (light by default, dark when asked), "one HTML file" and "Next.js" work as in Anatomy; a crewed figure in Next.js is tested (the crewed dial indicator matches its standalone page pixel for pixel), and `references/steps.md`, section 10, says how. Anatomy's third word, `3D`, isn't offered: it hasn't been tested with a crew, so an Animatomy figure is never built in 3D, even when asked; say so and build it flat.
 
 ## The one idea that matters
 
@@ -131,6 +131,7 @@ The kit is in `kit/`:
 | `kit/iso-kit.mjs` | The same core compiled to plain ESM, for Node scripts. Import it directly. |
 | `kit/iso.css` | `ISO_CSS` written out. Import it once and put `class="iso"` (plus `data-theme="light"` for light) on a wrapper or `<body>`. |
 | `kit/react/draw.tsx` | Server-safe React components: `Solid`, `Line`, `Wire`, `Dots`, `FaceText`, `IsoFigure`, `Plate`. |
+| `kit/react/steps.tsx`, `kit/react/run.tsx`, `kit/steps-run.d.mts` | A crewed figure in React: `<Steps>` (the caption panel, as `stepsHtml`) and `beatsOf`, server-safe; `useRun(stage, setup)`, `"use client"`, mounts the run after hydration and destroys it on unmount; types for `mountSteps`. |
 | `kit/react/live.tsx` | `"use client"` hooks: `useReadout`, `useLoop`, `useEased`, `useInView`, `useStillness`, plus `spring` and `follow`. |
 | `kit/lathe.mjs` | Round parts along any axis: `frameAlong`, `lathe` (smooth shading switches on by itself for any profile with a smooth knot), `solidOf`, `disc`, `ringBand`, `sphereOf`, `saddleOf`, `bandsOf` (one curved body cut into depth-sortable bands that share one surface, with one outline from `sidesOf`), visible arcs, ribs and bolt circles on round surfaces (`ribsOf` and `dotsOf` take `fade`, `ribsOf` takes `seams`), `rodOut` for a rod that slides out of a gland, and `fillet` for pipe routes. |
 | `kit/tube.mjs` | `tubePieces` splits a 3D pipe or cable into depth-sortable chunks (with `breaks`, `gaps` under collars and clamps, elliptical end caps, and `rings` for a braid, corrugation or wrap that follows the cross-section through every joint), and `tubeSvg` draws one; `crossingsOf` finds where a route passes through a clamp, `runsOf` the drawn runs. Its `.tb-*` fills are in `ISO_CSS`. |

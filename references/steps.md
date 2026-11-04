@@ -12,6 +12,7 @@ Every Animatomy figure is a full picture that plays its machine as one continuou
 7. API
 8. Verifying
 9. Anti-patterns
+10. A crewed figure in Next.js
 
 ## 1. Shape of a run
 
@@ -110,3 +111,19 @@ It returns `{ go(i), toggle(), aim(viewBox), index, playing }`.
 - **Stop-and-go.** Freezing the machine at the end of every beat. The run never freezes it; only the reader's Space does.
 - **Coloured machines.** Any tint on a housing, prop or wall competes with the crew. The machine and the scene stay in the kit's tones; only light and heat glow.
 - **Words in the drawing.** Titles and captions live under the picture, never on it.
+
+## 10. A crewed figure in Next.js
+
+The crew and the run are string and DOM code (`critterSvg`, `paintCritter`, `setDuty`, `mountSteps`), so a crewed figure keeps Anatomy's server/client split (`references/react.md`) but moves its art as finished markup. The crewed dial indicator ported this way matches its standalone page pixel for pixel.
+
+1. Copy `kit/` into the project (`components/iso/`), and the figure's build-time `.mjs` modules beside it; change only their `../../kit/` import path. Keep `allowJs` on; `kit/steps-run.d.mts` types the run.
+2. **Server component (`art.tsx`).** Build the whole drawing with the figure's own builder, critters at rest included (`critterSvg(c, { part })`), and wrap it once: `<svg key="art" className="iso-svg" viewBox=… dangerouslySetInnerHTML={{ __html: figure().join("") }} />`. Put `crewCss()`, `STEPS_CSS` and `subjectCss(…)` in one `<style dangerouslySetInnerHTML>` before the `<Plate>`. Render the caption panel with `<Steps key="steps" steps={beatsOf(STEPS)} />` (`kit/react/steps.tsx`) and the resting readout in `Plate`'s `readout`.
+3. Pass the client only data: `beatsOf(STEPS)`, each beat's target, the views and colours, rounded. Never import the story or reach modules into client code: they run the reach checks at load.
+4. **Client component (`live.tsx`).** Render the stage `div` (ref, `tabIndex={0}`, `role="group"`, `aria-label`) around the art, the hidden `aria-live` line and the steps, and call `useRun(stage, (node) => …)` (`kit/react/run.tsx`). In `setup`, build the model on the stage's own nodes and return `{ steps, views, colors, size, enter, update, done, advance, draw, save, load, takeOver }`. The client may import the pure model, tools and pose modules directly; they compute the same projection as the server.
+5. Pose critters exactly as a page script does: `paintCritter(el, critter(spec, pose, P))` then `setDuty(el, on)`, from the model, in `draw`. Never hold frame state in React (no `useState` per frame); React never owns the art's subtree, so writing into it is safe.
+6. `takeOver(run)` adds its listeners after the run's (Space hands back through the run's own handler) and returns a cleanup that cancels its frame, disconnects its observer and removes every listener. `useRun` destroys the run on unmount, so Strict Mode's double mount leaves exactly one run.
+7. Theme per route: put `className="iso" data-theme=…` on a wrapper (`display: flow-root`), not on `<body>`.
+8. Cost: the art ships twice (in the HTML and the RSC payload), about 1.4× the standalone page.
+
+Verify against `next start`: `drive.mjs http://localhost:3000 '[["wait",5000],["lines"]]'` (line ends 0, console clean), `?beat=n` shots compared with the standalone build, `flicker.mjs http://localhost:3000`, and `next dev` for hydration and key warnings.
+
