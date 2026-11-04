@@ -6,20 +6,19 @@ import * as L from "../../kit/lathe.mjs";
 import { critter, critterSvg, crewCss, subjectCss } from "../../kit/critters.mjs";
 import { kitScript, glScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml } from "../../kit/steps.mjs";
-import { WIDTH, HEIGHT, C, P, VOLTA, EMBER, ROO } from "./model.mjs";
+import { WIDTH, HEIGHT, C, P, VOLTA, PINCH, ROO } from "./model.mjs";
 import { room, socket, plug, cordOut, cordIn, bench, standBase, restBack, restFront, propsBack, propsFront, spareTips } from "./scene.mjs";
 import { ironBack, ironFront } from "./iron.mjs";
 import { board, farSide, liveWire, guide, leafSvg, stop, heaterLeads } from "./inside.mjs";
 import { rodParts } from "./rodset.mjs";
 import { dynamic, poses } from "./moving.mjs";
-import { STEPS, LABEL, keys, rest, reachWarnings, workWarnings } from "./story.mjs";
+import { STEPS, LABEL, keys, rest, reachWarnings } from "./story.mjs";
 import { MODEL_SCRIPT } from "./page-model.mjs";
 import { RUN_SCRIPT } from "./page-run.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const theme = process.argv.includes("--light") ? "light" : "dark";
 if (reachWarnings) console.warn(`${reachWarnings} reach warning(s)`);
-if (workWarnings) console.warn(`${workWarnings} point-of-work warning(s)`);
 const S0 = rest();
 const dyn0 = dynamic({ ...k, ...L }, P, C, S0);
 const pose0 = poses(C, S0);
@@ -34,7 +33,7 @@ const parts = [
   ironBack(), cordIn(), board(), ironFront(),
   "|",
   farSide(), mv("rodA", R.a), guide(), leafSvg(0), mv("rodB", R.b), mv("springBack", dyn0.springBack), mv("rodC", R.c), mv("springFront", dyn0.springFront),
-  stop(), mv("stub", dyn0.stub), mv("rodD", R.d), heaterLeads(), leafSvg(1), crew(EMBER, "ember"), liveWire(), crew(VOLTA, "volta"), crew(ROO, "roo"),
+  stop(), mv("stub", dyn0.stub), mv("rodD", R.d), heaterLeads(), leafSvg(1), liveWire(), crew(VOLTA, "volta"), crew(ROO, "roo"), crew(PINCH, "pinch"),
   restFront(-100, C.GRIP.r[1]), restFront(40, C.BARREL.r[1]), spareTips(), propsFront(),
 ];
 const cut = parts.indexOf("|");
@@ -55,7 +54,7 @@ const body = `<style>${css}</style>` + k.plateHtml({
   hint: "Plays on its own, on a loop",
   readout: "off · tip 22 °C",
   keys,
-  caption: `A 60 W soldering iron with a magnetic temperature switch, cut in half along its length. Volta brings the current, and while Ember presses the contact bridge shut it runs into the nichrome coil round the tip's copper core. A slug of magnetic alloy at the back of the tip holds a magnet on the switch rod; at the slug's Curie point, 370 °C, the magnet lets go, Roo's spring overpowers Ember and snaps the contacts open, and at 364 °C she presses them shut again.`,
+  caption: `A 60 W soldering iron with a magnetic temperature switch, cut in half along its length. A nichrome coil heats the tip's copper core from behind; a slug of magnetic alloy at the back of the tip holds a magnet that keeps the heater's contacts closed until the slug reaches its Curie point, 370 °C, and lets go.`,
   body: `<div class="iso-stage si-stage" tabindex="0" role="group" aria-label="Soldering iron, playing on a loop: Space pauses, Home starts again">${backSvg}<canvas class="si-layer si-heat" aria-hidden="true"></canvas>${frontSvg}</div>${stepsHtml(STEPS)}`,
 });
 

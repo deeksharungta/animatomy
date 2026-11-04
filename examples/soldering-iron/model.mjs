@@ -36,9 +36,8 @@ export const C = {
   CONTACTS: [-4.2, 3.6],
   SOCKET: { x: -184, y: -50, z: 0 },
   POST: [-5.4, 3.8],
-  ROO_AT: [-24, 7.5, 150],
-  // Ember stands behind the contact bridge on the board, facing the contacts she presses it onto.
-  EMBER_AT: [-39.75, 4.75, 15],
+  ROO_AT: [-24.5, 7.5, 150],
+  PINCH_AT: [-7, 6, -20],
   GUIDE: { x0: -53, x1: -47 },
   TERM: { x0: -61, x1: -54 },
   // Heat: a 1-D copper rod of nodes coupled to the heater along the heater's length.
@@ -56,9 +55,9 @@ export const C = {
 };
 
 export const VOLTA = { species: "eel", name: "Volta", size: 24, role: "power" };
-export const EMBER = { species: "fennec", name: "Ember", size: 12, role: "heat" };
+export const PINCH = { species: "crab", name: "Pinch", size: 9, role: "holding" };
 export const ROO = { species: "kangaroo", name: "Roo", size: 12, role: "spring" };
-export const ROLE = { power: "#F5C518", heat: "#F76B15", spring: "#E93D82" };
+export const ROLE = { power: "#F5C518", holding: "#E5484D", spring: "#E93D82" };
 
 export const BENCH = { x: -205, y: -70, w: 345, d: 138, r: 4 };
 export const WALL_Y = -76;

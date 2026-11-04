@@ -5,7 +5,7 @@ const svgs = [...stage.querySelectorAll(":scope > svg")];
 const part = (name) => stage.querySelector('[data-part="' + name + '"]');
 const el = {};
 const coilEl = part("coil");
-for (const n of ["rodA", "rodB", "rodC", "rodD", "springBack", "springFront", "stub", "rocker", "volta", "ember", "roo"]) el[n] = part(n);
+for (const n of ["rodA", "rodB", "rodC", "rodD", "springBack", "springFront", "stub", "rocker", "volta", "pinch", "roo"]) el[n] = part(n);
 const readout = document.querySelector("[data-readout]");
 const still = matchMedia("(prefers-reduced-motion: reduce)");
 let lastPose = {};
@@ -34,16 +34,17 @@ const mm = (s) => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart
 function draw(dt) {
   const D = dynamic(K, P, C, S);
   const move = K.translateAlong(P, [S.u, 0, 0]);
-  for (const n of ["rodA", "rodB", "rodC", "rodD"]) el[n].setAttribute("transform", move);
+  const coil = part("coil");
+for (const n of ["rodA", "rodB", "rodC", "rodD"]) el[n].setAttribute("transform", move);
   el.springBack.innerHTML = D.springBack; el.springFront.innerHTML = D.springFront; el.stub.innerHTML = D.stub; el.rocker.innerHTML = D.rocker;
   const p = poses(C, S);
   paintCrew("volta", VOLTA, p.volta, S.duty === "volta");
+  paintCrew("pinch", PINCH, p.pinch, S.duty === "pinch");
   paintCrew("roo", ROO, p.roo, S.duty === "roo");
-  paintCrew("ember", EMBER, p.ember, S.duty === "ember");
   paintGL(dt);
   coilEl.toggleAttribute("data-on", S.cur > 0.5);
   const point = S.T[S.T.length - 1];
-  const word = !S.power ? (point > 40 ? "off · cooling" : "off") : S.held ? "heater on · 60 W" : "contacts open · heater off";
+  const word = !S.power ? (point > 40 ? "off · cooling" : "off") : S.held ? "heater on · 60 W" : "heater off";
   const text = word + " · tip " + Math.round(point) + " °C · slug " + Math.round(S.slug) + " °C" + (S.clock > 0 ? " · " + mm(S.clock) : "");
   if (readout.textContent !== text) readout.textContent = text;
 }

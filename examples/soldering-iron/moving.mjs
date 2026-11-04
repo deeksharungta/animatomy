@@ -33,37 +33,32 @@ export function dynamic(K, P, C, S) {
 
 export function poses(C, S) {
   const Z = C.ZC, u = S.u, top = C.BOARD.z + C.BOARD.h, comp = (u + C.TRAVEL) / C.TRAVEL;
-  // Roo is the spring: feet fixed on the board, paws on the collar's lug. Crouched and squashed while Ember
-  // holds the rod in, stretched out after the collar as he snaps it back.
   const fx = C.COLLAR.x1 + u + 0.2;
   const roo = {
-    at: [C.ROO_AT[0], C.ROO_AT[1], top],
+    at: [C.ROO_AT[0] + u * 0.5, C.ROO_AT[1], top],
     heading: C.ROO_AT[2],
-    lean: 24 - 16 * comp,
+    lean: 8 + 6 * comp,
     look: [0, 6],
     paws: { l: [fx, 7.4, Z - 2.6], r: [fx, 7.4, Z - 4.6] },
-    squash: 0.34 * comp - 0.06,
+    squash: 0.06 + 0.12 * comp,
     eyes: S.rodV < -0.6 ? "wide" : S.power ? "open" : "happy",
   };
-  // Ember is the heat's control: paws on the contact bridge's back face, pressing it onto the contacts so the
-  // current reaches the coil. Leaning in while they are shut, pushed back upright when Roo overpowers her.
-  const bx = C.BRIDGE.x0 + u - 0.2;
-  const ember = {
-    at: [C.EMBER_AT[0], C.EMBER_AT[1], top],
-    heading: C.EMBER_AT[2],
-    lean: 5 + 15 * comp,
-    look: [0, 4],
-    paws: { l: [bx, 4.5, Z - 1.6], r: [bx, 3.4, Z - 3.5] },
-    squash: 0.14 * (1 - comp),
-    eyes: S.rodV < -0.6 ? "wide" : !S.power ? "shut" : "open",
+  const pinch = {
+    at: [C.PINCH_AT[0] + u, C.PINCH_AT[1], top],
+    heading: C.PINCH_AT[2],
+    lean: S.held ? 6 : -4,
+    look: [0, S.held ? 4 : 14],
+    paws: S.held ? { l: [C.POST[0], C.POST[1] + 0.8, Z - 3.6], r: [C.CUP.x0 + 2.7 + u, 4.4, Z - 3.8] } : { r: [C.CUP.x0 + 2.7 + u, 4.4, Z - 3.8] },
+    eyes: !S.held ? "wide" : S.slug > 300 ? "open" : S.power ? "open" : "shut",
+    squash: S.held ? 0.08 : 0,
   };
   const top6 = top + 1.1;
   const volta = {
-    path: [[-35, 4.2, top6], [-37.5, 6.8, top6], [-44, 6.8, top6], [-53.4, 6.8, top6], [-53.4, 6.8, top + 6.4], [-55.4, 5, top + 6.6]],
+    path: [[-35.4, 4.8, top6], [-44, 4.8, top6], [-53.4, 4.8, top6], [-53.4, 4.8, top + 6.4], [-55.6, 4.8, top + 6.6]],
     charge: S.cur > 0.05 ? S.cur : 0,
     flicker: S.t * 14,
     target: S.cur > 0.3 ? [C.CONTACT_X - 0.1, C.CONTACTS[1], Z - 2.4] : undefined,
     eyes: S.power ? "open" : "shut",
   };
-  return { roo, ember, volta };
+  return { roo, pinch, volta };
 }

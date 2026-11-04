@@ -30,9 +30,9 @@ export function farSide() {
   return cordStub() + out.join("");
 }
 
-// The live wire along the board's near edge to the near contact, which Volta lies on, clear of Ember's feet.
+// The live wire along the board's near edge to the near contact, which Volta lies on.
 export function liveWire() {
-  return wire([[LIVE_SCREW[0] + 1.4, LIVE_SCREW[1], TOP + 5.8], [-53.4, 6.8, TOP + 5.8], [-53.4, 6.8, TOP + 0.4], [-37.5, 6.8, TOP + 0.4], [C.CONTACT_X + 0.4, C.CONTACTS[1], TOP + 0.4]]);
+  return wire([[LIVE_SCREW[0] + 1.4, LIVE_SCREW[1], TOP + 5.8], [-53.4, 4.8, TOP + 5.8], [-53.4, 4.8, TOP + 0.4], [-36, 4.8, TOP + 0.4], [C.CONTACT_X + 0.4, C.CONTACTS[1], TOP + 0.4]]);
 }
 
 const cordStub = () => pipe([[-61, 0, 47.2], [-63.6, 0, 47.2]], 2.5, { tone: "mid", caps: [false, true] });
