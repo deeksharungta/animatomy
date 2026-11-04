@@ -4,24 +4,22 @@
 
 ### Added
 
-- The pepper grinder example, built from the skill alone under the new casting rules: Chomp's teeth crack each corn at the burr's lip, Roo is the spring under the cone, and the fixed ring has no critter. The skill now ships twenty-seven examples.
+- The pepper grinder example, built from the skill alone under the new casting rules: Chomp's teeth crack each corn at the burr's lip, Roo is the spring under the cone, and the fixed ring has no critter. The skill ships it among its examples.
 - A crewed figure works in Next.js, tested: the crewed dial indicator in a Next.js 16 app matches its standalone page pixel for pixel, with a clean build, console and hydration and 0 blinks. The kit gains `kit/react/steps.tsx` (`<Steps>`, `beatsOf`), `kit/react/run.tsx` (`useRun`) and `kit/steps-run.d.mts`, `references/steps.md` gains section 10, "A crewed figure in Next.js", and `flicker.mjs` takes a URL.
-- Seven new examples, built from the website's test prompts: a debounce timer (an idea figure), a rear derailleur you shift with ← →, a twist doorbell, a gyroscope, a pin-tumbler lock with six crew, a soldering iron with a WebGL glow, and a wind-up car.
+- Four new examples, built from the website's test prompts: a debounce timer (an idea figure), a gyroscope, a pin-tumbler lock with six crew, and a soldering iron with a WebGL glow.
 - `CREW.setDuty(el, on)` (in `kit/critters.mjs` and on every page) lights the on-duty rim at once the first time, then shows a change only once it has lasted 320 ms, so every rim the reader sees stays at least 300 ms and a speed hovering at a threshold can't make it blink. Every example uses it.
 - `scripts/flicker.mjs` watches a run page for a loop and reports any rim that blinks (on or off for under 300 ms).
 
 ### Removed
 
+- The rear derailleur, twist doorbell and wind-up car examples. The skill now ships twenty-four examples.
 - The click pen example: its moving parts were redrawn from scratch every frame instead of moved, and flickered.
 
 ### Fixed
 
-- Wind-up car recast: Roo no longer treads the barrel's drum (a hamster's job); he is the mainspring, braced between the barrel wall's hook and the arbor, crouching as you wind and turning with the barrel as it unwinds. Pinch's claws catch each ratchet tooth, Rocky presses the brake shoe, and `checkWork` runs over every duty frame.
 - Casting follows the sharpener, where every critter does the machine's work. The part's motion decides the species (a wheel or drum is hamsters running, a spring is Roo and Roo is only ever a spring, a cutter is Chomp's teeth, a catch is Pinch's claws, a flame is Ember); the headline event gets the first critter; a holder on a latch or magnet is a critter when the story shows what pulls against it and when it lets go, and a part held still with nothing pulling against it gets none. A heat critter works what makes or controls the heat (a switch, valve or bellows); standing on the hot part is a passenger.
 - Crew rule 8 is the point of work: the critter is its part, its working end (teeth, beak, paws, claws, feet) at the one place where the part's work visibly happens, and the work happens there because of its motion. Riding a part while the work happens elsewhere (a beaver on a pepper mill's turning cone, a woodpecker on a hammer's shank) is a passenger, however far it moves. `kit/reach.mjs` gains `checkWork`, any animal can aim its mouth with `pose.bite`, and the side-by-side with the toaster and sharpener and the 4× pass are gates no build may hand over without.
-- Derailleur reworked: Roo braced under the outer link's pin and squeezed by the cable, Mo stretched between an anchor strap and the cage tab's peg instead of riding the chain, a workshop of bench, drawers and pegboard tools, a denser cassette, hub and wheel, and a fixed chain-wrap jump in beat 3.
 - Gyroscope reworked: a dense bench instrument with a bench supply and tachometer, crew about 1.7× larger, Mo climbing hand over hand along the arm's rail (which is what doubles the twist), Pinch gripping the latch pin, and beats that end with the arm across the picture so nobody is hidden.
-- Wind-up car reworked: Roo treads the open barrel's drum from inside instead of standing on top of it, Pinch catches the arbor's recoil on the click, Rocky works the brake lever in view, and the car and its room are far denser.
 - The skill's time estimates match real builds (a Figure 15–45 min, a Hero 30–90 min, an Epic two hours or more), and a Hero that finishes in under 30 minutes is checked against 80 parts and the toaster before it is handed over.
 - Casting is tested with numbers: each critter's working space and part travel against its size (about 12 units to read), and a machine too small for that gets a warning before any building. `critter()` warns on a role outside the eight, and a cord or lever a person pulls is "you". `crew.md` names passengers, crew outside the cutaway and crews too small to read as anti-patterns.
 - A part's speed crossing its duty threshold back and forth could make an on-duty rim blink many times a second.
