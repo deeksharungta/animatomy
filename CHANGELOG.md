@@ -4,19 +4,22 @@
 
 ### Added
 
-- Eight new examples, built from the website's test prompts: a click pen, a debounce timer (an idea figure), a rear derailleur you shift with ← →, a twist doorbell, a gyroscope, a pin-tumbler lock with six crew, a soldering iron with a WebGL glow, and a wind-up car.
+- Seven new examples, built from the website's test prompts: a debounce timer (an idea figure), a rear derailleur you shift with ← →, a twist doorbell, a gyroscope, a pin-tumbler lock with six crew, a soldering iron with a WebGL glow, and a wind-up car.
 - `CREW.setDuty(el, on)` (in `kit/critters.mjs` and on every page) lights the on-duty rim at once the first time, then shows a change only once it has lasted 320 ms, so every rim the reader sees stays at least 300 ms and a speed hovering at a threshold can't make it blink. Every example uses it.
 - `scripts/flicker.mjs` watches a run page for a loop and reports any rim that blinks (on or off for under 300 ms).
+
+### Removed
+
+- The click pen example: its moving parts were redrawn from scratch every frame instead of moved, and flickered.
 
 ### Fixed
 
 - Derailleur reworked: Roo braced under the outer link's pin and squeezed by the cable, Mo stretched between an anchor strap and the cage tab's peg instead of riding the chain, a workshop of bench, drawers and pegboard tools, a denser cassette, hub and wheel, and a fixed chain-wrap jump in beat 3.
 - Gyroscope reworked: a dense bench instrument with a bench supply and tachometer, crew about 1.7× larger, Mo climbing hand over hand along the arm's rail (which is what doubles the twist), Pinch gripping the latch pin, and beats that end with the arm across the picture so nobody is hidden.
-- Click pen reworked: a 6:1 cutaway model on a display stand in a furnished desk scene; Rocky pulls the cam's lug into its notch inside the barrel instead of sitting on top of the pen, and Roo shoves the refill's collar. The camera fits the pen on its stand rather than the room, and the crew are as large as their reach allows, so they read about 1.6× bigger in the overview.
 - Wind-up car reworked: Roo treads the open barrel's drum from inside instead of standing on top of it, Pinch catches the arbor's recoil on the click, Rocky works the brake lever in view, and the car and its room are far denser.
 - The skill's time estimates match real builds (a Figure 15–45 min, a Hero 30–90 min, an Epic two hours or more), and a Hero that finishes in under 30 minutes is checked against 80 parts and the toaster before it is handed over.
 - Casting is tested with numbers: each critter's working space and part travel against its size (about 12 units to read), and a machine too small for that gets a warning before any building. `critter()` warns on a role outside the eight, and a cord or lever a person pulls is "you". `crew.md` names passengers, crew outside the cutaway and crews too small to read as anti-patterns.
-- The click pen's rims blinked many times a second as a part's speed crossed its duty threshold back and forth.
+- A part's speed crossing its duty threshold back and forth could make an on-duty rim blink many times a second.
 
 ### Changed
 

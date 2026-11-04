@@ -114,7 +114,7 @@ Then open Claude Code in your project and ask how anything works. Name the machi
 /animatomy explain a token bucket rate limiter, with a crew
 ```
 
-Twenty-seven complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
+Twenty-six complete examples ship with the skill, from a crewed dial gauge to the toaster, and Claude opens the closest one before it starts. Ask for a size ("a Figure", "a Hero", "an Epic"), a theme or a format (one HTML file, a React component, an A4 PDF) in the same line.
 
 Animatomy is a standard [Agent Skill](https://agentskills.io), so it also runs in OpenCode, Codex and Antigravity: put this folder in that agent's skills folder, as in `ANATOMY-README.md`. Builds need Node.js 20.10 or later and the checks need Chrome or Chromium. Nothing to `npm install`.
 
@@ -133,7 +133,6 @@ open examples/power-grid/power-grid-light.html
 open examples/sand-casting/sand-casting-light.html
 open examples/token-bucket/token-bucket-light.html
 open examples/dial-indicator-crew/dial-indicator-crew-light.html
-open examples/click-pen/click-pen-light.html
 open examples/debounce/debounce-light.html
 open examples/derailleur/derailleur-light.html
 open examples/doorbell/doorbell-light.html
