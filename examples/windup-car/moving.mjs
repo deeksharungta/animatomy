@@ -31,20 +31,24 @@ export function drawn(K, P, C, S, Q, M) {
   out.rearT = Q.spin(C.WHEEL.rearX, C.WHEEL.near[1] - 0.2, C.WHEEL.z, A.axle);
   out.frontT = Q.spin(C.WHEEL.frontX, C.WHEEL.near[1] - 0.2, C.WHEEL.z, A.axle);
   out.worldT = K.translateAlong(P, [-S.roll, 0, 0]);
+  // Roo turns with the barrel: he is posed with the wall's hook straight down, then spun to where the hook is.
+  out.rooT = Q.spin(B.x, C.CREW.roo.y, B.z, A.barrel + Math.PI / 2);
   // The mainspring from its hook in the barrel wall in to the arbor: wound tight round the arbor, let down against the wall.
   const Sp = C.SPRING, turns = Sp.coils + S.W, p = 0.35 + 0.95 * S.W, n = Math.ceil(turns * 56), pts = [];
   for (let i = 0; i <= n; i++) {
     const u = i / n, r = Sp.rIn + (Sp.rOut - Sp.rIn) * Math.pow(1 - u, p), a = A.barrel - u * turns * 2 * Math.PI;
     pts.push(at([B.x + r * Math.cos(a), Sp.y, B.z + r * Math.sin(a)]));
   }
-  const hook = (rr) => at([B.x + rr * Math.cos(A.barrel), Sp.y, B.z + rr * Math.sin(A.barrel)]);
-  out.spring = line(K.pathOf(pts), { tone: "hi" }) + line(K.pathOf([hook(Sp.rOut), hook(B.drum - 0.8)]), { tone: "hi" }) + K.dotsSvg([hook(B.drum - 0.8), pts[n]], { size: 0.7, tone: "hi" });
-  // Pressed ribs on the drum's inner wall, from its back to its mouth: the floor Roo treads, turning with it.
-  const az = ((P.azimuth ?? 45) * Math.PI) / 180, el = ((P.elevation ?? 30) * Math.PI) / 180, V = [Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el)], ri = B.drum - 0.8, ribs = [];
+  // The hook's lug, pressed in from the wall: the spring's outer end hooks its back, Roo's feet push its face.
+  const ri = B.drum - 0.8, lug = C.CREW.roo.lug, wall = (rr, s) => [B.x + rr * Math.cos(A.barrel) - s * Math.sin(A.barrel), B.z + rr * Math.sin(A.barrel) + s * Math.cos(A.barrel)];
+  out.spring = line(K.pathOf(pts), { tone: "hi" }) + K.dotsSvg([pts[n]], { size: 0.7, tone: "hi" }) +
+    solid(Q.flat([wall(ri + 0.4, -2.2), wall(ri - lug, -1.6), wall(ri - lug, 1.6), wall(ri + 0.4, 2.2)], Sp.y - 0.6, C.CREW.roo.y), { tone: "mid" });
+  // Pressed ribs on the drum's inner wall, from its back out to the lip's front edge, turning with it.
+  const az = ((P.azimuth ?? 45) * Math.PI) / 180, el = ((P.elevation ?? 30) * Math.PI) / 180, V = [Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el)], ribs = [];
   for (let i = 0; i < B.ribs; i++) {
     const t = A.barrel + (i / B.ribs) * Math.PI * 2, c = Math.cos(t), s = Math.sin(t);
     const alpha = Math.max(0, Math.min(1, (-(c * V[0] + s * V[2]) - 0.08) / 0.3));
-    if (alpha > 0.02) ribs.push({ d: K.pathOf([at([B.x + ri * c, B.yF + 0.4, B.z + ri * s]), at([B.x + ri * c, B.y1, B.z + ri * s])]), alpha });
+    if (alpha > 0.02) ribs.push({ d: K.pathOf([at([B.x + ri * c, B.yF + 0.4, B.z + ri * s]), at([B.x + ri * c, B.y1 + 0.5, B.z + ri * s])]), alpha });
   }
   out.drumRibs = K.fadedSvg(ribs, { tone: "lo" });
   // The pinions' leaves, turning with their arbors.
@@ -62,7 +66,7 @@ export function drawn(K, P, C, S, Q, M) {
     solid(K.disc(0, 0.6, 1.9, Q.face(Ck.pivot[0], Ck.y1, Ck.pivot[1]), P), { tone: "hi", crease: "lo" });
   const mid = [Ck.pivot[0] + arm[0] * 0.55, Ck.pivot[1] + arm[1] * 0.55], y = Ck.y1 + 0.1, anchor = [Ck.pivot[0] + 3.4, y, Ck.pivot[1] + 4.4];
   out.click += line(K.pathOf([anchor, [Ck.pivot[0] + 0.4, y, Ck.pivot[1] + 4.6], [mid[0], y, mid[1] + 1.1]].map(at)), { tone: "mid" }) + K.dotsSvg([at(anchor)], { size: 0.6, tone: "lo" });
-  out.clickTail = [tail[0], Ck.y1 + 0.6, tail[1]];
+  out.clickTip = [tip[0], Ck.y1, tip[1]];
   out.clickU = u;
   // The key: a butterfly bow on the arbor's end, turned by you.
   const Ky = C.KEY, ka = A.arbor, ur = [Math.cos(ka), 0, Math.sin(ka)], ua = [-Math.sin(ka), 0, Math.cos(ka)];
@@ -73,14 +77,17 @@ export function drawn(K, P, C, S, Q, M) {
   const hole = (c) => K.pathOf(Array.from({ length: 16 }, (_, i) => { const rr = c * 6.6 + 1.5 * Math.cos((i / 16) * Math.PI * 2), o = 0.62 * near; return at([B.x + ur[0] * rr + ua[0] * o, Ky.y0 + 7.2 + 1.5 * Math.sin((i / 16) * Math.PI * 2), B.z + ur[2] * rr + ua[2] * o]); }), true);
   out.key = solid(K.disc(0, 2, 2.6, Q.face(B.x, Ky.y0, B.z), P), { tone: "hi", crease: "lo" }) + solid(K.prismOf(F, neck, -0.6, 0.6, P), { tone: "hi" }) +
     [-1, 1].map((c) => solid(K.prismOf(F, lobe(c), -0.6, 0.6, P), { tone: "hi", inner: line(hole(c), { tone: "lo" }) })).join("");
-  // The brake lever: it turns on its stud; its shoe bears on the barrel's drum until it swings off.
-  const Bk = C.BRAKE, ang = Bk.swing * S.brake, piv = Bk.pivot;
+  // The brake lever: it turns on its stud; its lined shoe bears on the barrel's drum until it swings off.
+  const Bk = C.BRAKE, piv = Bk.pivot, ang = Bk.swing * S.brake;
   const turn = (p) => { const v = Q.rot([p[0] - piv[0], p[1] - piv[1]], ang); return [piv[0] + v[0], piv[1] + v[1]]; };
-  const grip = turn(Bk.grip), lo = turn(Bk.tail), sh = Bk.shoe;
-  const lx = (z) => piv[0] + ((Bk.tail[0] - piv[0]) * (piv[1] - z)) / (piv[1] - Bk.tail[1]) - 0.9;
-  const pad = [[sh[0] + 0.25, sh[1] - 3], [sh[0] - 0.2, sh[1] + 3], [lx(sh[1] + 3.6), sh[1] + 3.6], [lx(sh[1] - 3.6), sh[1] - 3.6]].map(turn);
-  out.brake = solid(Q.flat(pad, Bk.y0 - 0.6, Bk.y1 + 0.6), { tone: "mid" }) + solid(Q.bar(turn(piv), lo, 1.2, 1, Bk.y0, Bk.y1), { tone: "hi" }) + solid(Q.bar(turn([Bk.grip[0], Bk.grip[1] + 3]), turn([Bk.grip[0] + 0.2, Bk.grip[1] - 4.5]), 1.6, 1.6, Bk.y0 - 0.3, Bk.y1 + 0.3), { tone: "mid" }) +
+  const on = (rr, s) => turn([B.x + Math.cos(Bk.phi) * rr - Math.sin(Bk.phi) * s, B.z + Math.sin(Bk.phi) * rr + Math.cos(Bk.phi) * s]);
+  const arc = (rr, d) => turn([B.x + rr * Math.cos(Bk.phi + d), B.z + rr * Math.sin(Bk.phi + d)]);
+  const lining = [...[-0.16, -0.08, 0, 0.08, 0.16].map((d) => arc(B.drum + 0.05, d)), on(Bk.r, 3.1), on(Bk.r, -3.1)];
+  out.brake = solid(Q.flat(lining, Bk.y0 - 0.5, Bk.y1 + 0.5), { tone: "mid" }) + solid(Q.bar(on(Bk.r, -Bk.arm - Bk.tail), on(Bk.r, Bk.tip), Bk.w, Bk.w, Bk.y0, Bk.y1), { tone: "hi" }) +
     solid(K.disc(0, 0.6, 1.8, Q.face(piv[0], Bk.y1, piv[1]), P), { tone: "hi", crease: "lo" });
-  out.grip = [turn([Bk.grip[0] + 0.6, Bk.grip[1] + 1.2]), turn([Bk.grip[0] + 0.8, Bk.grip[1] - 2.4])].map(([x, z]) => [x, Bk.y1 + 0.5, z]);
+  // Where Rocky's paws press, the lever's back over the shoe; and the shoe's middle on its near face, where it grips the drum.
+  out.grip = [on(Bk.r + 0.4, 0), on(Bk.r + 0.4, 1.6)].map(([x, z]) => [x, Bk.y1 + 0.5, z]);
+  const sh = turn(Bk.shoe);
+  out.shoe = [sh[0], Bk.y1 + 0.5, sh[1]];
   return out;
 }

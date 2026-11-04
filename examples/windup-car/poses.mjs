@@ -1,37 +1,38 @@
 // The crew, posed each frame from the state that moves their parts; serialized into the page too.
 export function poses(C, S, D, A) {
-  const Q = C.CREW, B = C.BARREL, ri = B.drum - 0.8, up = Q.roo.up;
-  const load = Math.min(1, S.W / C.PH.full), b = S.brake, held = b < 0.5, running = Math.min(1, S.v / 0.25);
-  // Roo is the spring's push: wound, he crouches against the held drum; let go, he treads it round.
-  const tread = (-A.barrel * ri) / 5;
+  const Q = C.CREW, B = C.BARREL, R = Q.roo, r = C.ARBOR.r + 0.2;
+  const load = Math.min(1, S.W / C.PH.full), b = S.brake, held = b < 0.5;
+  // Roo is the mainspring: feet on the wall's hook, paws on the arbor where the spring's inner end hooks it, posed with the hook straight down (the page spins him with the barrel).
+  // Each turn you wind bends him tighter into the push; as the turns run out he straightens, driving the hook and the barrel round.
+  const arbor = (d) => [B.x + r * Math.sin(d), R.y, B.z - r * Math.cos(d)];
   const roo = {
-    at: [B.x + ri * Math.sin(up), Q.roo.y, B.z - ri * Math.cos(up)],
-    heading: Q.roo.heading,
-    stride: { phase: tread, amount: 0.16 * running },
-    hop: 0.8 * running * Math.abs(Math.sin(tread * Math.PI)),
-    lean: (4 + 16 * load) * (1 - b) + (6 + 12 * load) * b,
-    squash: (0.4 - 0.3 * b) * load,
-    look: [0, 10 * b - 4],
+    at: [B.x, R.y, B.z - (B.drum - 0.8 - R.lug)],
+    heading: R.heading,
+    lean: R.lean[0] + R.lean[1] * load,
+    squash: R.squash[0] + R.squash[1] * load,
+    look: [0, 6],
+    paws: { l: arbor(R.paw[0]), r: arbor(R.paw[1]) },
     eyes: S.v > 0.02 ? "open" : S.W < 0.6 && S.D > 0.5 ? "happy" : held && load > 0.6 ? "wide" : "open",
   };
-  // Pinch rides the click up each tooth as you wind, and leans back on it while the spring pulls.
-  const winding = S.keyV > 0;
+  // Pinch is the click: one claw on its tip at the tooth, the other closing on it as it drops behind each tooth and opening as the next lifts it.
+  const winding = S.keyV > 0, u = D.clickU, tip = D.clickTip, open = winding ? u : 0, piv = C.CLICK.pivot;
+  const back = [piv[0] - tip[0], piv[1] - tip[2]], bl = Math.hypot(back[0], back[1]);
   const pinch = {
     at: Q.pinch.at,
     heading: Q.pinch.heading,
-    lean: winding ? -4 + 10 * D.clickU : -4 - 10 * load,
-    paws: { l: D.clickTail, r: [D.clickTail[0] + 0.6, D.clickTail[1], D.clickTail[2] - 1] },
+    lean: winding ? -2 + 8 * u : -4 - 6 * load,
+    paws: { l: tip, r: [tip[0] + (back[0] / bl) * (0.8 + 1.8 * open), tip[1], tip[2] + (back[1] / bl) * (0.8 + 1.8 * open) + open] },
     eyes: winding || S.backV > 0 ? "wide" : S.W < 0.6 && S.D > 0.5 ? "happy" : "open",
   };
-  // Rocky presses the brake shoe onto the drum while you wind, and steps back with the lever as it swings off.
-  const back = Q.rocky.step * S.brake, moving = Math.abs(S.brakeV) > 0.05;
+  // Rocky presses the brake's shoe onto the drum while you wind; when you flick the tab he eases off with it, and lets go once the car rolls.
+  const n = [Math.cos(C.BRAKE.phi), Math.sin(C.BRAKE.phi)], lift = Math.min(1, Math.max(0, (S.v - 0.25) / 0.1));
+  const off = (p) => [p[0] + lift * (1.6 * n[0] + 0.6), p[1] + lift * 1.2, p[2] + lift * (1.6 * n[1] - 1.2)];
   const rocky = {
-    at: [Q.rocky.at[0] + back, Q.rocky.at[1], Q.rocky.at[2]],
+    at: [Q.rocky.at[0] + Q.rocky.step * b + 0.8 * lift, Q.rocky.at[1], Q.rocky.at[2]],
     heading: Q.rocky.heading,
-    stride: { phase: back / 3, amount: moving ? 0.12 : 0 },
-    lean: (4 + 10 * load) * (1 - b) - 4 * b,
-    paws: { l: D.grip[0], r: D.grip[1] },
-    eyes: !held && S.v > 0.05 ? "happy" : "open",
+    lean: (6 + 10 * load) * (1 - b) - 6 * b,
+    paws: { l: off(D.grip[0]), r: off(D.grip[1]) },
+    eyes: lift > 0.5 ? "happy" : held && load > 0.6 ? "wide" : "open",
   };
   return { roo, pinch, rocky };
 }

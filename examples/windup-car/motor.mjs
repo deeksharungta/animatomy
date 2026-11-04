@@ -1,5 +1,5 @@
 import * as L from "../../kit/lathe.mjs";
-import { C, P, at, S, Ln, D, faceY, flatY, discY, box, circleY } from "./model.mjs";
+import { C, P, K, at, S, Ln, D, faceY, flatY, discY, box, circleY } from "./model.mjs";
 import { rodY, teethPaths, ratchetPaths } from "./geo.mjs";
 
 const B = C.BARREL, I = C.INTER, Ar = C.ARBOR, Rt = C.RATCHET, Bk = C.BRAKE, Ck = C.CLICK;
@@ -59,7 +59,7 @@ export function barrelMouth() {
 // The rolled lip round the mouth, in front of everything inside the drum.
 export const barrelLip = () => S(L.ringBand(0, 0.7, B.drum - 0.8, B.drum + 0.3, faceY(B.x, B.y1 - 0.2, B.z), P, { steps: 72, hole: [0.7, B.drum - 0.8] }), { tone: "hi", crease: "lo" });
 
-// The arbor: from the back plate through the barrel, split at the spring and where Roo stands, out to the key.
+// The arbor: from the back plate through the barrel, split at the spring and where Roo's paws brace on it, out to the key.
 export const arborCollar = () => S(rodY(B.x, B.z, Ar.r, B.yF, C.SPRING.y), { tone: "hi", crease: "none" }) + S(discY(B.x, B.z, 3.2, B.yF + 0.4, B.yF + 2.4), { tone: "hi", crease: "lo" });
 export const arborBack = () => S(rodY(B.x, B.z, Ar.r, C.SPRING.y, C.CREW.roo.y), { tone: "hi", crease: "none" });
 export const arborFront = () => S(rodY(B.x, B.z, Ar.r, C.CREW.roo.y, Rt.y0), { tone: "hi", crease: "none" });
@@ -76,6 +76,12 @@ export function strap() {
     S(discY(Ck.pivot[0], Ck.pivot[1], 1.1, y1, Ck.y1 + 0.7), { tone: "hi", crease: "lo" }) +
     S(discY(CLICK_STUD[0], CLICK_STUD[1], 0.8, y1, Ck.y1 + 0.2), { tone: "hi", crease: "lo" }) +
     D([at([-16, y0 - 3, d + 1]), at([6, y0 - 3, d + 1])], { size: 0.5, tone: "lo" });
+}
+// The strap's shelf, folded out under the click: where Pinch stands to work it.
+export function shelf() {
+  const Sh = C.STRAP.shelf, y = C.STRAP.y1;
+  return S(box(Sh.x0, y, Sh.z - 0.8, Sh.x1, Sh.y1, Sh.z, 0.4, 0.2), { tone: "mid", inner: Ln(K.segment([Sh.x0 + 0.2, y + 0.8, Sh.z], [Sh.x1 - 0.2, y + 0.8, Sh.z], P), { tone: "faint" }) }) +
+    D([at([Sh.x0 + 1.4, Sh.y1 - 1.2, Sh.z]), at([Sh.x1 - 1.4, Sh.y1 - 1.2, Sh.z])], { size: 0.45, tone: "lo" });
 }
 
 // The brake's stud on the back plate, the lever turns on it; and the stop tab's slot in the tray.

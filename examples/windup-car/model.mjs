@@ -14,14 +14,14 @@ export const C = {
   AXPIN: { r: 3.5, n: 10, y0: -29.6, y1: -26.4 },
   ARBOR: { r: 1.8, y0: -30, y1: 46 },
   PLATE: { y0: -31.4, y1: -30 },
-  STRAP: { y0: 19.4, y1: 20.8 },
+  STRAP: { y0: 19.4, y1: 20.8, shelf: { x0: -15, x1: 2, y1: 28, z: 19 } },
   RATCHET: { y0: 20.8, y1: 22.8, r: 8.6, root: 6.6, n: 12 },
   CLICK: { y0: 21, y1: 22.6, pivot: [1.5, 24.5], tail: [7, 16.6] },
   KEY: { y0: 39, y1: 46, w: 11, h: 9 },
-  BRAKE: { y0: -18.2, y1: -16.6, pivot: [17, 50], grip: [11.8, 16.6], tail: [9.5, 4.6], swing: 0.26 },
+  BRAKE: { y0: -18.2, y1: -16.6, phi: -0.72, pad: 1, w: 0.8, tip: 3, arm: 6, tail: 14, swing: -0.3 },
   SPRING: { y: -18, rIn: 2.4, rOut: 17.4, coils: 5 },
-  // Where the crew stand: Roo on the drum's floor (angle up the slope, plane y), the others on the tray.
-  CREW: { roo: { y: -13.8, up: 0.2, heading: 0 }, pinch: { at: [12, 25, 10], heading: 115 }, rocky: { at: [22, -13, 10], heading: 100, step: 8 } },
+  // Where the crew stand: Roo braced from the wall's hook (its lug, plane y) to the arbor (paw angles from the bottom); Pinch on the strap's shelf; Rocky on the tray.
+  CREW: { roo: { y: -13.8, lug: 3, heading: 30, paw: [0.8, 1.2], lean: [2, 6], squash: [0.04, 0.2] }, pinch: { at: [-9, 23.5, 19], heading: 15 }, rocky: { at: [12.5, -13, 10], heading: 60, step: 1.6 } },
   // The run: physics of a 120 g car on 30 mm wheels.
   PH: { m: 0.12, r: 0.015, ratio: 16, eta: 0.8, tau0: 0.003, k: 0.0097, f0: 0.0235, c: 0.334, windRate: 0.9, full: 3, recoil: 2.4 },
   // The floor and wall scroll past by the distance run, with this period (set in story.mjs).
@@ -38,18 +38,18 @@ C.PH.Ws = (C.PH.f0 * C.PH.ratio * C.PH.r / C.PH.eta - C.PH.tau0) / C.PH.k;
   C.INTER.x = B[0] + a * u[0] + h * u[1];
   C.INTER.z = B[1] + a * u[1] - h * u[0];
 }
-// The brake lever: its shoe rests on the barrel's drum, on the line from the barrel's centre to the lever.
+// The brake lever, along the drum's tangent at angle phi: its shoe bears on the drum, it turns on a stud below, and its tail pokes out under the tray.
 {
-  const Bk = C.BRAKE, B = C.BARREL, zS = 35;
-  const s = (zS - B.z) / B.drum;
-  Bk.shoe = [B.x + B.drum * Math.sqrt(1 - s * s), zS];
+  const Bk = C.BRAKE, B = C.BARREL, n = [Math.cos(Bk.phi), Math.sin(Bk.phi)], t = [-n[1], n[0]], r = B.drum + Bk.pad + Bk.w;
+  const on = (rr, s) => [B.x + n[0] * rr + t[0] * s, B.z + n[1] * rr + t[1] * s];
+  Object.assign(Bk, { r, shoe: on(B.drum + Bk.pad / 2, 0), pivot: on(r, -Bk.arm), end: on(r, Bk.tip), stop: on(r, -Bk.arm - Bk.tail) });
 }
 // The click's tip rests on the ratchet on the line toward its pivot, turned back a little.
 C.CLICK.psi = Math.atan2(C.CLICK.pivot[1] - C.BARREL.z, C.CLICK.pivot[0] - C.BARREL.x) - 0.42;
 
-export const ROO = { species: "kangaroo", name: "Roo", size: 14, role: "spring", wear: ["sweatband"] };
+export const ROO = { species: "kangaroo", name: "Roo", size: 24, role: "spring", wear: ["sweatband"] };
 export const PINCH = { species: "crab", name: "Pinch", size: 15, role: "holding" };
-export const ROCKY = { species: "raccoon", name: "Rocky", size: 21, role: "holding" };
+export const ROCKY = { species: "raccoon", name: "Rocky", size: 22, role: "holding" };
 export const ROLE = { holding: "#E5484D", spring: "#E93D82" };
 
 const VIEW = [[-80, 50, 0], [76, 50, 0], [-80, -112, 0], [76, -112, 0], [-66, -40, 66], [60, -40, 56], [-12, -30, 72]];

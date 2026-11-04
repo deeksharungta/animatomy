@@ -24,7 +24,7 @@ export const farWheels = () => wheel(Wh.rearX, Wh.far[0], Wh.far[1], "far") + wh
 export function tray() {
   const ribs = [-26, -19, -12, -5, 2, 9, 16, 23].map((yy) => k.segment([Bd.x0 + 1.5, yy, Bd.deck], [Bd.x1 - 1.5, yy, Bd.deck], P)).join("");
   const slot = (x, y, w, d) => k.planOutline({ x, y, w, d, r: Math.min(w, d) / 2 - 0.05 }, Bd.deck, P, 4);
-  const slots = slot(8.4, -18.8, 15, 2.8) + [-56, -24, 24, 52].map((x) => slot(x - 2.6, Bd.y0 + 1.6, 5.2, 1.4)).join("");
+  const slots = slot(-8.8, -18.8, 8.6, 2.8) + [-56, -24, 24, 52].map((x) => slot(x - 2.6, Bd.y0 + 1.6, 5.2, 1.4)).join("");
   const holes = [[-30, 14], [-30, -26], [30, 14], [30, 0]].map(([x, y]) => k.ring(x, y, 1.3, Bd.deck, P, 16)).join("");
   return S(box(Bd.x0 + 1.4, Bd.y0, Bd.floor, Bd.x1 - 1.4, Bd.y1, Bd.deck, 0.6, 0.3), { tone: "mid", inner: Ln(ribs, { tone: "faint" }) }) + Ln(slots + holes, { tone: "lo" });
 }

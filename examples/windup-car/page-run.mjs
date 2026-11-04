@@ -4,7 +4,7 @@ const stage = document.querySelector(".wc-stage");
 const svg = stage.querySelector("svg");
 const part = (name) => svg.querySelector('[data-part="' + name + '"]');
 const HTML = ["spring", "drumRibs", "interLeaves", "axleLeaves", "click", "key", "brake"];
-const SPUN = { barrelT: "barrelTeeth", coverT: "coverMarks", ratchetT: "ratchetTeeth", interT: "interTeeth", rearT: "rearHub", frontT: "frontHub", worldT: "worldLines", worldT2: "worldProps" };
+const SPUN = { barrelT: "barrelTeeth", coverT: "coverMarks", ratchetT: "ratchetTeeth", interT: "interTeeth", rearT: "rearHub", frontT: "frontHub", worldT: "worldLines", worldT2: "worldProps", rooT: "rooSpin" };
 const CREWS = ["roo", "pinch", "rocky"];
 const el = Object.fromEntries([...HTML, ...Object.values(SPUN), ...CREWS].map((n) => [n, part(n)]));
 const drum = part("barrelWall").querySelector(".iso-solid");
