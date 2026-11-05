@@ -1,6 +1,9 @@
 // The crew, posed each frame from the same state that moves their parts; serialized into the page as it stands.
 // Roo is the springs: feet on the near spring's base leg, paws on its hook over the hammer's arm, crouched tight
 // while the trap is set and flinging the arm over as it snaps. Pinch is the catch: his claws on the bar's tip.
+// Nib, off duty, comes for the cheese (nib.mjs).
+import { nibPose } from "./nib.mjs";
+
 export function poses(C, S) {
   const Z = C.AX.z, th = S.th, W = C.WIRE, SP = C.SPRING, Q = C.CREW;
   const tan = [-Math.sin(th), 0, Math.cos(th)], r = SP.hook + 1.6;
@@ -24,5 +27,5 @@ export function poses(C, S) {
     paws: g > 0.02 ? { l: [tipX - 2.6, 1.4, tipZ + 0.3], r: [tipX - 0.4, 1.4, tipZ + 0.3] } : undefined,
     eyes: S.duty === "pinch" ? "wide" : g > 0.5 ? "open" : "happy",
   };
-  return { roo, pinch, hook, tip: [tipX - 1.5, 1.4, tipZ + 0.3] };
+  return { roo, pinch, nib: nibPose(C, S), hook, tip: [tipX - 1.5, 1.4, tipZ + 0.3] };
 }

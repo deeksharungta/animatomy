@@ -19,7 +19,7 @@ function loop(now) {
   tPrev = now;
   if (still.matches) { for (let i = 0; i < 600; i++) step(0.02); } else step(dt);
   draw();
-  const busy = S.free || S.barFree || S.hand || S.layT >= 0 || S.duty || Math.abs(S.pen - S.penT) > 0.05 || Math.abs(S.grip - S.gripT) > 0.01 || (S.set && Math.abs(S.psi - S.psiT) > 0.01);
+  const busy = S.free || S.barFree || S.hand || S.layT >= 0 || S.duty || S.md !== S.mdT || S.scare > 0 || Math.abs(S.grab - S.grabT) > 0.01 || Math.abs(S.grip - S.gripT) > 0.01 || (S.set && Math.abs(S.psi - S.psiT) > 0.01);
   if (busy || drag) frame = requestAnimationFrame(loop);
   else { tPrev = 0; said.textContent = readoutText(); }
 }
@@ -29,11 +29,12 @@ function take() {
   if (run.playing) run.toggle();
   run.aim(TAKE_VIEW);
   took = true;
+  S.mdT = 0; S.grabT = 0; S.push = false;
   S.stepT = 1;
 }
-// Press: tip the pedal toward the trip angle (the pencil follows); set: wind the hammer back and lay the bar.
-function pressTo(psi) { take(); if (!S.set) return; S.penT = 0; S.pen = 0; S.rate = 24; S.psiT = Math.max(0, Math.min(C.TRIP + 0.4, psi)); kick(); }
-function windTo(th) { take(); if (S.set || S.free || S.barFree || S.layT >= 0) return; S.penT = 400; S.hand = true; S.slow = 1; S.thT = Math.max(C.TH_REST, Math.min(C.TH_SET + 0.03, th)); kick(); }
+// Press: tip the pedal toward the trip angle (Nib has gone home: your finger presses); set: wind the hammer back and lay the bar.
+function pressTo(psi) { take(); if (!S.set) return; S.push = true; S.rate = 24; S.psiT = Math.max(0, Math.min(C.TRIP + 0.4, psi)); kick(); }
+function windTo(th) { take(); if (S.set || S.free || S.barFree || S.layT >= 0) return; S.push = false; S.hand = true; S.slow = 1; S.thT = Math.max(C.TH_REST, Math.min(C.TH_SET + 0.03, th)); kick(); }
 function setIfBack() { if (S.hand && S.thT >= C.TH_SET && S.layT < 0) { S.layT = 0; S.gripT = 0; kick(); } }
 function pointAt(e) {
   const box = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
@@ -65,7 +66,7 @@ stage.addEventListener("pointermove", (e) => {
 });
 for (const type of ["pointerup", "pointercancel"]) stage.addEventListener(type, () => {
   if (!drag) return;
-  if (drag.kind === "press" && S.set) { S.psiT = 0; S.penT = 400; }
+  if (drag.kind === "press" && S.set) { S.psiT = 0; S.push = false; }
   if (drag.kind === "wind") { if (S.thT >= C.TH_SET - 0.25) { S.thT = C.TH_SET + 0.03; setIfBack(); } else { S.hand = false; S.free = true; S.slow = 1 / 20; S.w = 0; S.tm = 0; S.landed = false; } }
   drag = null; kick();
 });

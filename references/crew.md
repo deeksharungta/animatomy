@@ -64,7 +64,7 @@ Pinch · crab     · holding · the ring's key, takes each crack's kick         
 
 ## 3. Roles and colours
 
-`ROLES` in `kit/critters.mjs`. Each critter wears a thin collar in its role colour, with a small tag at the throat. A sweatband takes the same colour (section 12).
+`ROLES` in `kit/critters.mjs`. Each critter wears a thin collar in its role colour, with a small tag at the throat. A sweatband takes the same colour (section 12). An animal the machine is for rather than a part of it, such as the mouse at a mousetrap, is a visitor: give it no `role`, and it wears no collar and is never lit.
 
 | Role | Colour | Hex | Mechanisms |
 |---|---|---|---|

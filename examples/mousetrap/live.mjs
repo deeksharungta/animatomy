@@ -1,6 +1,7 @@
-// The page script, part one: the trap's model (pencil, pedal, catch, hammer, bar), the drawing and the run.
+// The page script, part one: the trap's model (Nib, pedal, catch, hammer, bar), the drawing and the run.
 // Every number comes from the same constants the build draws with; the snap runs in model time, slowed on screen.
-import { C, P, WIDTH, HEIGHT, ROO, PINCH, torque, pedalPt } from "./model.mjs";
+import { C, P, WIDTH, HEIGHT, ROO, PINCH, NIB, torque, pedalPt } from "./model.mjs";
+import { nibAt, nibStep, nibPose } from "./nib.mjs";
 import { STEPS, VIEWS, TAKE_VIEW, START, NUM } from "./story.mjs";
 import { dynamic } from "./moving.mjs";
 import { poses } from "./poses.mjs";
@@ -9,7 +10,7 @@ import { takeScript } from "./take.mjs";
 
 export const liveScript = () => `
 const P = ${JSON.stringify(P)}, C = ${JSON.stringify(C)}, NUM = ${JSON.stringify(NUM)};
-const SPEC = ${JSON.stringify({ roo: ROO, pinch: PINCH })};
+const SPEC = ${JSON.stringify({ roo: ROO, pinch: PINCH, nib: NIB })};
 const STEP_INFO = ${JSON.stringify(STEPS.map(({ title, text, who, hold, pace }) => ({ title, text, who, hold, pace })))};
 const VIEWS = ${JSON.stringify(VIEWS.map((v) => v.map((n) => +n.toFixed(2))))}, TAKE_VIEW = ${JSON.stringify(TAKE_VIEW.map((n) => +n.toFixed(2)))};
 const COLORS = ${JSON.stringify(STEPS.map((s) => s.color))};
@@ -20,13 +21,17 @@ const pedalPt = ${pedalPt.toString()};
 const wireOf = ${wireOf.toString()};
 const bendOf = ${bendOf.toString()};
 const dynamic = ${dynamic.toString()};
+const nibAt = ${nibAt.toString()};
+const nibStep = ${nibStep.toString()};
+const nibPose = ${nibPose.toString()};
 const poses = ${poses.toString()};
 const stage = document.querySelector(".iso-stage"), svg = stage.querySelector("svg");
 const el = {};
-for (const n of ["springFar", "springNear", "armFar", "armNear", "cross", "bar", "plate", "tab", "cheese", "pencil", "roo", "pinch"]) el[n] = svg.querySelector('[data-part="' + n + '"]');
+for (const n of ["springFar", "springNear", "armFar", "armNear", "cross", "bar", "plate", "tab", "cheese", "roo", "pinch", "nib"]) el[n] = svg.querySelector('[data-part="' + n + '"]');
+const nibBox = el.nib.parentNode, slot = { back: svg.querySelector('[data-slot="nibBack"]'), front: svg.querySelector('[data-slot="nibFront"]') };
 const readout = document.querySelector("[data-readout]");
 const SLOW = 1 / NUM.slow, G = 9.81, LB = C.BAR.L / 2000, ARM = C.PH.L;
-const fresh = () => ({ ...START, set: true, free: false, barFree: false, hand: false, thT: C.TH_SET, penT: 400, psiT: 0, gripT: 1, barT: null, slow: 1, tm: 0, landed: false, hitV: 0, snapMs: 0, stepT: 0, layT: -1 });
+const fresh = () => ({ ...START, set: true, free: false, barFree: false, hand: false, thT: C.TH_SET, psiT: 0, gripT: 1, barT: null, slow: 1, tm: 0, landed: false, hitV: 0, snapMs: 0, stepT: 0, layT: -1 });
 const S = fresh();
 window.__mt = { S, C, P, iso };
 // The bar rides on the crossbar while the crossbar is under it: the least angle that clears it.
@@ -42,7 +47,7 @@ function physics(md) {
     if (S.free) {
       S.w -= ((torque(S.th) + C.PH.drag * S.w * Math.abs(S.w)) / C.PH.I) * h; S.th += S.w * h;
       if (S.th <= C.TH_REST) {
-        if (!S.landed) { S.landed = true; S.hitV = -S.w * ARM; S.snapMs = S.tm * 1000; S.psi = C.PMAX; S.slow = Math.max(S.slow, 1 / 25); S.penT = 400; }
+        if (!S.landed) { S.landed = true; S.hitV = -S.w * ARM; S.snapMs = S.tm * 1000; S.psi = C.PMAX; S.slow = Math.max(S.slow, 1 / 25); S.push = false; S.grabT = 0; if (S.md >= C.NIB.len - 0.5) S.scare = 1e-6; }
         S.th = C.TH_REST; S.w = -S.w * C.PH.e;
         if (Math.abs(S.w) < 4) { S.w = 0; S.free = false; }
       }
@@ -59,12 +64,14 @@ function physics(md) {
 function step(dt) {
   S.stepT += dt;
   const ease = (v, t, tau) => v + (t - v) * (1 - Math.exp(-dt / tau));
-  S.pen = ease(S.pen, S.penT, S.penT > 100 ? 0.6 : 0.3); if (Math.abs(S.pen - S.penT) < 0.05) S.pen = S.penT;
+  // Nib keeps model time: still while the snap plays slowed, then the jump and the run home.
+  nibStep(C, S, S.free || S.barFree ? dt * S.slow : dt);
+  if (S.set && S.grabT && S.grab > 0.85) S.push = true;
   const g0 = S.grip; S.grip = ease(S.grip, S.gripT, 0.14); if (Math.abs(S.grip - S.gripT) < 0.01) S.grip = S.gripT;
   S.gripV = Math.abs(S.grip - g0) / Math.max(dt, 1e-3);
   const p0 = S.psi;
   if (S.set) {
-    if (S.pen < 0.5) S.psi = Math.min(S.psiT, S.psi + dt * (S.rate || 1.4));
+    if (S.push) S.psi = Math.min(S.psiT, S.psi + dt * (S.rate || 1.4));
     else S.psi = ease(S.psi, 0, 0.4);
     S.strain = Math.max(0, Math.min(1, S.psi / C.TRIP));
     if (S.psi >= C.TRIP) release();
@@ -105,15 +112,20 @@ function readoutText() {
 }
 function draw() {
   const D = dynamic(K, P, C, S);
-  for (const n of ["springFar", "springNear", "armFar", "armNear", "cross", "bar", "plate", "tab", "cheese", "pencil"]) if (el[n].__d !== D[n]) { el[n].innerHTML = D[n]; el[n].__d = D[n]; }
+  for (const n of ["springFar", "springNear", "armFar", "armNear", "cross", "bar", "plate", "tab", "cheese"]) if (el[n].__d !== D[n]) { el[n].innerHTML = D[n]; el[n].__d = D[n]; }
   const q = poses(C, S);
   paintCrew("roo", q.roo, S.duty === "roo");
   paintCrew("pinch", q.pinch, S.duty === "pinch");
+  // Nib is drawn behind the trap until past its bait end, then in front of it.
+  const front = q.nib && q.nib.at[0] > C.BASE.x + C.BASE.w + 1;
+  nibBox.style.display = q.nib ? "" : "none";
+  if (q.nib) { const s = front ? slot.front : slot.back; if (nibBox.parentNode !== s) s.appendChild(nibBox); paintCrew("nib", q.nib, false); }
   const text = readoutText();
   if (readout.textContent !== text) readout.textContent = text;
 }
 const DONE = [
   () => S.stepT > 0.3,
+  () => S.md === C.NIB.len && S.stepT > 0.4,
   () => !S.set,
   () => S.grip < 0.05 && S.th < C.TH_SET - 0.3,
   () => !S.free && !S.barFree,
@@ -122,10 +134,11 @@ const DONE = [
 ];
 function enter(i, how) {
   if (i === 0) { const keep = how === "loop" ? {} : {}; Object.assign(S, fresh(), keep); }
-  if (i === 1) { S.penT = 0; S.psiT = C.TRIP + 0.6; }
-  if (i === 3) { S.slow = SLOW; }
-  if (i === 4) { S.slow = 1; S.penT = 400; S.hand = true; S.thT = C.TH_SET + 0.03; S.psiT = 0; }
-  if (i === 5) { S.layT = 0; S.gripT = 0; }
+  if (i === 1) { S.mdT = C.NIB.len; }
+  if (i === 2) { S.md = S.mdT = C.NIB.len; S.grabT = 1; S.psiT = C.TRIP + 0.6; }
+  if (i === 4) { S.slow = SLOW; }
+  if (i === 5) { S.slow = 1; S.hand = true; S.thT = C.TH_SET + 0.03; S.psiT = 0; }
+  if (i === 6) { S.layT = 0; S.gripT = 0; }
   S.stepT = 0; S.rate = 0;
   draw();
 }

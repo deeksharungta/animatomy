@@ -1,5 +1,5 @@
 // The parts that move, rebuilt from the state each frame: the hammer, the springs, the hold-down bar, the pedal,
-// the cheese on it and the pencil. Serialized into the page as it stands: it uses only K, P, C, S and the page's
+// and the cheese on it. Serialized into the page as it stands: it uses only K, P, C, S and the page's
 // wireOf, bendOf and pedalPt.
 export function dynamic(K, P, C, S) {
   const Z = C.AX.z, th = S.th, ct = Math.cos(th), st = Math.sin(th);
@@ -78,15 +78,6 @@ export function dynamic(K, P, C, S) {
   const holes = `<path class="mt-hole" d="${hole(34, 3.5, 1.8) + hole(37.5, 7.6, 1.2) + hole(29.6, 1.9, 1)}"/>`;
   const cheese = `<g class="mt-cheese">${K.solidSvg(K.prismOf(Fw, ch, 0, 14, P), { tone: "hi", inner: holes })}</g>`;
 
-  // The pencil you press with: its graphite point on the cheese's slope, its shaft leaning up toward you.
-  const tip = pp(34, 0, s0 + 7.9), d = [0.32, 0.5, 0.8], dl = Math.hypot(...d), dn = d.map((v) => v / dl);
-  const T0 = tip.map((v, i) => v + dn[i] * S.pen), Fp = K.frameAlong(T0, dn);
-  const hex = Array.from({ length: 6 }, (_, i) => [7 * Math.cos((i / 6) * 6.283), 7 * Math.sin((i / 6) * 6.283)]);
-  const pencil = S.pen > 300 ? "" : K.solidSvg(K.solidOf([[0, 0.2], [4, 1.3], [19, 6.4, 1], [21, 6.6]], Fp, P), { tone: "hi", inner: K.lineSvg(K.arcOf(Fp, 4, 1.3, P), { tone: "mid" }) })
-    + K.solidSvg(K.prismOf(Fp, hex, 20, 150, P), { tone: "mid" })
-    + K.solidSvg(K.disc(150, 162, 6.6, Fp, P), { tone: "hi", inner: K.lineSvg(K.arcOf(Fp, 153, 6.6, P) + K.arcOf(Fp, 159, 6.6, P), { tone: "lo" }) })
-    + K.solidSvg(K.solidOf([[162, 6.3], [170, 6.3, 1], [172, 5.2, 1]], Fp, P), { tone: "lo" });
-
-  return { armNear, armFar, cross, springNear: spring(1), springFar: spring(-1), bar, plate: plate + cup, tab, cheese, pencil, hook: off0(1), hookFar: off0(-1) };
+  return { armNear, armFar, cross, springNear: spring(1), springFar: spring(-1), bar, plate: plate + cup, tab, cheese, hook: off0(1), hookFar: off0(-1) };
   function off0(sg) { const r = SP.hook + 1.6; return arm(r, sg * (C.ARM_Y + 1)).map((v, i) => v + tan[i] * (W + SP.wire / 2)); }
 }

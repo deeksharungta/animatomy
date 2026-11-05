@@ -15,7 +15,7 @@ export function propsBack() {
   const flap = [[box.x + box.w, box.y + 2], [box.x + box.w + 20, box.y + 6], [box.x + box.w + 20, box.y + box.d - 6], [box.x + box.w, box.y + box.d - 2]];
   out.push(S(k.extrude(flap, 0, 0.6, P), { tone: "mid" }));
   // The jar: glass body, a ribbed lid and a label band.
-  const J = [104, -66], body = L.frameAlong([J[0], J[1], 0], [0, 0, 1]);
+  const J = [-104, -64], body = L.frameAlong([J[0], J[1], 0], [0, 0, 1]);
   out.push(`<path class="iso-halo" d="${k.haloOf({ x: J[0] - 20, y: J[1] - 20, w: 40, d: 40, r: 20 }, 0, 44, P)}"/>`);
   out.push(S(L.solidOf([[0, 17], [3, 18, 1], [34, 18, 1], [37, 16], [38, 14.5]], body, P), { tone: "hi", inner: Ln(L.arcOf(body, 9, 18, P) + L.arcOf(body, 27, 18, P), { tone: "lo" }) }));
   out.push(Ln([20, 16, 12].map((z, i) => L.arcOf(body, z, 18, P, { from: 0.9 + i * 0.1, to: 2.2 - i * 0.2 })).join(""), { tone: "lo", free: true }));
