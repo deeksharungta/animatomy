@@ -3729,7 +3729,7 @@ function eelCritter(spec, pose, P) {
   const ys = outline.map((q) => q[1]).concat([snout[1] - hw[0] * 2.4, snout[1] + hw[0] * 1.4]);
   return {
     name: spec.name ?? sp, species: sp, role: spec.role, size, stance: "path", hang: false, front: true, mirror, eyes,
-    key: `${sp}|path|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0],
+    key: `${sp}|path|true|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0],
     box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], lines: { ray: k * 0.14, glow: Math.max(1, hw[0] * 0.55), core: Math.max(0.4, hw[0] * 0.17) },
   };
 }
@@ -3763,7 +3763,7 @@ function critter(spec, pose = {}, P) {
   const fw = [Math.cos(h), Math.sin(h), 0];
   const fs = sub(iso([at[0] + fw[0], at[1] + fw[1], at[2]], P), g0);
   const fl = len(fs) || 1;
-  const mirror = fs[0] > 0;
+  const mirror = fs[0] > 1e-6 * fl; // a tolerance: facing along the camera's line, fs[0] is rounding noise
   const front = fs[1] > -0.05 * fl;
   const turn = Math.min(1, 0.74 + (0.26 * Math.abs(fs[0])) / fl / 0.55);
   const sq = pose.squash ?? 0;

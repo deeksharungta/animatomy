@@ -122,7 +122,7 @@ export function eelCritter(spec, pose, P) {
   const ys = outline.map((q) => q[1]).concat([snout[1] - hw[0] * 2.4, snout[1] + hw[0] * 1.4]);
   return {
     name: spec.name ?? sp, species: sp, role: spec.role, size, stance: "path", hang: false, front: true, mirror, eyes,
-    key: `${sp}|path|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0],
+    key: `${sp}|path|true|${mirror}|${eyes}`, S, dyn, reach: {}, depth: depthOf(mid, P), anchor: p[0],
     box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], lines: { ray: k * 0.14, glow: Math.max(1, hw[0] * 0.55), core: Math.max(0.4, hw[0] * 0.17) },
   };
 }

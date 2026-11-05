@@ -19,6 +19,9 @@
 
 ### Fixed
 
+- A critter facing straight along the camera's line no longer flips to its mirror image for single frames: the rig's left/right test was rounding noise at that heading, and now has a tolerance. The toilet cistern's Mo showed it.
+- `scripts/flicker.mjs` also reports a critter whose drawing turns (mirror, front or stance) and turns back within 300 ms.
+
 - A critter replaces the part it is: a fresh can opener drew its cutting wheel beside Chomp, so the cut read as the blade's work. The rule and a new anti-pattern say the part isn't drawn as well, and a held tool must visibly move by the critter's hand. The premise in `SKILL.md` and `references/crew.md` no longer says "take the crew away and the mechanism is still true", which said the opposite.
 - Casting follows the sharpener, where every critter does the machine's work. The part's motion decides the species (a wheel or drum is hamsters running, a spring is Roo and Roo is only ever a spring, a cutter is Chomp's teeth, a catch is Pinch's claws, a flame is Ember); the headline event gets the first critter; a holder on a latch or magnet is a critter when the story shows what pulls against it and when it lets go, and a part held still with nothing pulling against it gets none. A heat critter works what makes or controls the heat (a switch, valve or bellows); standing on the hot part is a passenger.
 - Crew rule 8 is the point of work: the critter is its part, its working end (teeth, beak, paws, claws, feet) at the one place where the part's work visibly happens, and the work happens there because of its motion. Riding a part while the work happens elsewhere (a beaver on a pepper mill's turning cone, a woodpecker on a hammer's shank) is a passenger, however far it moves. `kit/reach.mjs` gains `checkWork`, any animal can aim its mouth with `pose.bite`, and the side-by-side with the toaster and sharpener and the 4× pass are gates no build may hand over without.
