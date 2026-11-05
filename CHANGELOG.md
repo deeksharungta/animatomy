@@ -4,6 +4,7 @@
 
 ### Added
 
+- Five examples for the video set, none on the website: a toilet cistern (the water a translucent cut-away volume), a hydraulic car jack lifting a car's corner until the tyre clears the floor, a lockstitch sewing machine with a four-animal crew, a cylinder music box playing "Twinkle, Twinkle, Little Star", and a hash map as a post-office sorting desk (an idea figure). Thirty-two examples ship, 23 crewed.
 - The can opener example, from the new-user test after the "critter replaces its part" rule: Chomp is the cutter with no wheel blade beside him, Bun and Mochi the motor, Roo the lever's spring. Twenty-seven examples ship, 18 crewed; it isn't on the website.
 - Two examples from the new-user test: an interactive mousetrap (Pinch the catch, Roo the springs, a 12.3 ms snap) and a hot glue gun with WebGL melt (Volta on self-regulating PTC stones, Pinch the feed claw, Roo the carriage spring). The skill ships twenty-six examples, 17 crewed; neither is on the website.
 - The pepper grinder example, built from the skill alone under the new casting rules: Chomp's teeth crack each corn at the burr's lip, Roo is the spring under the cone, and the fixed ring has no critter. The skill ships it among its examples.
