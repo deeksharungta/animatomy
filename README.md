@@ -85,8 +85,6 @@ Thirteen species ship: hamster, mouse, squirrel, beaver, sloth, mole, kangaroo, 
 | fluid | aqua | pumps, hoses, valves |
 | spring | pink | springs, launchers |
 
-An animal the machine is for, like the mouse at the mousetrap, is a visitor: no collar, never lit.
-
 Casting rules, in short:
 
 - **The right animal for the job.** Wheels are hamsters, springs are Roo (and Roo is only ever a spring), cutters are Chomp, catches are Pinch.

@@ -17,8 +17,7 @@ export function pieces(sp, stance, front, mirror, eyes, role, wear, spread = fal
   if (!front) for (const m of B.backMarks ?? []) out.body += softShape(sp, m.pts, m.tone, m.op ?? 1);
   for (const o of B.ao ?? []) out.body += aoBlob(sp, o, 0.8);
   out.body += legs(B.over);
-  // A collar shows the role; an animal with none (a visitor, off duty) wears none.
-  out.collar = role ? collarSvg(R.collar) : "";
+  out.collar = collarSvg(R.collar);
   out.head = headSvg(sp, R.head, { eyes, front, mirror, wear, role });
   out.tail = R.tail ? tailSvg(sp, R.tail, mirror) : "";
   if (R.wing) {

@@ -14,8 +14,7 @@
 //                               · space: 30 tall between the bar (y 0) and the near arm (y 36); the hook moves 28
 // Pinch · crab     · holding · the pedal's catch: his claws on the bar's tip, holding a tenth of the spring's push
 //                               · work: the bar's tip at the catch lip · paws · moves: lets go as the pedal tips 3.4°
-// Nib · mouse · off duty: not a part. Comes out of the hole for the cheese, and the tug on it springs the trap.
-// You pull the hammer back and lay the bar over: that is "you" in the captions.
+// You press the cheese with a pencil, pull the hammer back and lay the bar over: that is "you" in the captions.
 import * as k from "../../kit/iso-kit.mjs";
 
 export const WIDTH = 720;
@@ -29,9 +28,6 @@ export const C = {
   PEDAL: { px: 56, pz: 21.6, h: 0.6, tongue: [-10, 0, 6], plate: [0, 42, 20], tab: [-11.2, -10, 4.4], lip: [-15.2, 3.2], cup: [32, 7.5] },
   TRIP: 3.4,
   CREW: { roo: { at: [4, 42, 18], heading: 30, squash: [0.05, 0.5], lean: [20, -40] }, pinch: { at: [40, 10, 18], heading: 30 } },
-  // Nib's way from the hole, behind the trap and round its bait end, to stand on the floor at the cheese's tall end;
-  // grip: the paws on that end (u, ±v, up) and the teeth on the slope (u, up). Walks and runs in units a second.
-  NIB: { path: [[-40, -86], [-40, -72], [94, -68], [110, -54], [109, -10], [106, 0]], walk: 70, run: 150, step: 20, hop: 10, back: 9, lean: [6, 14], grip: [40.8, 3.2, 3, 32, 6.8] },
   // The physics, in SI: two springs, a 1.6 mm steel bail 38 mm long and 28 mm wide.
   PH: { k: 0.0052, tau0: 0.012, rho: 7850, d: 0.0016, L: 0.038, w: 0.028, e: 0.28, drag: 2.5e-9 },
 };
@@ -56,8 +52,6 @@ export const pedalPt = (C, u, v, s, psi) => {
   C.PHI_REST = Math.PI + Math.asin((C.BAR.z - C.BAR.r) / C.BAR.L);
 }
 
-C.NIB.len = C.NIB.path.slice(1).reduce((l, b, i) => l + Math.hypot(b[0] - C.NIB.path[i][0], b[1] - C.NIB.path[i][1]), 0);
-
 // The hammer's inertia (two arms and a crossbar of wire) and the springs' torque, as functions of its angle.
 {
   const H = C.PH, m = (l) => H.rho * Math.PI * (H.d / 2) ** 2 * l;
@@ -78,8 +72,6 @@ export const catchForce = () => (crossForce() * C.CROSS_AT) / C.BAR.L;
 
 export const ROO = { species: "kangaroo", name: "Roo", size: 34, role: "spring", wear: ["sweatband"] };
 export const PINCH = { species: "crab", name: "Pinch", size: 22, role: "holding" };
-// Off duty, so no role: no collar, never lit. Bigger than the crew, still a small mouse for a trap this size.
-export const NIB = { species: "mouse", name: "Nib", size: 54 };
 export const ROLE = { holding: "#E5484D", spring: "#E93D82" };
 
 export const FLOOR = { x: -320, y: -92, w: 600, d: 380, r: 1 };

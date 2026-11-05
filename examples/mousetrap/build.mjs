@@ -7,7 +7,7 @@ import * as L from "../../kit/lathe.mjs";
 import { critter, critterSvg, crewCss, subjectCss } from "../../kit/critters.mjs";
 import { kitScript, crewScript, stepsScript } from "../../scripts/inline-kit.mjs";
 import { STEPS_CSS, stepsHtml } from "../../kit/steps.mjs";
-import { C, P, WIDTH, HEIGHT, ROO, PINCH, NIB, pedalPt } from "./model.mjs";
+import { C, P, WIDTH, HEIGHT, ROO, PINCH, pedalPt } from "./model.mjs";
 import { room, floor } from "./scene.mjs";
 import { propsBack, propsFront } from "./props.mjs";
 import { base, label, axle, axleStaples, eye, barStaple, pedalStaple, legStaple, pedalRoll } from "./trap.mjs";
@@ -26,20 +26,16 @@ const S0 = START;
 const D0 = dynamic({ ...k, ...L }, P, C, S0), Q0 = poses(C, S0);
 const g = (name, html) => `<g data-part="${name}">${html}</g>`;
 const crew = (spec, pose, name) => critterSvg(critter(spec, pose, P), { part: name });
-// Nib starts at home, out of sight. The page moves Nib between two slots: behind the trap, or in front of it once
-// past its bait end.
-const nibAt0 = poses(C, { ...S0, md: C.NIB.len, mh: 180 }).nib;
-const nib = (name) => `<g data-slot="${name}">${name === "nibBack" ? `<g style="display:none">${crew(NIB, nibAt0, "nib")}</g>` : ""}</g>`;
 
 const svg = k.figureSvg({
   width: WIDTH, height: HEIGHT, label: LABEL,
   body: [
-    room(), floor(), propsBack(), nib("nibBack"), base(), label(),
+    room(), floor(), propsBack(), base(), label(),
     g("springFar", D0.springFar), legStaple(-1),
     axle(-C.SPRING.y0 + 0.5, C.SPRING.y0 - 0.5), axleStaples(), eye(-C.ARM_Y), g("armFar", D0.armFar),
     barStaple(), g("plate", D0.plate), pedalStaple(), pedalRoll(), g("cheese", D0.cheese), g("cross", D0.cross), g("bar", D0.bar), g("tab", D0.tab),
     crew(PINCH, Q0.pinch, "pinch"), eye(C.ARM_Y), g("armNear", D0.armNear), g("springNear", D0.springNear), legStaple(1),
-    crew(ROO, Q0.roo, "roo"), nib("nibFront"), propsFront(),
+    crew(ROO, Q0.roo, "roo"), g("pencil", D0.pencil), propsFront(),
   ],
 });
 

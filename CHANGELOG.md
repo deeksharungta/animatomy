@@ -4,7 +4,6 @@
 
 ### Added
 
-- The mousetrap has a mouse: Nib, off duty, comes out of the hole for the cheese and the tug springs the trap, which lands 6 mm short of Nib's nose; Nib jumps back and runs home. The pencil is gone, and the jar moved off Nib's path. An animal with no `role` is a visitor: it wears no collar and is never lit.
 - The can opener example, from the new-user test after the "critter replaces its part" rule: Chomp is the cutter with no wheel blade beside him, Bun and Mochi the motor, Roo the lever's spring. Twenty-seven examples ship, 18 crewed; it isn't on the website.
 - Two examples from the new-user test: an interactive mousetrap (Pinch the catch, Roo the springs, a 12.3 ms snap) and a hot glue gun with WebGL melt (Volta on self-regulating PTC stones, Pinch the feed claw, Roo the carriage spring). The skill ships twenty-six examples, 17 crewed; neither is on the website.
 - The pepper grinder example, built from the skill alone under the new casting rules: Chomp's teeth crack each corn at the burr's lip, Roo is the spring under the cone, and the fixed ring has no critter. The skill ships it among its examples.
