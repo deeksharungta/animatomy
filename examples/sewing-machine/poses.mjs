@@ -16,8 +16,10 @@ export function poses(C, S, kin) {
     eyes: S.idle > 3 ? "shut" : "open",
     tailSway: flying ? 0.3 * Math.sin(S.t * 9) : 0,
   };
-  // Pinch: the hook turns anticlockwise from above, two laps a stitch; its point meets the needle at the catch.
-  const H = C.HOOK, [bx, by] = C.B, phi = C.PHI_N + 2 * (S.th - C.CATCH), rad = Math.PI / 180;
+  // Pinch: the hook turns anticlockwise from above, two laps a stitch; its point meets the needle at the catch. He
+  // walks the lap that carries the loop, back round to the needle, and waits there through the empty second lap.
+  const TAU = 2 * Math.PI, lap = (((2 * (S.th - C.CATCH)) % (2 * TAU)) + 2 * TAU) % (2 * TAU);
+  const H = C.HOOK, [bx, by] = C.B, phi = C.PHI_N + Math.min(lap, TAU), rad = Math.PI / 180;
   const deg = ((((phi / rad) % 360) + 360) % 360) / 5, i0 = Math.floor(deg), f = deg - i0, ip = (T) => T[i0 % 72] * (1 - f) + T[(i0 + 1) % 72] * f;
   const D = ip(C.CRAB.D), rho = ip(C.CRAB.R), pa = phi - D * rad;
   const hp = [bx + H.r * Math.cos(phi), by + H.r * Math.sin(phi), H.z], tg = [-Math.sin(phi), Math.cos(phi)];

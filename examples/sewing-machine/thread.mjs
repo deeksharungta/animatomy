@@ -19,15 +19,18 @@ export function threads(K, P, C, S, R, D, Q) {
   const front = (run) => { const parts = []; let cur = []; for (const [a, p] of run) { if (seen(a)) cur.push(at(p)); else { if (cur.length > 1) parts.push(K.pathOf(cur)); cur = []; } } if (cur.length > 1) parts.push(K.pathOf(cur)); return parts.join(""); };
   const H = [nx, ny, under], low = [];
   if (psi < carry + shed && S.holes.length) {
+    // Let go at 288°, the loop isn't swung back round the case: it slides off and the take-up draws it straight up
+    // into the needle hole, shrinking where it lies, while Pinch walks his second lap empty.
     const s = psi < carry ? 0 : K.ease((psi - carry) / shed);
-    const pn = C.PHI_N, phi = psi < carry ? Q.phi : pn + 2 * carry * (1 - s);
+    const pn = C.PHI_N, phi = psi < carry ? Q.phi : pn + 2 * carry, tight = (p) => p.map((v, i) => v + (H[i] - v) * s);
+    const pull = (run) => run.map(([a, p]) => [a, tight(p)]);
     const claw = psi < carry ? Q.hook : [bx + C.HOOK.r * Math.cos(phi), by + C.HOOK.r * Math.sin(phi), C.HOOK.z];
     const zu = C.HOOK.top - 1 + s * 1, zl = C.HOOK.race + 4 + s * 5, start = [bx + rl * Math.cos(pn), by + rl * Math.sin(pn), zu];
-    low.push(K.pathOf([at(H), at(start)]));
-    low.push(front(ring(pn, phi, zu)));
-    low.push(front(ring(phi, pn, zl)));
-    if (seen(phi)) low.push(K.pathOf([at(claw), at([bx + rl * Math.cos(phi), by + rl * Math.sin(phi), zu])]) + K.pathOf([at(claw), at([bx + rl * Math.cos(phi), by + rl * Math.sin(phi), zl])]));
-    low.push(K.pathOf([at([bx + rl * Math.cos(pn), by + rl * Math.sin(pn), zl]), at(H)]));
+    low.push(K.pathOf([at(H), at(tight(start))]));
+    low.push(front(pull(ring(pn, phi, zu))));
+    low.push(front(pull(ring(phi, pn, zl))));
+    if (psi < carry && seen(phi)) low.push(K.pathOf([at(claw), at([bx + rl * Math.cos(phi), by + rl * Math.sin(phi), zu])]) + K.pathOf([at(claw), at([bx + rl * Math.cos(phi), by + rl * Math.sin(phi), zl])]));
+    low.push(K.pathOf([at(tight([bx + rl * Math.cos(pn), by + rl * Math.sin(pn), zl])), at(H)]));
   } else if (psi > TAU - 0.4 && eye[2] < under) {
     // Just before the catch the thread flares out of the rising needle's eye toward the hook.
     const f = (psi - (TAU - 0.4)) / 0.4;
